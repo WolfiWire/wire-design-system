@@ -6,6 +6,7 @@
 <title>WDS Component Reference — v1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -394,17 +395,90 @@ hr.divider{border:none;border-top:1px solid var(--gray-200);margin:40px 0}
   <!-- ═══════════════════════════════ ICONS ═══════════════════════════════ -->
   <section class="section" id="icons">
     <div class="section-header">
-      <div class="section-title">Icons</div>
-      <div class="section-desc">Phosphor Bold as the default icon set. Wire custom icons used selectively for product-specific concepts. Both sets combined at the component level.</div>
+      <div class="section-title">Icons <span class="tag new-tag">updated</span></div>
+      <div class="section-desc">Phosphor Bold is the default icon set — 189 of 212 Wire custom icons map directly to Phosphor equivalents. 21 Wire custom icons are retained as inline SVG for concepts Phosphor doesn't cover.</div>
     </div>
-    <table class="token-table">
-      <thead><tr><th>Set</th><th>Weight</th><th>CDN</th><th>Usage</th></tr></thead>
-      <tbody>
-        <tr><td class="token-name">Phosphor</td><td class="token-value">Bold</td><td class="token-css">cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2</td><td class="token-desc">Default for all standard UI icons</td></tr>
-        <tr><td class="token-name">Wire custom</td><td class="token-value">—</td><td class="token-css">Figma: Wire Design System → node 4649-2453</td><td class="token-desc">Selective overrides for product-specific icons</td></tr>
-      </tbody>
-    </table>
-    <div class="note">Wire custom icons are exported as SVG from Figma on a per-component basis. Phosphor icons are loaded via CDN using the <span class="tag">ph-bold</span> class prefix, e.g. <span class="tag">&lt;i class="ph-bold ph-chats"&gt;&lt;/i&gt;</span></div>
+
+    <div class="subsection">
+      <div class="subsection-title">Icon sets</div>
+      <table class="token-table">
+        <thead><tr><th>Set</th><th>Weight / style</th><th>Usage rule</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="token-name">Phosphor Bold</td>
+            <td class="token-value">Bold (default) · Fill (active state)</td>
+            <td class="token-desc">All standard UI icons. Bold = default/hover. Fill = active/selected. Load via CDN: <code style="font-size:10.5px">ph-bold ph-{name}</code> or <code style="font-size:10.5px">ph-fill ph-{name}</code></td>
+          </tr>
+          <tr>
+            <td class="token-name">Wire custom</td>
+            <td class="token-value">Inline SVG · currentColor</td>
+            <td class="token-desc">21 icons with no Phosphor equivalent. Embedded as inline SVG, sized via <code style="font-size:10.5px">width/height</code> or <code style="font-size:10.5px">font-size</code>. Always use <code style="font-size:10.5px">fill="currentColor"</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Wire custom icons — retained (21)</div>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">These have no Phosphor equivalent and must be used from the Wire SVG set. Export from Figma: Wire Design System → Iconography, or use from the <code style="font-size:11px">Iconography.zip</code> asset bundle.</p>
+      <table class="token-table">
+        <thead><tr><th>Preview</th><th>Name</th><th>Use in WDS</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;"><svg viewBox="0 0 17 16" fill="none" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg></span></td>
+            <td class="token-name">Channel</td>
+            <td class="token-desc">Channel avatars — replaces <code style="font-size:10.5px">#</code> glyph in all channel avatar contexts</td>
+          </tr>
+          <tr><td><i class="ph-bold ph-users-three" style="font-size:16px;color:var(--gray-400)"></i></td><td class="token-name">Group</td><td class="token-desc">Group avatars — Wire's three-person arrangement</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Verified</td><td class="token-desc">Verification badge — blue/light shield shape</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Federated User</td><td class="token-desc">User from a federated organisation</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">External Partner</td><td class="token-desc">External partner org indicator</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">External user (new)</td><td class="token-desc">External user badge</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Guest</td><td class="token-desc">Guest user indicator</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Group admin</td><td class="token-desc">Admin badge on group avatars</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Add Team</td><td class="token-desc">Create a new team</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Read receipts</td><td class="token-desc">Message delivered/read state</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Read receipts off</td><td class="token-desc">Read receipts disabled</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Certificate valid/expired/revoked/expiring</td><td class="token-desc">E2EI certificate states (4 icons)</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">SCIM (external managed)</td><td class="token-desc">IT-managed account indicator</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Blur high / Blur low</td><td class="token-desc">Camera blur controls</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Dock window</td><td class="token-desc">Desktop window management</td></tr>
+          <tr><td><span style="font-size:11px;color:var(--gray-400)">SVG</span></td><td class="token-name">Wire</td><td class="token-desc">Wire logotype / wordmark</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Phosphor equivalents — selected mappings</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-chats" style="font-size:15px"></i> Conversations</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-files" style="font-size:15px"></i> Drive / Files</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-video-camera" style="font-size:15px"></i> Video / Call</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-magnifying-glass" style="font-size:15px"></i> Search</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-gear" style="font-size:15px"></i> Settings</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-bell" style="font-size:15px"></i> Alerts</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-bell-slash" style="font-size:15px"></i> Mute</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-paperclip" style="font-size:15px"></i> Attachment</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-arrow-bend-up-left" style="font-size:15px"></i> Reply</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-trash" style="font-size:15px"></i> Delete</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-pencil-simple" style="font-size:15px"></i> Edit</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-microphone" style="font-size:15px"></i> Mic On</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-microphone-slash" style="font-size:15px"></i> Mic Off</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-at" style="font-size:15px"></i> Mention</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-users-three" style="font-size:15px"></i> Team</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-shield" style="font-size:15px"></i> Shield</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-lock" style="font-size:15px"></i> Lock</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-smiley" style="font-size:15px"></i> Emoji</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-timer" style="font-size:15px"></i> Timed Message</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-phone" style="font-size:15px"></i> Call</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-paper-plane-tilt" style="font-size:15px"></i> Send</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-plus" style="font-size:15px"></i> Plus</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-x" style="font-size:15px"></i> Close</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-archive" style="font-size:15px"></i> Archive</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 10px;font-size:11.5px;"><i class="ph-bold ph-download-simple" style="font-size:15px"></i> Download</div>
+      </div>
+      <div class="note" style="margin-top:12px;">Full mapping of all 189 Wire → Phosphor icon equivalents is maintained in the <code style="font-size:11px">Iconography.zip</code> asset bundle documentation. For any icon not listed here, default to Phosphor Bold.</div>
+    </div>
   </section>
 
   <hr class="divider"/>
