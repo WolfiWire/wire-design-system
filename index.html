@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WDS Component Reference — v1</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gray-50:#fafafa;--gray-100:#f4f4f5;--gray-200:#e4e4e7;--gray-300:#d4d4d8;
+  --gray-400:#a1a1aa;--gray-500:#71717a;--gray-600:#52525b;--gray-700:#3f3f46;
+  --gray-800:#27272a;--gray-900:#18181b;
+  --blue-50:#eff6ff;--blue-100:#dbeafe;--blue-600:#2563eb;
+  --radius-none:0;--radius-sm:4px;--radius-md:6px;--radius-lg:10px;
+  --radius-base:12px;--radius-xl:17px;--radius-2xl:22px;--radius-full:9999px;
+  --sp-0:0px;--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;
+  --sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-10:40px;--sp-12:48px;
+  --sp-16:64px;--sp-20:80px;--sp-24:96px;
+  --wire-bg-inv:#17181a;
+  --wire-bg-inv-focus:#34373d;
+  --wire-bg-inv-hover:#26272c;
+  --wire-accent-bg:#e7f0fa;
+  --wire-accent:#0667c8;
+
+  /* Avatar component */
+  --ws-avatar-blue:#0667C8;
+  --ws-avatar-green:#1D7833;
+  --ws-avatar-amber:#A25915;
+  --ws-avatar-petrol:#01718E;
+  --ws-avatar-purple:#8944AB;
+  --ws-avatar-red:#C20013;
+  --ws-channel-blue-bg:#E7F0FA;--ws-channel-blue-border:#CDE1F4;
+  --ws-channel-green-bg:#E8F1EA;--ws-channel-green-border:#D2E4D6;
+  --ws-channel-amber-bg:#F6EEE8;--ws-channel-amber-border:#ECDED0;
+  --ws-channel-petrol-bg:#E5F1F3;--ws-channel-petrol-border:#CCE2E7;
+  --ws-channel-purple-bg:#F4EDF7;--ws-channel-purple-border:#E7DAEE;
+  --ws-channel-red-bg:#F9E6E8;--ws-channel-red-border:#F3CCD0;
+  --ws-availability-available:#1D7833;
+  --ws-availability-busy:#A25915;
+  --ws-availability-away:#C20013;
+  --ws-text:#17181A;
+  --ws-text-secondary:#676B71;
+  --ws-text-muted:#9FA1A7;
+  --ws-border:#DCE0E3;
+  --ws-border-strong:#676B71;
+  --ws-surface:#FFFFFF;
+  --ws-bg:#FAFAFA;
+  --ws-surface-sunken:#EDEFF0;
+  --ws-disabled-surface:#CBCED1;
+  --ws-danger:#C20013;--ws-danger-weak:#F9E6E8;
+  --ws-success:#1D7833;--ws-success-weak:#E8F1EA;
+  --ws-warning:#A25915;--ws-warning-weak:#F6EEE8;
+  --ws-backdrop:rgba(0,0,0,0.55);
+  --font:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono','Fira Mono',monospace;
+}
+body{font-family:var(--font);font-size:14px;color:var(--gray-900);background:#fff;line-height:1.6}
+
+/* Layout */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;border-right:1px solid var(--gray-200);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--gray-200);margin-bottom:16px}
+.sidebar-logo-name{font-size:13px;font-weight:600;color:var(--gray-900)}
+.sidebar-logo-version{font-size:11px;color:var(--gray-400);margin-top:2px}
+.nav-group{margin-bottom:4px}
+.nav-group-label{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--gray-400);padding:8px 20px 4px}
+.nav-link{display:block;font-size:13px;color:var(--gray-600);padding:5px 20px;text-decoration:none;border-left:2px solid transparent;transition:color 0.1s,border-color 0.1s}
+.nav-link:hover{color:var(--gray-900)}
+.nav-link.active{color:var(--gray-900);font-weight:500;border-left-color:var(--gray-900)}
+
+.content{flex:1;max-width:860px;padding:48px 56px;overflow-x:hidden}
+
+/* Page header */
+.page-header{margin-bottom:48px;padding-bottom:24px;border-bottom:1px solid var(--gray-200)}
+.page-title{font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--gray-900);margin-bottom:6px}
+.page-meta{font-size:13px;color:var(--gray-400)}
+
+/* Section */
+.section{margin-bottom:56px;scroll-margin-top:24px}
+.section-header{margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--gray-200)}
+.section-title{font-size:18px;font-weight:600;color:var(--gray-900);letter-spacing:-0.01em}
+.section-desc{font-size:13px;color:var(--gray-500);margin-top:4px;line-height:1.6}
+
+.subsection{margin-bottom:32px}
+.subsection-title{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--gray-400);margin-bottom:12px}
+
+/* Token tables */
+.token-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.token-table th{text-align:left;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--gray-400);padding:6px 12px;border-bottom:1px solid var(--gray-200)}
+.token-table td{padding:7px 12px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+.token-table tr:last-child td{border-bottom:none}
+.token-name{font-family:var(--mono);font-size:11.5px;color:var(--gray-700)}
+.token-css{font-family:var(--mono);font-size:11px;color:var(--gray-400)}
+.token-value{font-family:var(--mono);font-size:11.5px;color:var(--gray-600)}
+.token-desc{font-size:12px;color:var(--gray-500)}
+.swatch{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,0.08);flex-shrink:0;vertical-align:middle}
+.swatch-row{display:flex;align-items:center;gap:8px}
+
+/* Spacing scale visual */
+.spacing-scale{display:flex;flex-direction:column;gap:6px}
+.spacing-row{display:flex;align-items:center;gap:12px}
+.spacing-bar-wrap{flex:1;max-width:400px;display:flex;align-items:center}
+.spacing-bar{height:16px;background:var(--gray-200);border-radius:2px;min-width:2px;transition:width 0.2s}
+.spacing-label{font-family:var(--mono);font-size:11px;color:var(--gray-500);width:80px}
+.spacing-px{font-size:11px;color:var(--gray-400);width:36px;text-align:right}
+
+/* Radius scale visual */
+.radius-grid{display:flex;flex-wrap:wrap;gap:16px}
+.radius-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.radius-box{width:48px;height:48px;background:var(--gray-200);border:1px solid var(--gray-300)}
+.radius-name{font-family:var(--mono);font-size:10px;color:var(--gray-500)}
+.radius-val{font-size:10px;color:var(--gray-400)}
+
+/* Type scale */
+.type-scale{display:flex;flex-direction:column;gap:2px}
+.type-row{display:flex;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.type-row:last-child{border-bottom:none}
+.type-meta{width:140px;flex-shrink:0}
+.type-token{font-family:var(--mono);font-size:11px;color:var(--gray-500);display:block}
+.type-specs{font-size:10.5px;color:var(--gray-400);margin-top:2px}
+.type-sample{color:var(--gray-900);flex:1}
+
+/* Component canvas */
+.component-canvas{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:24px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.component-canvas.dark{background:#111113}
+.component-canvas.centered{justify-content:center}
+
+/* States grid */
+.states-grid{display:flex;gap:12px;flex-wrap:wrap}
+.state-card{background:#fff;border:1px solid var(--gray-200);border-radius:8px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:100px}
+.state-card.dark{background:#17181a;border-color:#34373d}
+.state-label{font-size:11px;color:var(--gray-500);font-weight:500}
+
+/* Props table */
+.props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+.prop-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:10px 12px}
+.prop-name{font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:6px;font-family:var(--mono)}
+.prop-vals{display:flex;flex-wrap:wrap;gap:3px}
+.prop-val{font-size:11px;font-family:var(--mono);background:#fff;border:1px solid var(--gray-200);border-radius:3px;padding:1px 5px;color:var(--gray-600)}
+
+/* Token usage pills */
+.token-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.token-pill{display:inline-flex;align-items:center;gap:5px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-full);padding:3px 8px;font-size:11px;font-family:var(--mono);color:var(--gray-600)}
+.pill-swatch{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* Sidebar component styles */
+.wire-sidebar-demo{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--gray-200);height:460px}
+.nav-rail{width:56px;background:#17181a;display:flex;flex-direction:column;align-items:center;padding:10px 8px;flex-shrink:0}
+.rail-top{display:flex;flex-direction:column;align-items:center;gap:20px;flex:1}
+.rail-bottom{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:4px}
+.team-av{width:32px;height:32px;border-radius:6px;background:#1c1c1e;border:1px solid #34373d;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font)}
+.user-av{width:24px;height:24px;border-radius:9999px;background:linear-gradient(135deg,#0667c8,#0891b2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;border:1px solid #34373d;position:relative;cursor:pointer;font-family:var(--font)}
+.user-av .presence{position:absolute;bottom:-1px;right:-1px;width:7px;height:7px;border-radius:9999px;background:#22c55e;border:1.5px solid #17181a}
+.nav-items-group{display:flex;flex-direction:column;align-items:center;gap:4px}
+.n-item{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#71717a;font-size:17px;transition:background 0.1s,color 0.1s;position:relative;flex-shrink:0}
+.n-item:hover{background:#26272c;color:#d4d4d8}
+.n-item.active{background:#34373d;color:#fff}
+.n-item.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:18px;background:#fff;border-radius:0 3px 3px 0}
+.product-nav{width:240px;background:#fafafa;border-right:1px solid #e5e8ea;display:flex;flex-direction:column;overflow:hidden}
+.pnav-header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
+.pnav-title{font-size:15px;font-weight:600;color:#17181a;font-family:var(--font)}
+.hdr-actions{display:flex;gap:4px}
+.hdr-btn{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#676b71;font-size:14px;border:none;background:transparent}
+.hdr-btn:hover{background:#e5e8ea}
+.hdr-btn.outlined{border:1px solid #dce0e3}
+.pnav-scroll{flex:1;overflow-y:auto;padding-bottom:8px}
+.pnav-scroll::-webkit-scrollbar{width:3px}
+.pnav-scroll::-webkit-scrollbar-thumb{background:#dce0e3;border-radius:2px}
+.sec{padding:6px 16px}
+.sec:not(:last-child){border-bottom:1px solid #e5e8ea}
+.sec-label{font-size:10.5px;font-weight:600;color:#9fa1a7;letter-spacing:0.05em;text-transform:uppercase;padding:6px 8px 4px;font-family:var(--font)}
+.c-item{display:flex;align-items:center;gap:8px;padding:0 8px;height:32px;border-radius:6px;cursor:pointer;transition:background 0.1s}
+.c-item:hover{background:#efefef}
+.c-item.selected{background:#e7f0fa}
+.c-name{flex:1;font-size:13px;color:#676b71;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-family:var(--font)}
+.c-item.selected .c-name{color:#17181a;font-weight:600}
+.c-item.unread .c-name{color:#17181a;font-weight:500}
+.ch-av{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.usr-av{width:20px;height:20px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;border:1px solid #dce0e3;position:relative;font-family:var(--font)}
+.grp-av{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#9fa1a7;font-size:12px}
+.badge{background:#17181a;color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;flex-shrink:0;line-height:1.4;font-family:var(--font)}
+.badge-icon{width:18px;height:18px;background:#17181a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0}
+.badge-muted{background:#fff;border:1px solid #dce0e3;color:#676b71}
+.dot-av{position:absolute;bottom:-1px;right:-1px;width:6px;height:6px;border-radius:9999px;border:1.5px solid #fafafa}
+.dot-green{background:#22c55e}
+.dot-red{background:#ef4444}
+.main-placeholder{flex:1;background:#fff;display:flex;align-items:center;justify-content:center;color:#9fa1a7;font-size:12px;font-family:var(--font)}
+
+/* Utility */
+.tag{display:inline-block;font-size:10px;font-weight:500;background:var(--gray-100);color:var(--gray-600);border-radius:3px;padding:2px 6px;font-family:var(--mono)}
+.new-tag{background:#dcfce7;color:#166534}
+.note{font-size:12px;color:var(--gray-500);background:var(--gray-50);border-left:3px solid var(--gray-300);padding:10px 14px;border-radius:0 4px 4px 0;margin-top:12px;line-height:1.6}
+hr.divider{border:none;border-top:1px solid var(--gray-200);margin:40px 0}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar nav -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-name">Wire Design System</div>
+    <div class="sidebar-logo-version">v2 · June 2026</div>
+    <a href="prototype.html" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;font-weight:500;color:#fff;background:#17181a;padding:5px 10px;border-radius:6px;text-decoration:none;" onmouseover="this.style.background='#34373d'" onmouseout="this.style.background='#17181a'">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H3M9 1V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Open prototype
+    </a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Foundation</div>
+    <a class="nav-link active" href="#colors">Colors</a>
+    <a class="nav-link" href="#spacing">Spacing</a>
+    <a class="nav-link" href="#radius">Radius</a>
+    <a class="nav-link" href="#typography">Typography</a>
+    <a class="nav-link" href="#icons">Icons</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Components</div>
+    <a class="nav-link" href="#main-nav">Main nav sidebar</a>
+    <a class="nav-link" href="#conv-sidebar">Conversation sidebar</a>
+  </div>
+</nav>
+
+<!-- Main content -->
+<main class="content">
+
+  <div class="page-header">
+    <div class="page-title">WDS Component Reference</div>
+    <div class="page-meta">Wire Design System · Built on shadcn/ui · Inter · Phosphor Bold · v1</div>
+  </div>
+
+  <!-- ═══════════════════════════════ COLORS ═══════════════════════════════ -->
+  <section class="section" id="colors">
+    <div class="section-header">
+      <div class="section-title">Colors</div>
+      <div class="section-desc">Semantic color tokens with Light and Dark mode values. Defined in the Wire Design System Figma file under the <span class="tag">Theme</span> collection. Primitives live in <span class="tag">Color Primitives</span>.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Accent colors</div>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Users can select one of 6 accent colors. All semantic accent tokens resolve through the <span class="tag">Accent Color</span> variable collection mode.</p>
+      <table class="token-table">
+        <thead><tr><th>Swatch</th><th>Name</th><th>Hex</th></tr></thead>
+        <tbody>
+          <tr><td><div class="swatch" style="background:#0667c8"></div></td><td class="token-name">Blue</td><td class="token-value">#0667c8</td></tr>
+          <tr><td><div class="swatch" style="background:#0d9488"></div></td><td class="token-name">Petrol</td><td class="token-value">#0d9488</td></tr>
+          <tr><td><div class="swatch" style="background:#7c3aed"></div></td><td class="token-name">Purple</td><td class="token-value">#7c3aed</td></tr>
+          <tr><td><div class="swatch" style="background:#d97706"></div></td><td class="token-name">Amber</td><td class="token-value">#d97706</td></tr>
+          <tr><td><div class="swatch" style="background:#16a34a"></div></td><td class="token-name">Green</td><td class="token-value">#16a34a</td></tr>
+          <tr><td><div class="swatch" style="background:#dc2626"></div></td><td class="token-name">Red</td><td class="token-value">#dc2626</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Semantic tokens (Theme collection)</div>
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Light mode</th><th>Dark mode</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">Background/Base/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:#fff;border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#17181a"></div><span class="token-value">#17181a</span></div></td><td class="token-desc">App background</td></tr>
+          <tr><td class="token-name">Background/Base/Primary-focus</td><td><div class="swatch-row"><div class="swatch" style="background:#f4f4f5"></div><span class="token-value">#f4f4f5</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#34373d"></div><span class="token-value">#34373d</span></div></td><td class="token-desc">Selected/focus state</td></tr>
+          <tr><td class="token-name">Background/Inverted/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:#17181a"></div><span class="token-value">#17181a</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#fff;border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td class="token-desc">Badges, unread counts</td></tr>
+          <tr><td class="token-name">Background/Accent/Secondary</td><td><div class="swatch-row"><div class="swatch" style="background:#e7f0fa"></div><span class="token-value">#e7f0fa</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#0c2d4a"></div><span class="token-value">#0c2d4a</span></div></td><td class="token-desc">Selected conversation bg</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Full token list in Figma: Wire Design System → Variables → Theme. 85 tokens total across Background, Content, Border, Bubble, Sheet, Backdrop groups.</div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ SPACING ═══════════════════════════════ -->
+  <section class="section" id="spacing">
+    <div class="section-header">
+      <div class="section-title">Spacing <span class="tag new-tag">new</span></div>
+      <div class="section-desc">Base-4 scale derived from Tailwind / shadcn. Defined in the <span class="tag">Spacing</span> variable collection. Scoped to <span class="tag">GAP</span> and <span class="tag">WIDTH_HEIGHT</span>.</div>
+    </div>
+    <div class="spacing-scale">
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/0</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:2px"></div></div><div class="spacing-px">0px</div><div class="token-css">--spacing-0</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/1</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:4px"></div></div><div class="spacing-px">4px</div><div class="token-css">--spacing-1</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/2</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:8px"></div></div><div class="spacing-px">8px</div><div class="token-css">--spacing-2</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/3</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:12px"></div></div><div class="spacing-px">12px</div><div class="token-css">--spacing-3</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/4</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:16px"></div></div><div class="spacing-px">16px</div><div class="token-css">--spacing-4</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/5</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:20px"></div></div><div class="spacing-px">20px</div><div class="token-css">--spacing-5</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/6</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:24px"></div></div><div class="spacing-px">24px</div><div class="token-css">--spacing-6</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/8</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:32px"></div></div><div class="spacing-px">32px</div><div class="token-css">--spacing-8</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/10</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:40px"></div></div><div class="spacing-px">40px</div><div class="token-css">--spacing-10</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/12</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:48px"></div></div><div class="spacing-px">48px</div><div class="token-css">--spacing-12</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/16</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:64px"></div></div><div class="spacing-px">64px</div><div class="token-css">--spacing-16</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/20</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:80px"></div></div><div class="spacing-px">80px</div><div class="token-css">--spacing-20</div></div>
+      <div class="spacing-row"><div class="spacing-label token-name">spacing/24</div><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:96px"></div></div><div class="spacing-px">96px</div><div class="token-css">--spacing-24</div></div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ RADIUS ═══════════════════════════════ -->
+  <section class="section" id="radius">
+    <div class="section-header">
+      <div class="section-title">Radius <span class="tag new-tag">new</span></div>
+      <div class="section-desc">Maia style — base 12px. Defined in the <span class="tag">Radius</span> variable collection. Scoped to <span class="tag">CORNER_RADIUS</span>.</div>
+    </div>
+    <div class="radius-grid">
+      <div class="radius-item"><div class="radius-box" style="border-radius:0"></div><div class="radius-name">radius/none</div><div class="radius-val">0px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><div class="radius-name">radius/sm</div><div class="radius-val">4px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:6px"></div><div class="radius-name">radius/md</div><div class="radius-val">6px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:10px"></div><div class="radius-name">radius/lg</div><div class="radius-val">10px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:12px"></div><div class="radius-name">radius/base</div><div class="radius-val">12px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:17px"></div><div class="radius-name">radius/xl</div><div class="radius-val">17px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:22px"></div><div class="radius-name">radius/2xl</div><div class="radius-val">22px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:9999px;width:80px"></div><div class="radius-name">radius/full</div><div class="radius-val">9999px</div></div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ TYPOGRAPHY ═══════════════════════════════ -->
+  <section class="section" id="typography">
+    <div class="section-header">
+      <div class="section-title">Typography <span class="tag new-tag">new</span></div>
+      <div class="section-desc">Inter across all platforms (Windows, Linux, macOS). Defined in the <span class="tag">Typography/Inter</span> variable collection and as <span class="tag">WDS/</span> text styles in Figma.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Font families</div>
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Value</th><th>CSS var</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">font-family/sans</td><td class="token-value">Inter</td><td class="token-css">--font-sans</td><td class="token-desc">All UI text</td></tr>
+          <tr><td class="token-name">font-family/mono</td><td class="token-value">JetBrains Mono</td><td class="token-css">--font-mono</td><td class="token-desc">Code, token names</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Type scale</div>
+      <div class="type-scale">
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Display/Large</span><span class="type-specs">36px · Bold · lh 40</span></div>
+          <div class="type-sample" style="font-size:36px;font-weight:700;line-height:40px;font-family:'Inter',sans-serif;letter-spacing:-0.5px">Display Large</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Display/Medium</span><span class="type-specs">30px · Bold · lh 36</span></div>
+          <div class="type-sample" style="font-size:30px;font-weight:700;line-height:36px;font-family:'Inter',sans-serif;letter-spacing:-0.3px">Display Medium</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Heading/H1</span><span class="type-specs">24px · Bold · lh 32</span></div>
+          <div class="type-sample" style="font-size:24px;font-weight:700;line-height:32px;font-family:'Inter',sans-serif">Heading 1</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Heading/H2</span><span class="type-specs">20px · SemiBold · lh 28</span></div>
+          <div class="type-sample" style="font-size:20px;font-weight:600;line-height:28px;font-family:'Inter',sans-serif">Heading 2</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Heading/H3</span><span class="type-specs">18px · SemiBold · lh 28</span></div>
+          <div class="type-sample" style="font-size:18px;font-weight:600;line-height:28px;font-family:'Inter',sans-serif">Heading 3</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Heading/H4</span><span class="type-specs">16px · SemiBold · lh 24</span></div>
+          <div class="type-sample" style="font-size:16px;font-weight:600;line-height:24px;font-family:'Inter',sans-serif">Heading 4</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Body/Large</span><span class="type-specs">16px · Regular · lh 24</span></div>
+          <div class="type-sample" style="font-size:16px;font-weight:400;line-height:24px;font-family:'Inter',sans-serif">Body large — the quick brown fox jumps</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Body/Medium</span><span class="type-specs">14px · Regular · lh 20</span></div>
+          <div class="type-sample" style="font-size:14px;font-weight:400;line-height:20px;font-family:'Inter',sans-serif">Body medium — the quick brown fox jumps over the lazy dog</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Body/Small</span><span class="type-specs">13px · Regular · lh 18</span></div>
+          <div class="type-sample" style="font-size:13px;font-weight:400;line-height:18px;font-family:'Inter',sans-serif">Body small — the quick brown fox jumps over the lazy dog</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Label/Large</span><span class="type-specs">14px · Medium · lh 20</span></div>
+          <div class="type-sample" style="font-size:14px;font-weight:500;line-height:20px;font-family:'Inter',sans-serif">Label large</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Label/Medium</span><span class="type-specs">12px · Medium · lh 16</span></div>
+          <div class="type-sample" style="font-size:12px;font-weight:500;line-height:16px;font-family:'Inter',sans-serif;letter-spacing:0.1px">Label medium</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><span class="type-token">WDS/Caption/Regular</span><span class="type-specs">11px · Regular · lh 16</span></div>
+          <div class="type-sample" style="font-size:11px;font-weight:400;line-height:16px;font-family:'Inter',sans-serif">Caption regular — timestamps, metadata</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ ICONS ═══════════════════════════════ -->
+  <section class="section" id="icons">
+    <div class="section-header">
+      <div class="section-title">Icons</div>
+      <div class="section-desc">Phosphor Bold as the default icon set. Wire custom icons used selectively for product-specific concepts. Both sets combined at the component level.</div>
+    </div>
+    <table class="token-table">
+      <thead><tr><th>Set</th><th>Weight</th><th>CDN</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td class="token-name">Phosphor</td><td class="token-value">Bold</td><td class="token-css">cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2</td><td class="token-desc">Default for all standard UI icons</td></tr>
+        <tr><td class="token-name">Wire custom</td><td class="token-value">—</td><td class="token-css">Figma: Wire Design System → node 4649-2453</td><td class="token-desc">Selective overrides for product-specific icons</td></tr>
+      </tbody>
+    </table>
+    <div class="note">Wire custom icons are exported as SVG from Figma on a per-component basis. Phosphor icons are loaded via CDN using the <span class="tag">ph-bold</span> class prefix, e.g. <span class="tag">&lt;i class="ph-bold ph-chats"&gt;&lt;/i&gt;</span></div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ MAIN NAV SIDEBAR ═══════════════════════════════ -->
+  <section class="section" id="main-nav">
+    <div class="section-header">
+      <div class="section-title">Main nav sidebar</div>
+      <div class="section-desc">Primary product navigation rail. Fixed 56px wide, full height, dark background. Houses team identity, user avatar with presence, product nav items, and utility actions.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Anatomy</div>
+      <div class="component-canvas dark" style="padding:16px;align-items:center;justify-content:center">
+        <nav style="width:56px;background:#17181a;border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:10px 8px;height:360px;border:1px solid #34373d">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:20px;flex:1">
+            <div class="team-av">W</div>
+            <div class="user-av" style="font-size:9px;font-weight:600">KD<span class="presence"></span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div class="n-item active"><i class="ph-bold ph-chats" aria-hidden="true"></i></div>
+              <div class="n-item"><i class="ph-bold ph-files" aria-hidden="true"></i></div>
+              <div class="n-item"><i class="ph-bold ph-video-camera" aria-hidden="true"></i></div>
+              <div class="n-item"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:4px">
+            <div class="n-item"><i class="ph-bold ph-gear" aria-hidden="true"></i></div>
+            <div class="n-item"><i class="ph-bold ph-question" aria-hidden="true"></i></div>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Nav item — states</div>
+      <div class="states-grid">
+        <div class="state-card dark">
+          <div class="n-item" style="pointer-events:none;color:#71717a"><i class="ph-bold ph-chats" aria-hidden="true"></i></div>
+          <span class="state-label" style="color:#9fa1a7">Default</span>
+        </div>
+        <div class="state-card dark">
+          <div class="n-item" style="pointer-events:none;background:#26272c;color:#d4d4d8"><i class="ph-bold ph-chats" aria-hidden="true"></i></div>
+          <span class="state-label" style="color:#9fa1a7">Hover</span>
+        </div>
+        <div class="state-card dark">
+          <div style="position:relative;width:32px;height:32px">
+            <div class="n-item active" style="pointer-events:none"><i class="ph-bold ph-chats" aria-hidden="true"></i></div>
+          </div>
+          <span class="state-label" style="color:#9fa1a7">Selected</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Component properties</div>
+      <div class="props-grid">
+        <div class="prop-card"><div class="prop-name">state</div><div class="prop-vals"><span class="prop-val">default</span><span class="prop-val">hover</span><span class="prop-val">selected</span></div></div>
+        <div class="prop-card"><div class="prop-name">icon</div><div class="prop-vals"><span class="prop-val">Phosphor Bold</span></div></div>
+        <div class="prop-card"><div class="prop-name">size</div><div class="prop-vals"><span class="prop-val">32×32px</span></div></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Tokens used</div>
+      <div class="token-pills">
+        <span class="token-pill"><span class="pill-swatch" style="background:#17181a"></span>Background/Base/Primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#34373d"></span>Background/Base/Primary-focus</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#26272c"></span>Background/Base/Primary-hover</span>
+        <span class="token-pill">radius/md · 6px</span>
+        <span class="token-pill">spacing/2 · 8px</span>
+        <span class="token-pill">WDS/Label/Small</span>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Figma reference</div>
+      <div class="note">Design Vision file → Components page → node <span class="tag">155-10642</span></div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ CONVERSATION SIDEBAR ═══════════════════════════════ -->
+  <section class="section" id="conv-sidebar">
+    <div class="section-header">
+      <div class="section-title">Conversation sidebar</div>
+      <div class="section-desc">Secondary navigation panel for the Conversations product. 260px wide, light background. Shows conversation list grouped into Channels, Groups, and 1:1 Conversations.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Live preview</div>
+      <div class="wire-sidebar-demo">
+        <nav class="nav-rail">
+          <div class="rail-top">
+            <div class="team-av">W</div>
+            <div class="user-av">KD<span class="presence"></span></div>
+            <div class="nav-items-group">
+              <div class="n-item active" onclick="setNavDoc(this)"><i class="ph-bold ph-chats" aria-hidden="true"></i></div>
+              <div class="n-item" onclick="setNavDoc(this)"><i class="ph-bold ph-files" aria-hidden="true"></i></div>
+              <div class="n-item" onclick="setNavDoc(this)"><i class="ph-bold ph-video-camera" aria-hidden="true"></i></div>
+              <div class="n-item" onclick="setNavDoc(this)"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i></div>
+            </div>
+          </div>
+          <div class="rail-bottom">
+            <div class="n-item"><i class="ph-bold ph-gear" aria-hidden="true"></i></div>
+            <div class="n-item"><i class="ph-bold ph-question" aria-hidden="true"></i></div>
+          </div>
+        </nav>
+        <aside class="product-nav">
+          <div class="pnav-header">
+            <span class="pnav-title">Conversations</span>
+            <div class="hdr-actions">
+              <button class="hdr-btn"><i class="ph-bold ph-gear" aria-hidden="true"></i></button>
+              <button class="hdr-btn outlined"><i class="ph-bold ph-plus" aria-hidden="true"></i></button>
+            </div>
+          </div>
+          <div class="pnav-scroll">
+            <div class="sec">
+              <div class="sec-label">Channels</div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="ch-av" style="background:#dbeafe;color:#2563eb">#</div><span class="c-name">Marketing Team</span></div>
+              <div class="c-item selected" onclick="selConvDoc(this)"><div class="ch-av" style="background:#ede9fe;color:#7c3aed">#</div><span class="c-name">Product & Engineering</span><span class="badge">2</span></div>
+              <div class="c-item unread" onclick="selConvDoc(this)"><div class="ch-av" style="background:#dcfce7;color:#16a34a">#</div><span class="c-name">Design System</span><span class="badge">1</span></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="ch-av" style="background:#fef3c7;color:#d97706">#</div><span class="c-name">General</span></div>
+            </div>
+            <div class="sec">
+              <div class="sec-label">Groups</div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="grp-av"><i class="ph-bold ph-users-three" aria-hidden="true"></i></div><span class="c-name">Q3 Planning</span></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="grp-av"><i class="ph-bold ph-users-three" aria-hidden="true"></i></div><span class="c-name">Marketing Team</span><div class="badge-icon"><i class="ph-bold ph-arrow-bend-up-left" style="font-size:9px" aria-hidden="true"></i></div></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="grp-av"><i class="ph-bold ph-users-three" aria-hidden="true"></i></div><span class="c-name">Client Review</span></div>
+            </div>
+            <div class="sec">
+              <div class="sec-label">1:1 Conversations</div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#f0e6ff;color:#7c3aed">JO</div><span class="c-name">Jaqueline Olaho</span></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#e0f2fe;color:#0284c7">DL<span class="dot-av dot-green"></span></div><span class="c-name">Dor Lewis</span><div class="badge-icon badge-muted"><i class="ph-bold ph-bell-slash" style="font-size:9px" aria-hidden="true"></i></div></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#fce7f3;color:#be185d">DA</div><span class="c-name">Deniz Agha</span><div class="badge-icon"><i class="ph-bold ph-at" style="font-size:9px" aria-hidden="true"></i></div></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#e7f0fa;color:#0667c8">WL</div><span class="c-name">William Lobster</span></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#fef9ee;color:#d97706">MP<span class="dot-av dot-red"></span></div><span class="c-name">Marcel Pierrot</span></div>
+            </div>
+          </div>
+        </aside>
+        <div class="main-placeholder">← select a conversation</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Conversation item — states</div>
+      <div class="states-grid">
+        <div class="state-card">
+          <div class="c-item" style="pointer-events:none;width:200px"><div class="ch-av" style="background:#dbeafe;color:#2563eb">#</div><span class="c-name">Marketing Team</span></div>
+          <span class="state-label">Default</span>
+        </div>
+        <div class="state-card">
+          <div class="c-item" style="pointer-events:none;width:200px;background:#efefef"><div class="ch-av" style="background:#dbeafe;color:#2563eb">#</div><span class="c-name">Marketing Team</span></div>
+          <span class="state-label">Hover</span>
+        </div>
+        <div class="state-card">
+          <div class="c-item selected" style="pointer-events:none;width:200px"><div class="ch-av" style="background:#ede9fe;color:#7c3aed">#</div><span class="c-name">Product & Eng</span><span class="badge">2</span></div>
+          <span class="state-label">Selected</span>
+        </div>
+        <div class="state-card">
+          <div class="c-item unread" style="pointer-events:none;width:200px"><div class="ch-av" style="background:#dcfce7;color:#16a34a">#</div><span class="c-name">Design System</span><span class="badge">1</span></div>
+          <span class="state-label">Unread</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Component properties</div>
+      <div class="props-grid">
+        <div class="prop-card"><div class="prop-name">type</div><div class="prop-vals"><span class="prop-val">channel</span><span class="prop-val">group</span><span class="prop-val">1:1</span></div></div>
+        <div class="prop-card"><div class="prop-name">state</div><div class="prop-vals"><span class="prop-val">default</span><span class="prop-val">hover</span><span class="prop-val">selected</span><span class="prop-val">unread</span></div></div>
+        <div class="prop-card"><div class="prop-name">badge</div><div class="prop-vals"><span class="prop-val">none</span><span class="prop-val">count</span><span class="prop-val">mention</span><span class="prop-val">reply</span><span class="prop-val">muted</span></div></div>
+        <div class="prop-card"><div class="prop-name">presence</div><div class="prop-vals"><span class="prop-val">none</span><span class="prop-val">available</span><span class="prop-val">busy</span><span class="prop-val">away</span></div></div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Tokens used</div>
+      <div class="token-pills">
+        <span class="token-pill"><span class="pill-swatch" style="background:#fafafa;border:1px solid #e4e4e7"></span>Background/Base/Secondary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#e7f0fa"></span>Background/Accent/Secondary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#17181a"></span>Background/Inverted/Primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#e5e8ea"></span>Border/Base/Primary</span>
+        <span class="token-pill">radius/md · 6px</span>
+        <span class="token-pill">spacing/2 · 8px</span>
+        <span class="token-pill">spacing/4 · 16px</span>
+        <span class="token-pill">WDS/Body/Medium</span>
+        <span class="token-pill">WDS/Label/Medium</span>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Figma reference</div>
+      <div class="note">Design Vision file → Components page → node <span class="tag">162-20289</span></div>
+    </div>
+  </section>
+
+
+  <hr class="divider"/>
+
+  <!-- ═══════════════════════════════ AVATAR ═══════════════════════════════ -->
+  <section class="section" id="avatar">
+    <div class="section-header">
+      <div class="section-title">Avatar <span class="tag new-tag">new</span></div>
+      <div class="section-desc">Identity representation for people, channels, and groups. Three shapes, four sizes, optional availability status dot, lock badge for private channels, and verified badge. Identity tint is deterministically hashed from the display name.</div>
+    </div>
+
+    <!-- People -->
+    <div class="subsection">
+      <div class="subsection-title">People — circle</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;">
+          <!-- 28px -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:28px;height:28px;">
+              <div style="width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-blue);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:11px;letter-spacing:.02em;">KD</div>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">28px</span>
+          </div>
+          <!-- 40px -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:40px;height:40px;">
+              <div style="width:40px;height:40px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-green);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:16px;letter-spacing:.02em;">MP</div>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">40px</span>
+          </div>
+          <!-- 48px -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:48px;height:48px;">
+              <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-amber);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;letter-spacing:.02em;">PN</div>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">48px</span>
+          </div>
+          <!-- 64px -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:64px;height:64px;">
+              <div style="width:64px;height:64px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-purple);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:26px;letter-spacing:.02em;">TV</div>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">64px</span>
+          </div>
+          <div style="width:1px;background:#e4e4e7;height:40px;margin:0 4px;align-self:center;"></div>
+          <!-- All 6 hues at 48px -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-blue);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">KD</div>
+            <span style="font-size:10px;color:var(--gray-400)">blue</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-green);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">MP</div>
+            <span style="font-size:10px;color:var(--gray-400)">green</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-amber);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">PN</div>
+            <span style="font-size:10px;color:var(--gray-400)">amber</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-petrol);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">AR</div>
+            <span style="font-size:10px;color:var(--gray-400)">petrol</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-purple);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">TV</div>
+            <span style="font-size:10px;color:var(--gray-400)">purple</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-red);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">LH</div>
+            <span style="font-size:10px;color:var(--gray-400)">red</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability -->
+    <div class="subsection">
+      <div class="subsection-title">People — availability status dot</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:48px;height:48px;">
+              <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-blue);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">KD</div>
+              <span style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-radius:9999px;background:var(--ws-availability-available);box-shadow:0 0 0 2px #fff;"></span>
+            </div>
+            <span style="font-size:11px;color:var(--gray-500)">available</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:48px;height:48px;">
+              <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-green);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">MP</div>
+              <span style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-radius:9999px;background:var(--ws-availability-busy);box-shadow:0 0 0 2px #fff;"></span>
+            </div>
+            <span style="font-size:11px;color:var(--gray-500)">busy</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:48px;height:48px;">
+              <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--ws-avatar-amber);color:#fff;box-shadow:0 0 0 1px var(--ws-border);font-weight:600;font-size:20px;">PN</div>
+              <span style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-radius:9999px;background:#fff;box-shadow:inset 0 0 0 2px var(--ws-availability-away),0 0 0 2px #fff;"></span>
+            </div>
+            <span style="font-size:11px;color:var(--gray-500)">away</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Channels -->
+    <div class="subsection">
+      <div class="subsection-title">Channels — rounded square</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-blue-bg);border:1px solid var(--ws-channel-blue-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-blue);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">blue</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-green-bg);border:1px solid var(--ws-channel-green-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-green);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">green</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-amber-bg);border:1px solid var(--ws-channel-amber-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-amber);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">amber</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-petrol-bg);border:1px solid var(--ws-channel-petrol-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-petrol);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">petrol</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-purple-bg);border:1px solid var(--ws-channel-purple-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-purple);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">purple</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-red-bg);border:1px solid var(--ws-channel-red-border);">
+              <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-red);">#</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">red</span>
+          </div>
+          <div style="width:1px;background:#e4e4e7;height:40px;margin:0 4px;align-self:center;"></div>
+          <!-- locked badge -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="position:relative;width:48px;height:48px;">
+              <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--ws-channel-blue-bg);border:1px solid var(--ws-channel-blue-border);">
+                <span style="font-weight:700;font-size:24px;line-height:1;color:var(--ws-avatar-blue);">#</span>
+              </div>
+              <span style="position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;border-radius:5px;background:#17181A;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;font-size:11px;">&#128274;</span>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">locked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div class="subsection">
+      <div class="subsection-title">Groups — white rounded square, three identity-colored figures</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ws-border);">
+              <svg viewBox="0 0 19 9" width="14" height="7" fill="none"><g transform="translate(0 0.7)"><path fill="#1D7833" d="M3.6 3.7C2.7 3.7 1.9 2.9 1.9 1.9 1.9.8 2.7 0 3.6 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM.9 8.2C.2 8.2 0 7.9 0 7.4 0 6.1 1.4 4.5 3.6 4.5c.9 0 1.6.2 2.1.6C4.6 6 4 7.4 4.6 8.2H.9z"/></g><g transform="translate(5.3 0)"><path fill="#8944AB" d="M4.1 4.3C3.1 4.3 2.2 3.4 2.2 2.1c0-1.2.9-2.1 1.9-2.1 1.1 0 1.9.9 1.9 2.1 0 1.2-.9 2.2-1.9 2.2zM1.1 8.9C.3 8.9 0 8.6 0 8.1 0 6.9 1.6 5.2 4.1 5.2c2.5 0 4.1 1.7 4.1 2.9 0 .5-.3.8-1.1.8H1.1z"/></g><g transform="translate(13.3 0.7)"><path fill="#C20013" d="M2.1 3.7c-.9 0-1.7-.8-1.7-1.8C.4.8 1.2 0 2.1 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM4.8 8.2H1.1C1.7 7.4 1.1 6 0 5.1c.5-.3 1.2-.6 2.1-.6 2.2 0 3.6 1.6 3.6 2.9 0 .5-.2.8-.9.8z"/></g></svg>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">28px</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ws-border);">
+              <svg viewBox="0 0 19 9" width="20" height="10" fill="none"><g transform="translate(0 0.7)"><path fill="#1D7833" d="M3.6 3.7C2.7 3.7 1.9 2.9 1.9 1.9 1.9.8 2.7 0 3.6 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM.9 8.2C.2 8.2 0 7.9 0 7.4 0 6.1 1.4 4.5 3.6 4.5c.9 0 1.6.2 2.1.6C4.6 6 4 7.4 4.6 8.2H.9z"/></g><g transform="translate(5.3 0)"><path fill="#8944AB" d="M4.1 4.3C3.1 4.3 2.2 3.4 2.2 2.1c0-1.2.9-2.1 1.9-2.1 1.1 0 1.9.9 1.9 2.1 0 1.2-.9 2.2-1.9 2.2zM1.1 8.9C.3 8.9 0 8.6 0 8.1 0 6.9 1.6 5.2 4.1 5.2c2.5 0 4.1 1.7 4.1 2.9 0 .5-.3.8-1.1.8H1.1z"/></g><g transform="translate(13.3 0.7)"><path fill="#C20013" d="M2.1 3.7c-.9 0-1.7-.8-1.7-1.8C.4.8 1.2 0 2.1 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM4.8 8.2H1.1C1.7 7.4 1.1 6 0 5.1c.5-.3 1.2-.6 2.1-.6 2.2 0 3.6 1.6 3.6 2.9 0 .5-.2.8-.9.8z"/></g></svg>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">40px</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ws-border);">
+              <svg viewBox="0 0 19 9" width="24" height="12" fill="none"><g transform="translate(0 0.7)"><path fill="#1D7833" d="M3.6 3.7C2.7 3.7 1.9 2.9 1.9 1.9 1.9.8 2.7 0 3.6 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM.9 8.2C.2 8.2 0 7.9 0 7.4 0 6.1 1.4 4.5 3.6 4.5c.9 0 1.6.2 2.1.6C4.6 6 4 7.4 4.6 8.2H.9z"/></g><g transform="translate(5.3 0)"><path fill="#8944AB" d="M4.1 4.3C3.1 4.3 2.2 3.4 2.2 2.1c0-1.2.9-2.1 1.9-2.1 1.1 0 1.9.9 1.9 2.1 0 1.2-.9 2.2-1.9 2.2zM1.1 8.9C.3 8.9 0 8.6 0 8.1 0 6.9 1.6 5.2 4.1 5.2c2.5 0 4.1 1.7 4.1 2.9 0 .5-.3.8-1.1.8H1.1z"/></g><g transform="translate(13.3 0.7)"><path fill="#C20013" d="M2.1 3.7c-.9 0-1.7-.8-1.7-1.8C.4.8 1.2 0 2.1 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM4.8 8.2H1.1C1.7 7.4 1.1 6 0 5.1c.5-.3 1.2-.6 2.1-.6 2.2 0 3.6 1.6 3.6 2.9 0 .5-.2.8-.9.8z"/></g></svg>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">48px</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ws-border);">
+              <svg viewBox="0 0 19 9" width="32" height="16" fill="none"><g transform="translate(0 0.7)"><path fill="#1D7833" d="M3.6 3.7C2.7 3.7 1.9 2.9 1.9 1.9 1.9.8 2.7 0 3.6 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM.9 8.2C.2 8.2 0 7.9 0 7.4 0 6.1 1.4 4.5 3.6 4.5c.9 0 1.6.2 2.1.6C4.6 6 4 7.4 4.6 8.2H.9z"/></g><g transform="translate(5.3 0)"><path fill="#8944AB" d="M4.1 4.3C3.1 4.3 2.2 3.4 2.2 2.1c0-1.2.9-2.1 1.9-2.1 1.1 0 1.9.9 1.9 2.1 0 1.2-.9 2.2-1.9 2.2zM1.1 8.9C.3 8.9 0 8.6 0 8.1 0 6.9 1.6 5.2 4.1 5.2c2.5 0 4.1 1.7 4.1 2.9 0 .5-.3.8-1.1.8H1.1z"/></g><g transform="translate(13.3 0.7)"><path fill="#C20013" d="M2.1 3.7c-.9 0-1.7-.8-1.7-1.8C.4.8 1.2 0 2.1 0c.9 0 1.7.8 1.7 1.9 0 1-.8 1.8-1.7 1.8zM4.8 8.2H1.1C1.7 7.4 1.1 6 0 5.1c.5-.3 1.2-.6 2.1-.6 2.2 0 3.6 1.6 3.6 2.9 0 .5-.2.8-.9.8z"/></g></svg>
+            </div>
+            <span style="font-size:10px;color:var(--gray-400)">64px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Props -->
+    <div class="subsection">
+      <div class="subsection-title">Component properties</div>
+      <div class="props-grid">
+        <div class="prop-card"><div class="prop-name">name</div><div class="prop-vals"><span class="prop-val">string</span></div></div>
+        <div class="prop-card"><div class="prop-name">src</div><div class="prop-vals"><span class="prop-val">string?</span></div></div>
+        <div class="prop-card"><div class="prop-name">size</div><div class="prop-vals"><span class="prop-val">28</span><span class="prop-val">40</span><span class="prop-val">48</span><span class="prop-val">64</span></div></div>
+        <div class="prop-card"><div class="prop-name">shape</div><div class="prop-vals"><span class="prop-val">circle</span><span class="prop-val">square</span></div></div>
+        <div class="prop-card"><div class="prop-name">icon</div><div class="prop-vals"><span class="prop-val">channel</span><span class="prop-val">group</span></div></div>
+        <div class="prop-card"><div class="prop-name">availability</div><div class="prop-vals"><span class="prop-val">available</span><span class="prop-val">busy</span><span class="prop-val">away</span></div></div>
+        <div class="prop-card"><div class="prop-name">locked</div><div class="prop-vals"><span class="prop-val">boolean</span></div></div>
+        <div class="prop-card"><div class="prop-name">colorIndex</div><div class="prop-vals"><span class="prop-val">0–5</span></div></div>
+      </div>
+    </div>
+
+    <!-- Radius note -->
+    <div class="subsection">
+      <div class="subsection-title">Border-radius — avatar squares</div>
+      <div class="note">Avatar squares use a proportional radius outside the standard WDS <span class="tag">Radius</span> scale — sized to match the avatar's corner weight at each size. People (circle) always use <span class="tag">radius/full</span>.</div>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Size</th><th>Shape</th><th>Border-radius</th></tr></thead>
+        <tbody>
+          <tr><td class="token-value">28px</td><td class="token-desc">Square (channel/group)</td><td class="token-value">8px</td></tr>
+          <tr><td class="token-value">40px</td><td class="token-desc">Square (channel/group)</td><td class="token-value">11px</td></tr>
+          <tr><td class="token-value">48px</td><td class="token-desc">Square (channel/group)</td><td class="token-value">13px</td></tr>
+          <tr><td class="token-value">64px</td><td class="token-desc">Square (channel/group)</td><td class="token-value">18px</td></tr>
+          <tr><td class="token-value">all</td><td class="token-desc">Circle (people)</td><td class="token-value">9999px · radius/full</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tokens used -->
+    <div class="subsection">
+      <div class="subsection-title">Tokens used</div>
+      <div class="token-pills">
+        <span class="token-pill"><span class="pill-swatch" style="background:#0667C8"></span>--ws-avatar-blue</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#1D7833"></span>--ws-avatar-green</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#A25915"></span>--ws-avatar-amber</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#01718E"></span>--ws-avatar-petrol</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#8944AB"></span>--ws-avatar-purple</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#C20013"></span>--ws-avatar-red</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#E7F0FA"></span>--ws-channel-*-bg</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#DCE0E3"></span>--ws-border · hairline ring</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#1D7833"></span>--ws-availability-available</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#A25915"></span>--ws-availability-busy</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#C20013"></span>--ws-availability-away</span>
+        <span class="token-pill">WDS/Body/Medium · initials</span>
+      </div>
+    </div>
+
+    <!-- Token alignment note -->
+    <div class="note" style="margin-top:0;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;">
+      <strong style="color:#92400e;">Token alignment:</strong> <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">--ws-text</code> in the Claude Design export resolves to <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#000000</code>. WDS uses <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#17181A</code> (gray-100) as primary text to stay within the Wire gray scale. Treated as equivalent.
+    </div>
+
+    <div class="subsection" style="margin-top:24px">
+      <div class="subsection-title">Source</div>
+      <div class="note">Claude Design export: Wire Design System 1.0 · Avatar component &amp; color tokens</div>
+    </div>
+  </section>
+
+  <div style="height:64px"></div>
+
+</main>
+</div>
+
+<script>
+document.querySelectorAll('.nav-link').forEach(link=>{
+  link.addEventListener('click',function(e){
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+    this.classList.add('active');
+    const target=document.querySelector(this.getAttribute('href'));
+    if(target)target.scrollIntoView({behavior:'smooth'});
+  });
+});
+function setNavDoc(el){
+  document.querySelectorAll('.n-item[onclick]').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+function selConvDoc(el){
+  document.querySelectorAll('.c-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  el.classList.remove('unread');
+  const b=el.querySelector('.badge');
+  if(b)b.remove();
+}
+window.addEventListener('scroll',()=>{
+  const sections=document.querySelectorAll('.section[id]');
+  let current='';
+  sections.forEach(s=>{
+    if(window.scrollY>=s.offsetTop-60)current=s.id;
+  });
+  document.querySelectorAll('.nav-link').forEach(l=>{
+    l.classList.toggle('active',l.getAttribute('href')==='#'+current);
+  });
+},{passive:true});
+</script>
+</body>
+</html>
