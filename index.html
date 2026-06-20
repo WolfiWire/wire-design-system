@@ -609,7 +609,7 @@ hr.divider{border:none;border-top:1px solid var(--gray-200);margin:40px 0}
   <section class="section" id="avatar">
     <div class="section-header">
       <div class="section-title">Avatar <span class="tag new-tag">new</span></div>
-      <div class="section-desc">Identity representation for people, channels, and groups. Three shapes, four sizes, optional availability status dot, lock badge for private channels, and verified badge. Identity tint is deterministically hashed from the display name.</div>
+      <div class="section-desc">Identity representation for people, channels, and groups. Three shapes, four sizes. <strong>Identity tint + initials</strong> is the primary state — the tint color is deterministically hashed from the display name. Photo is an optional overlay rendered at runtime. Availability status dot, lock badge for private channels.</div>
     </div>
 
     <!-- People -->
@@ -842,6 +842,25 @@ hr.divider{border:none;border-top:1px solid var(--gray-200);margin:40px 0}
         <span class="token-pill"><span class="pill-swatch" style="background:#C20013"></span>--ws-availability-away</span>
         <span class="token-pill">WDS/Body/Medium · initials</span>
       </div>
+    </div>
+
+    <!-- CSS class reference -->
+    <div class="subsection">
+      <div class="subsection-title">CSS class reference</div>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">.av</td><td class="token-desc">Base people avatar — circle, white initials, hairline ring via box-shadow</td></tr>
+          <tr><td class="token-name">.av-{size}</td><td class="token-desc">Size modifier: <code style="font-size:11px">.av-20</code> <code style="font-size:11px">.av-28</code> <code style="font-size:11px">.av-40</code> <code style="font-size:11px">.av-48</code> <code style="font-size:11px">.av-64</code></td></tr>
+          <tr><td class="token-name">.av-{hue}</td><td class="token-desc">Identity tint: <code style="font-size:11px">.av-blue</code> <code style="font-size:11px">.av-green</code> <code style="font-size:11px">.av-amber</code> <code style="font-size:11px">.av-petrol</code> <code style="font-size:11px">.av-purple</code> <code style="font-size:11px">.av-red</code></td></tr>
+          <tr><td class="token-name">.av-channel</td><td class="token-desc">Channel avatar — rounded square, soft hue fill + border. Pair with <code style="font-size:11px">.av-channel-{size}</code></td></tr>
+          <tr><td class="token-name">.av-group</td><td class="token-desc">Group avatar — white rounded square + hairline border, Phosphor users-three icon inside</td></tr>
+          <tr><td class="token-name">.av-dot</td><td class="token-desc">Availability dot — absolute positioned, bottom-right. Always pair with a state class</td></tr>
+          <tr><td class="token-name">.av-dot-available</td><td class="token-desc">Green dot · <code style="font-size:11px">background:#1D7833; box-shadow:0 0 0 2px #fff</code></td></tr>
+          <tr><td class="token-name">.av-dot-busy</td><td class="token-desc">Amber dot · <code style="font-size:11px">background:#A25915; box-shadow:0 0 0 2px #fff</code></td></tr>
+          <tr><td class="token-name">.av-dot-away</td><td class="token-desc">White fill + red inset ring · <code style="font-size:11px">box-shadow:inset 0 0 0 2px #C20013, 0 0 0 2px #fff</code></td></tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Token alignment note -->
