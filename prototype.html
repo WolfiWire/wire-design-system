@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wire — App Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"/>
+<style>
+/* ─── WDS TOKENS ───────────────────────────────────────────────── */
+:root {
+  /* Gray primitives */
+  --gray-010:#FAFAFA; --gray-020:#EDEFF0; --gray-030:#E5E8EA;
+  --gray-040:#DCE0E3; --gray-050:#CBCED1; --gray-060:#9FA1A7;
+  --gray-070:#676B71; --gray-080:#54585F; --gray-090:#34373D;
+  --gray-095:#26272C; --gray-100:#17181A;
+
+  /* Spacing */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-8:32px;
+
+  /* Radius */
+  --radius-sm:4px; --radius-md:6px; --radius-lg:10px;
+  --radius-base:12px; --radius-xl:17px; --radius-full:9999px;
+
+  /* Semantic surface tokens */
+  --ws-bg:var(--gray-010);
+  --ws-surface:#FFFFFF;
+  --ws-surface-sunken:var(--gray-020);
+  --ws-disabled-surface:var(--gray-050);
+  --ws-text:var(--gray-100);
+  --ws-text-secondary:var(--gray-070);
+  --ws-text-muted:var(--gray-060);
+  --ws-border:var(--gray-040);
+  --ws-border-strong:var(--gray-070);
+  --ws-backdrop:rgba(0,0,0,0.55);
+
+  /* Accent (blue default) */
+  --ws-accent:#0667C8;
+  --ws-accent-hover:#0552A0;
+  --ws-accent-weak:#E7F0FA;
+  --ws-accent-weak-border:#CDE1F4;
+  --ws-on-accent:#FFFFFF;
+
+  /* Semantic status */
+  --ws-danger:#C20013; --ws-danger-weak:#F9E6E8;
+  --ws-success:#1D7833; --ws-success-weak:#E8F1EA;
+  --ws-warning:#A25915; --ws-warning-weak:#F6EEE8;
+
+  /* Avatar identity tints */
+  --ws-avatar-blue:#0667C8; --ws-avatar-green:#1D7833;
+  --ws-avatar-amber:#A25915; --ws-avatar-petrol:#01718E;
+  --ws-avatar-purple:#8944AB; --ws-avatar-red:#C20013;
+
+  /* Channel fills */
+  --ws-channel-blue-bg:#E7F0FA;   --ws-channel-blue-border:#CDE1F4;
+  --ws-channel-green-bg:#E8F1EA;  --ws-channel-green-border:#D2E4D6;
+  --ws-channel-amber-bg:#F6EEE8;  --ws-channel-amber-border:#ECDED0;
+  --ws-channel-petrol-bg:#E5F1F3; --ws-channel-petrol-border:#CCE2E7;
+  --ws-channel-purple-bg:#F4EDF7; --ws-channel-purple-border:#E7DAEE;
+  --ws-channel-red-bg:#F9E6E8;    --ws-channel-red-border:#F3CCD0;
+
+  /* Availability */
+  --ws-avail-available:#1D7833;
+  --ws-avail-busy:#A25915;
+  --ws-avail-away:#C20013;
+
+  /* Page backgrounds */
+  --page-bg:#1a4a7a;
+  --rail-mode:dark; /* toggled via class */
+}
+
+/* ─── RESET & BASE ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',system-ui,sans-serif; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; }
+
+/* ─── PAGE SHELL ───────────────────────────────────────────────── */
+#page {
+  width:100vw; height:100vh;
+  display:flex; align-items:stretch;
+  background:var(--page-bg);
+  transition:background 0.35s ease;
+}
+
+/* ─── NAV RAIL ─────────────────────────────────────────────────── */
+#rail {
+  width:56px; flex-shrink:0;
+  background:transparent;
+  display:flex; flex-direction:column; align-items:center;
+  padding:10px 8px;
+}
+.rail-top { display:flex; flex-direction:column; align-items:center; gap:20px; flex:1; }
+.rail-bottom { display:flex; flex-direction:column; align-items:center; gap:2px; padding-bottom:6px; }
+.rail-items { display:flex; flex-direction:column; align-items:center; gap:4px; }
+
+/* Team avatar */
+.team-av {
+  width:32px; height:32px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; letter-spacing:-.3px;
+}
+#page.dark-rail .team-av { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); color:#fff; }
+#page.light-rail .team-av { background:rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.14); color:var(--gray-100); }
+
+/* User avatar */
+.user-av {
+  width:24px; height:24px; border-radius:var(--radius-full);
+  background:linear-gradient(135deg, var(--ws-avatar-blue), var(--ws-avatar-petrol));
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:600; color:#fff;
+  position:relative;
+}
+#page.dark-rail .user-av { box-shadow:0 0 0 1.5px rgba(255,255,255,0.2); }
+#page.light-rail .user-av { box-shadow:0 0 0 1.5px rgba(0,0,0,0.12); }
+.user-av .presence {
+  position:absolute; bottom:-1px; right:-1px;
+  width:7px; height:7px; border-radius:var(--radius-full);
+  background:var(--ws-avail-available);
+}
+#page.dark-rail .user-av .presence { box-shadow:0 0 0 1.5px var(--gray-100); }
+#page.light-rail .user-av .presence { box-shadow:0 0 0 1.5px #fff; }
+
+/* Nav items */
+.n-item {
+  width:32px; height:32px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0;
+  position:relative;
+}
+#page.dark-rail .n-item { color:rgba(255,255,255,0.38); }
+#page.dark-rail .n-item:hover { background:rgba(255,255,255,0.09); color:rgba(255,255,255,0.75); }
+#page.dark-rail .n-item.active { color:#fff; }
+#page.light-rail .n-item { color:rgba(0,0,0,0.28); }
+#page.light-rail .n-item:hover { background:rgba(0,0,0,0.06); color:rgba(0,0,0,0.65); }
+#page.light-rail .n-item.active { color:var(--gray-100); }
+
+/* ─── APP WINDOW ───────────────────────────────────────────────── */
+#app-window {
+  flex:1; display:flex; overflow:hidden;
+  margin:4px 4px 4px 0;
+  border-radius:var(--radius-base);
+  border:0.5px solid rgba(0,0,0,0.12);
+  background:var(--ws-surface);
+  min-width:0;
+}
+
+/* ─── PRODUCT SIDEBAR ──────────────────────────────────────────── */
+#product-sidebar {
+  width:248px; flex-shrink:0;
+  background:var(--ws-bg);
+  border-right:0.5px solid var(--ws-border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#product-sidebar.hidden { display:none; }
+
+.psidebar-header {
+  height:48px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--sp-4);
+  border-bottom:0.5px solid var(--ws-border);
+}
+.psidebar-title { font-size:15px; font-weight:600; color:var(--ws-text); }
+.psidebar-actions { display:flex; gap:var(--sp-1); }
+.icon-btn {
+  width:28px; height:28px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--ws-text-secondary); font-size:15px;
+}
+.icon-btn:hover { background:var(--ws-border); }
+.icon-btn.outlined { border:0.5px solid var(--ws-border); }
+
+.psidebar-scroll { flex:1; overflow-y:auto; }
+.psidebar-scroll::-webkit-scrollbar { width:3px; }
+.psidebar-scroll::-webkit-scrollbar-thumb { background:var(--ws-border); border-radius:2px; }
+
+.conv-section { padding:var(--sp-2) var(--sp-4); }
+.conv-section + .conv-section { border-top:0.5px solid var(--ws-border); }
+.section-label {
+  font-size:10.5px; font-weight:600; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--ws-text-muted);
+  padding:var(--sp-2) var(--sp-2) var(--sp-1);
+}
+.conv-item {
+  display:flex; align-items:center; gap:var(--sp-2);
+  padding:0 var(--sp-2); height:32px; border-radius:var(--radius-md);
+  cursor:pointer;
+}
+.conv-item:hover { background:var(--gray-030); }
+.conv-item.selected { background:var(--ws-accent-weak); }
+.conv-name {
+  flex:1; font-size:13px; color:var(--ws-text-secondary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+}
+.conv-item.selected .conv-name { color:var(--ws-text); font-weight:600; }
+.conv-item.unread .conv-name { color:var(--ws-text); font-weight:600; }
+.conv-badge {
+  background:var(--gray-100); color:#fff;
+  font-size:10px; font-weight:600; padding:1px 5px;
+  border-radius:var(--radius-sm); flex-shrink:0;
+}
+
+/* ─── AVATAR COMPONENT ─────────────────────────────────────────── */
+.av {
+  border-radius:var(--radius-full);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:600; color:#fff; flex-shrink:0; position:relative;
+  box-shadow:0 0 0 1px var(--ws-border);
+}
+.av.sq { border-radius:0; } /* overridden inline per size */
+.av-28 { width:28px; height:28px; font-size:11px; }
+.av-20 { width:20px; height:20px; font-size:8px; }
+.av-16 { width:16px; height:16px; font-size:8px; }
+.av.channel { background:var(--ws-channel-blue-bg); border:1px solid var(--ws-channel-blue-border); box-shadow:none; }
+.av .av-dot {
+  position:absolute; bottom:-1px; right:-1px;
+  width:8px; height:8px; border-radius:var(--radius-full);
+  box-shadow:0 0 0 1.5px var(--ws-bg);
+}
+
+/* ─── CONTENT AREA ─────────────────────────────────────────────── */
+#content-area {
+  flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0;
+  background:var(--ws-surface);
+}
+
+.content-topbar {
+  height:48px; flex-shrink:0;
+  display:flex; align-items:center; padding:0 var(--sp-4); gap:var(--sp-2);
+  border-bottom:0.5px solid var(--ws-border);
+}
+.topbar-title {
+  font-size:14px; font-weight:600; color:var(--ws-text);
+  display:flex; align-items:center; gap:6px; flex:1; min-width:0;
+}
+.topbar-meta { font-size:12px; color:var(--ws-text-muted); }
+.topbar-right { display:flex; gap:var(--sp-1); margin-left:auto; flex-shrink:0; }
+
+/* ─── CONVERSATION VIEW ────────────────────────────────────────── */
+#view-conv { display:flex; flex-direction:column; flex:1; overflow:hidden; }
+
+.msg-list {
+  flex:1; overflow-y:auto; padding:var(--sp-4);
+  display:flex; flex-direction:column; gap:var(--sp-3);
+}
+.msg-list::-webkit-scrollbar { width:3px; }
+.msg-list::-webkit-scrollbar-thumb { background:var(--ws-border); border-radius:2px; }
+
+.day-sep {
+  display:flex; align-items:center; gap:var(--sp-2);
+  color:var(--ws-text-muted); font-size:11px; margin:var(--sp-2) 0;
+}
+.day-sep::before, .day-sep::after {
+  content:''; flex:1; height:0.5px; background:var(--ws-border);
+}
+
+.msg-row { display:flex; gap:var(--sp-2); align-items:flex-end; }
+.msg-row.sent { flex-direction:row-reverse; }
+.msg-av-wrap { width:24px; flex-shrink:0; }
+.msg-av {
+  width:24px; height:24px; border-radius:var(--radius-full);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:600; color:#fff;
+}
+.msg-body { display:flex; flex-direction:column; gap:2px; max-width:62%; }
+.msg-row.sent .msg-body { align-items:flex-end; }
+.msg-sender { font-size:11px; font-weight:500; color:var(--ws-accent); margin-bottom:2px; }
+.msg-bubble {
+  padding:var(--sp-2) var(--sp-3);
+  border-radius:10px; border-bottom-left-radius:3px;
+  font-size:13px; line-height:1.55; color:var(--ws-text);
+  background:var(--gray-020);
+}
+.msg-row.sent .msg-bubble {
+  background:var(--ws-accent-weak);
+  border-radius:10px; border-bottom-right-radius:3px; border-bottom-left-radius:10px;
+}
+.msg-meta { font-size:10px; color:var(--ws-text-muted); }
+.msg-row.sent .msg-meta { text-align:right; }
+
+/* Reactions */
+.reactions { display:flex; gap:4px; margin-top:4px; flex-wrap:wrap; }
+.reaction {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:11px; padding:2px 7px; border-radius:var(--radius-full);
+  background:var(--gray-020); border:0.5px solid var(--ws-border);
+  color:var(--ws-text-secondary); cursor:pointer;
+}
+.reaction:hover { background:var(--gray-030); }
+
+/* File attachment bubble */
+.file-bubble {
+  background:var(--gray-020); border-radius:10px; border-bottom-left-radius:3px;
+  padding:var(--sp-3); display:flex; align-items:center; gap:var(--sp-3);
+  border:0.5px solid var(--ws-border); cursor:pointer;
+}
+.file-bubble:hover { background:var(--gray-030); }
+.file-icon-wrap {
+  width:36px; height:36px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.file-info { min-width:0; }
+.file-name { font-size:13px; font-weight:500; color:var(--ws-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.file-meta { font-size:11px; color:var(--ws-text-muted); margin-top:2px; }
+
+/* Composer */
+.composer {
+  flex-shrink:0; padding:var(--sp-2) var(--sp-4) var(--sp-3);
+}
+.composer-wrap {
+  background:var(--gray-010); border:0.5px solid var(--ws-border);
+  border-radius:var(--radius-base); padding:var(--sp-2) var(--sp-3);
+  display:flex; align-items:center; gap:var(--sp-2);
+}
+.composer-input {
+  flex:1; font-size:13px; color:var(--ws-text);
+  background:transparent; border:none; outline:none;
+  font-family:inherit;
+}
+.composer-input::placeholder { color:var(--ws-text-muted); }
+.composer-icons { display:flex; gap:var(--sp-1); color:var(--ws-text-muted); font-size:16px; }
+.composer-icons i { cursor:pointer; }
+.composer-icons i:hover { color:var(--ws-text-secondary); }
+.send-btn {
+  width:28px; height:28px; border-radius:var(--radius-full);
+  background:var(--ws-disabled-surface);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; color:#fff; flex-shrink:0;
+}
+.send-btn.active { background:var(--ws-accent); }
+
+/* ─── DRIVE VIEW ───────────────────────────────────────────────── */
+#view-drive { display:none; flex-direction:column; flex:1; overflow:hidden; }
+
+.drive-toolbar {
+  padding:var(--sp-2) var(--sp-4);
+  display:flex; align-items:center; gap:var(--sp-2);
+  border-bottom:0.5px solid var(--ws-border); flex-shrink:0;
+}
+.search-wrap {
+  flex:1; display:flex; align-items:center; gap:var(--sp-2);
+  background:var(--gray-010); border:0.5px solid var(--ws-border);
+  border-radius:var(--radius-md); padding:5px 10px;
+}
+.search-wrap input {
+  flex:1; border:none; outline:none; background:transparent;
+  font-size:12.5px; color:var(--ws-text); font-family:inherit;
+}
+.search-wrap input::placeholder { color:var(--ws-text-muted); }
+.filter-btn {
+  display:flex; align-items:center; gap:4px; font-size:11.5px;
+  padding:5px 10px; border-radius:var(--radius-md);
+  border:0.5px solid var(--ws-border); background:var(--ws-surface);
+  color:var(--ws-text);
+}
+.filter-btn:hover { background:var(--gray-020); }
+
+.drive-table-wrap { flex:1; overflow:auto; }
+.drive-table {
+  width:100%; border-collapse:collapse; font-size:12.5px;
+}
+.drive-table th {
+  text-align:left; font-size:10.5px; font-weight:600;
+  letter-spacing:.04em; text-transform:uppercase; color:var(--ws-text-muted);
+  padding:8px 12px; border-bottom:0.5px solid var(--ws-border);
+  position:sticky; top:0; background:var(--ws-surface); z-index:1;
+}
+.drive-table td {
+  padding:8px 12px; border-bottom:0.5px solid var(--gray-020);
+  color:var(--ws-text-secondary); white-space:nowrap; vertical-align:middle;
+}
+.drive-table tr:hover td { background:var(--gray-010); }
+.drive-table td:first-child { color:var(--ws-text); font-weight:500; }
+.drive-table td.check { width:36px; padding-left:16px; }
+.check-box {
+  width:15px; height:15px; border-radius:3px;
+  border:1.5px solid var(--ws-border); display:inline-block; cursor:pointer;
+}
+.file-type-icon {
+  width:22px; height:22px; border-radius:var(--radius-sm);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:11px; margin-right:6px; vertical-align:middle; flex-shrink:0;
+}
+.tag-chip {
+  display:inline-flex; font-size:10.5px; font-weight:500;
+  padding:2px 8px; border-radius:var(--radius-full);
+}
+.tag-chip.red { background:var(--ws-danger-weak); color:var(--ws-danger); }
+.tag-chip.blue { background:var(--ws-accent-weak); color:var(--ws-accent); }
+
+/* ─── BG PICKER ────────────────────────────────────────────────── */
+#bg-picker {
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  display:flex; gap:6px; align-items:center;
+  background:rgba(0,0,0,0.55); backdrop-filter:blur(8px);
+  border-radius:var(--radius-full); padding:6px 10px;
+  z-index:100;
+}
+.bg-swatch {
+  width:20px; height:20px; border-radius:var(--radius-full);
+  cursor:pointer; border:2px solid transparent;
+  transition:border-color .15s;
+}
+.bg-swatch.active { border-color:#fff; }
+.bg-swatch:hover { border-color:rgba(255,255,255,.6); }
+#picker-label {
+  font-size:10px; color:rgba(255,255,255,0.5); margin-left:4px;
+  letter-spacing:.04em; text-transform:uppercase; font-weight:500;
+}
+
+/* ─── DOCS LINK ────────────────────────────────────────────────── */
+#docs-link {
+  position:fixed; top:12px; right:12px; z-index:100;
+  font-size:11px; font-weight:500; color:rgba(255,255,255,0.5);
+  display:flex; align-items:center; gap:4px;
+  text-decoration:none; padding:5px 10px;
+  background:rgba(0,0,0,0.3); backdrop-filter:blur(8px);
+  border-radius:var(--radius-full); border:0.5px solid rgba(255,255,255,0.12);
+  transition:color .15s, background .15s;
+}
+#docs-link:hover { color:#fff; background:rgba(0,0,0,0.45); }
+</style>
+</head>
+<body>
+
+<a id="docs-link" href="index.html" target="_blank">
+  <i class="ph-bold ph-arrow-left" style="font-size:10px"></i> Docs
+</a>
+
+<!-- ── PAGE ── -->
+<div id="page" class="dark-rail">
+
+  <!-- ── NAV RAIL ── -->
+  <nav id="rail" aria-label="Primary navigation">
+    <div class="rail-top">
+      <div class="team-av">W</div>
+      <div class="user-av">KD<span class="presence"></span></div>
+      <div class="rail-items">
+        <div class="n-item active" data-product="conv" title="Conversations">
+          <i class="ph-fill ph-chats"></i>
+        </div>
+        <div class="n-item" data-product="drive" title="Drive">
+          <i class="ph-bold ph-files"></i>
+        </div>
+        <div class="n-item" title="Meetings">
+          <i class="ph-bold ph-video-camera"></i>
+        </div>
+        <div class="n-item" title="Search">
+          <i class="ph-bold ph-magnifying-glass"></i>
+        </div>
+      </div>
+    </div>
+    <div class="rail-bottom">
+      <div class="n-item" title="Settings"><i class="ph-bold ph-gear"></i></div>
+      <div class="n-item" title="Help"><i class="ph-bold ph-question"></i></div>
+    </div>
+  </nav>
+
+  <!-- ── APP WINDOW ── -->
+  <div id="app-window">
+
+    <!-- ── PRODUCT SIDEBAR (Conversations) ── -->
+    <aside id="product-sidebar" aria-label="Conversations sidebar">
+      <div class="psidebar-header">
+        <span class="psidebar-title" id="sidebar-title">Conversations</span>
+        <div class="psidebar-actions">
+          <button class="icon-btn" title="Settings"><i class="ph-bold ph-gear"></i></button>
+          <button class="icon-btn outlined" title="New conversation"><i class="ph-bold ph-plus"></i></button>
+        </div>
+      </div>
+      <div class="psidebar-scroll">
+
+        <div class="conv-section">
+          <div class="section-label">Channels</div>
+          <div class="conv-item" data-conv="marketing">
+            <div class="av av-16 sq channel" style="border-radius:4px;background:var(--ws-channel-blue-bg);border-color:var(--ws-channel-blue-border);">
+              <span style="font-size:9px;font-weight:700;color:var(--ws-avatar-blue)">#</span>
+            </div>
+            <span class="conv-name">Marketing Team</span>
+          </div>
+          <div class="conv-item selected" data-conv="prodeng">
+            <div class="av av-16 sq channel" style="border-radius:4px;background:var(--ws-channel-purple-bg);border-color:var(--ws-channel-purple-border);">
+              <span style="font-size:9px;font-weight:700;color:var(--ws-avatar-purple)">#</span>
+            </div>
+            <span class="conv-name">Product & Engineering</span>
+          </div>
+          <div class="conv-item unread" data-conv="design">
+            <div class="av av-16 sq channel" style="border-radius:4px;background:var(--ws-channel-green-bg);border-color:var(--ws-channel-green-border);">
+              <span style="font-size:9px;font-weight:700;color:var(--ws-avatar-green)">#</span>
+            </div>
+            <span class="conv-name">Design System</span>
+            <span class="conv-badge">3</span>
+          </div>
+          <div class="conv-item" data-conv="general">
+            <div class="av av-16 sq channel" style="border-radius:4px;background:var(--ws-channel-amber-bg);border-color:var(--ws-channel-amber-border);">
+              <span style="font-size:9px;font-weight:700;color:var(--ws-avatar-amber)">#</span>
+            </div>
+            <span class="conv-name">General</span>
+          </div>
+        </div>
+
+        <div class="conv-section">
+          <div class="section-label">Groups</div>
+          <div class="conv-item" data-conv="q3">
+            <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--ws-text-muted);font-size:13px;flex-shrink:0;">
+              <i class="ph-bold ph-users-three"></i>
+            </div>
+            <span class="conv-name">Q3 Planning</span>
+          </div>
+          <div class="conv-item unread" data-conv="marketing-grp">
+            <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--ws-text-muted);font-size:13px;flex-shrink:0;">
+              <i class="ph-bold ph-users-three"></i>
+            </div>
+            <span class="conv-name">Marketing Team</span>
+            <span class="conv-badge">1</span>
+          </div>
+        </div>
+
+        <div class="conv-section">
+          <div class="section-label">1:1 Conversations</div>
+          <div class="conv-item" data-conv="jo">
+            <div class="av av-20" style="background:var(--ws-avatar-purple);border-radius:var(--radius-full);box-shadow:0 0 0 1px var(--ws-border);">JO</div>
+            <span class="conv-name">Jaqueline Olaho</span>
+          </div>
+          <div class="conv-item" data-conv="dl">
+            <div class="av av-20" style="background:var(--ws-avatar-blue);border-radius:var(--radius-full);box-shadow:0 0 0 1px var(--ws-border);position:relative;">
+              DL
+              <span class="av-dot" style="background:var(--ws-avail-available);box-shadow:0 0 0 1.5px var(--ws-bg);"></span>
+            </div>
+            <span class="conv-name">Dor Lewis</span>
+          </div>
+          <div class="conv-item" data-conv="da">
+            <div class="av av-20" style="background:var(--ws-avatar-amber);border-radius:var(--radius-full);box-shadow:0 0 0 1px var(--ws-border);">DA</div>
+            <span class="conv-name">Deniz Agha</span>
+          </div>
+          <div class="conv-item" data-conv="mp">
+            <div class="av av-20" style="background:var(--ws-avatar-red);border-radius:var(--radius-full);box-shadow:0 0 0 1px var(--ws-border);position:relative;">
+              MP
+              <span class="av-dot" style="background:#fff;box-shadow:inset 0 0 0 2px var(--ws-avail-away), 0 0 0 1.5px var(--ws-bg);"></span>
+            </div>
+            <span class="conv-name">Marcel Pierrot</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ── CONTENT AREA ── -->
+    <main id="content-area">
+
+      <!-- Conversations topbar -->
+      <div class="content-topbar" id="topbar-conv">
+        <div class="topbar-title">
+          <span class="topbar-meta">#</span>
+          Product & Engineering
+          <i class="ph-bold ph-caret-right" style="font-size:11px;color:var(--ws-text-muted)"></i>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" title="Video call"><i class="ph-bold ph-video-camera"></i></button>
+          <button class="icon-btn" title="Search in conversation"><i class="ph-bold ph-magnifying-glass"></i></button>
+          <button class="icon-btn" title="More"><i class="ph-bold ph-dots-three"></i></button>
+        </div>
+      </div>
+
+      <!-- Drive topbar -->
+      <div class="content-topbar" id="topbar-drive" style="display:none">
+        <div class="topbar-title">
+          Drive
+          <i class="ph-bold ph-gear" style="font-size:13px;color:var(--ws-text-muted)"></i>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn outlined" style="padding:0 var(--sp-3);width:auto;font-size:12.5px;font-weight:500;gap:4px;" title="Upload new file">
+            <i class="ph-bold ph-plus" style="font-size:13px"></i> New
+          </button>
+        </div>
+      </div>
+
+      <!-- ── CONVERSATION VIEW ── -->
+      <div id="view-conv">
+        <div class="msg-list" id="msg-list">
+
+          <div class="day-sep">Today</div>
+
+          <!-- Message from Deniz -->
+          <div class="msg-row">
+            <div class="msg-av-wrap">
+              <div class="msg-av" style="background:var(--ws-avatar-purple)">DA</div>
+            </div>
+            <div class="msg-body">
+              <div class="msg-sender">Deniz Agha</div>
+              <div class="msg-bubble">Hi team, any news on the pitch deck? We have a meeting next week and should specify some of the details until then.</div>
+              <div class="msg-meta">10:32 AM</div>
+            </div>
+          </div>
+
+          <!-- File attachment -->
+          <div class="msg-row">
+            <div class="msg-av-wrap">
+              <div class="msg-av" style="background:var(--ws-avatar-green)">ML</div>
+            </div>
+            <div class="msg-body">
+              <div class="msg-sender" style="color:var(--ws-avatar-green)">Marie Laurent</div>
+              <div class="file-bubble">
+                <div class="file-icon-wrap" style="background:#fee2e2;color:#991b1b;">
+                  <i class="ph-bold ph-file-pdf"></i>
+                </div>
+                <div class="file-info">
+                  <div class="file-name">Wire_Pitch_Deck_v3.pdf</div>
+                  <div class="file-meta">4.2 MB · Uploaded from desktop</div>
+                </div>
+                <i class="ph-bold ph-download-simple" style="font-size:16px;color:var(--ws-text-muted);margin-left:auto;"></i>
+              </div>
+              <div class="msg-meta">10:35 AM</div>
+            </div>
+          </div>
+
+          <!-- Sent message -->
+          <div class="msg-row sent">
+            <div class="msg-body">
+              <div class="msg-bubble">Working on it! Will share a draft by Thursday. Marie's version looks great as a starting point.</div>
+              <div class="reactions">
+                <div class="reaction">👍 <span>12</span></div>
+                <div class="reaction">❤️ <span>4</span></div>
+              </div>
+              <div class="msg-meta">10:34 AM · Edited ✓✓</div>
+            </div>
+          </div>
+
+          <!-- Short reply -->
+          <div class="msg-row">
+            <div class="msg-av-wrap">
+              <div class="msg-av" style="background:var(--ws-avatar-purple)">DA</div>
+            </div>
+            <div class="msg-body">
+              <div class="msg-bubble">Perfect, thanks! Let's sync on Thursday then.</div>
+              <div class="msg-meta">10:38 AM</div>
+            </div>
+          </div>
+
+          <!-- Another sent message -->
+          <div class="msg-row sent">
+            <div class="msg-body">
+              <div class="msg-bubble">Sounds good 👍</div>
+              <div class="msg-meta">10:39 AM</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Composer -->
+        <div class="composer">
+          <div class="composer-wrap">
+            <input class="composer-input" id="composer-input" type="text" placeholder="Type a message" autocomplete="off"/>
+            <div class="composer-icons">
+              <i class="ph-bold ph-smiley" title="Emoji"></i>
+              <i class="ph-bold ph-paperclip" title="Attach file"></i>
+              <i class="ph-bold ph-sparkle" title="AI assist"></i>
+            </div>
+            <button class="send-btn" id="send-btn" title="Send">
+              <i class="ph-bold ph-arrow-up" style="font-size:12px"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DRIVE VIEW ── -->
+      <div id="view-drive">
+        <div class="drive-toolbar">
+          <div class="search-wrap">
+            <i class="ph-bold ph-magnifying-glass" style="font-size:13px;color:var(--ws-text-muted)"></i>
+            <input type="text" placeholder="Search files and folders"/>
+          </div>
+          <button class="filter-btn">Name <i class="ph-bold ph-caret-down" style="font-size:9px;margin-left:2px"></i></button>
+          <button class="filter-btn">Conversation <i class="ph-bold ph-caret-down" style="font-size:9px;margin-left:2px"></i></button>
+          <button class="filter-btn">Uploaded by <i class="ph-bold ph-caret-down" style="font-size:9px;margin-left:2px"></i></button>
+          <button class="filter-btn">Tags <i class="ph-bold ph-caret-down" style="font-size:9px;margin-left:2px"></i></button>
+        </div>
+        <div class="drive-table-wrap">
+          <table class="drive-table">
+            <thead>
+              <tr>
+                <th class="check"></th>
+                <th>Name</th>
+                <th>Conversation</th>
+                <th>Uploaded by</th>
+                <th>Tags</th>
+                <th>Size</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="check"><div class="check-box"></div></td>
+                <td><span class="file-type-icon" style="background:#fee2e2;color:#991b1b"><i class="ph-bold ph-file-pdf"></i></span>Wire – New Features</td>
+                <td><i class="ph-bold ph-users-three" style="font-size:10px;margin-right:4px"></i>Marketing Channel</td>
+                <td>
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span class="av av-20" style="background:var(--ws-avatar-petrol);border-radius:var(--radius-full);">DA</span>
+                    Deniz Agha
+                  </span>
+                </td>
+                <td><span class="tag-chip red">Urgent</span></td>
+                <td>3.25 MB</td>
+                <td style="color:var(--ws-text-muted)">Today 11:51 AM</td>
+              </tr>
+              <tr>
+                <td class="check"><div class="check-box"></div></td>
+                <td><span class="file-type-icon" style="background:#fef3c7;color:#92400e"><i class="ph-bold ph-file"></i></span>Wire – New Features</td>
+                <td><i class="ph-bold ph-users-three" style="font-size:10px;margin-right:4px"></i>Product design (internal)</td>
+                <td>
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span class="av av-20" style="background:var(--ws-avatar-green);border-radius:var(--radius-full);">BC</span>
+                    Barbara Cotilina
+                  </span>
+                </td>
+                <td><span class="tag-chip red">Urgent</span></td>
+                <td>3.25 MB</td>
+                <td style="color:var(--ws-text-muted)">Today 11:51 AM</td>
+              </tr>
+              <tr>
+                <td class="check"><div class="check-box"></div></td>
+                <td><span class="file-type-icon" style="background:#dbeafe;color:#1e40af"><i class="ph-bold ph-file-image"></i></span>Basic Table Cell</td>
+                <td><i class="ph-bold ph-users-three" style="font-size:10px;margin-right:4px"></i>Marketing Channel</td>
+                <td>
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span class="av av-20" style="background:var(--ws-avatar-red);border-radius:var(--radius-full);">DL</span>
+                    Dor Lewis
+                  </span>
+                </td>
+                <td></td>
+                <td>3.25 MB</td>
+                <td style="color:var(--ws-text-muted)">Today 11:51 AM</td>
+              </tr>
+              <tr>
+                <td class="check"><div class="check-box"></div></td>
+                <td><span class="file-type-icon" style="background:#dcfce7;color:#166534"><i class="ph-bold ph-file-text"></i></span>Basic Table Cell</td>
+                <td><i class="ph-bold ph-users-three" style="font-size:10px;margin-right:4px"></i>Product design (internal)</td>
+                <td>
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span class="av av-20" style="background:var(--ws-avatar-purple);border-radius:var(--radius-full);">DA</span>
+                    Deniz Agha
+                  </span>
+                </td>
+                <td><span class="tag-chip blue">Review</span></td>
+                <td>3.25 MB</td>
+                <td style="color:var(--ws-text-muted)">Today 11:51 AM</td>
+              </tr>
+              <tr>
+                <td class="check"><div class="check-box"></div></td>
+                <td><span class="file-type-icon" style="background:#f3e8ff;color:#7e22ce"><i class="ph-bold ph-presentation-chart"></i></span>Q3 Strategy Deck</td>
+                <td><i class="ph-bold ph-users-three" style="font-size:10px;margin-right:4px"></i>Q3 Planning</td>
+                <td>
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span class="av av-20" style="background:var(--ws-avatar-amber);border-radius:var(--radius-full);">ML</span>
+                    Marie Laurent
+                  </span>
+                </td>
+                <td><span class="tag-chip blue">Review</span></td>
+                <td>8.1 MB</td>
+                <td style="color:var(--ws-text-muted)">Yesterday 3:20 PM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── BG PICKER ── -->
+<div id="bg-picker" aria-label="Page background picker">
+  <span id="picker-label">Background</span>
+  <div class="bg-swatch active" style="background:#1a4a7a" data-bg="#1a4a7a" data-rail="dark" title="Dark blue"></div>
+  <div class="bg-swatch" style="background:#2d1f3d" data-bg="#2d1f3d" data-rail="dark" title="Dark warm"></div>
+  <div class="bg-swatch" style="background:#0d3d3a" data-bg="#0d3d3a" data-rail="dark" title="Dark teal"></div>
+  <div class="bg-swatch" style="background:linear-gradient(135deg,#1a4a7a,#2d1f3d)" data-bg="linear-gradient(135deg,#1a4a7a,#2d1f3d)" data-rail="dark" title="Blue/warm gradient"></div>
+  <div class="bg-swatch" style="background:#e8e4dc" data-bg="#e8e4dc" data-rail="light" title="Light neutral"></div>
+  <div class="bg-swatch" style="background:#dce8f5" data-bg="#dce8f5" data-rail="light" title="Light blue"></div>
+</div>
+
+<script>
+// ── Product switching ──
+const navItems = document.querySelectorAll('.n-item[data-product]');
+const sidebar = document.getElementById('product-sidebar');
+const topbarConv = document.getElementById('topbar-conv');
+const topbarDrive = document.getElementById('topbar-drive');
+const viewConv = document.getElementById('view-conv');
+const viewDrive = document.getElementById('view-drive');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    navItems.forEach(n => {
+      n.classList.remove('active');
+      const icon = n.querySelector('i');
+      const product = n.dataset.product;
+      if (product === 'conv') { icon.className = 'ph-bold ph-chats'; }
+      if (product === 'drive') { icon.className = 'ph-bold ph-files'; }
+    });
+    item.classList.add('active');
+    const product = item.dataset.product;
+    const icon = item.querySelector('i');
+    if (product === 'conv') {
+      icon.className = 'ph-fill ph-chats';
+      sidebar.classList.remove('hidden');
+      topbarConv.style.display = '';
+      topbarDrive.style.display = 'none';
+      viewConv.style.display = 'flex';
+      viewDrive.style.display = 'none';
+    }
+    if (product === 'drive') {
+      icon.className = 'ph-fill ph-files';
+      sidebar.classList.add('hidden');
+      topbarConv.style.display = 'none';
+      topbarDrive.style.display = '';
+      viewConv.style.display = 'none';
+      viewDrive.style.display = 'flex';
+    }
+  });
+});
+
+// ── Conversation selection ──
+document.querySelectorAll('.conv-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.conv-item').forEach(i => {
+      i.classList.remove('selected');
+    });
+    item.classList.add('selected');
+    item.classList.remove('unread');
+    const badge = item.querySelector('.conv-badge');
+    if (badge) badge.remove();
+  });
+});
+
+// ── Composer send ──
+const input = document.getElementById('composer-input');
+const sendBtn = document.getElementById('send-btn');
+const msgList = document.getElementById('msg-list');
+
+input.addEventListener('input', () => {
+  sendBtn.classList.toggle('active', input.value.trim().length > 0);
+});
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && input.value.trim()) sendMessage();
+});
+sendBtn.addEventListener('click', () => {
+  if (input.value.trim()) sendMessage();
+});
+function sendMessage() {
+  const text = input.value.trim();
+  const row = document.createElement('div');
+  row.className = 'msg-row sent';
+  row.innerHTML = `<div class="msg-body">
+    <div class="msg-bubble">${text}</div>
+    <div class="msg-meta">Just now</div>
+  </div>`;
+  msgList.appendChild(row);
+  input.value = '';
+  sendBtn.classList.remove('active');
+  msgList.scrollTop = msgList.scrollHeight;
+}
+
+// ── Background picker ──
+const page = document.getElementById('page');
+document.querySelectorAll('.bg-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    page.style.background = swatch.dataset.bg;
+    const rail = swatch.dataset.rail;
+    page.classList.remove('dark-rail', 'light-rail');
+    page.classList.add(rail + '-rail');
+  });
+});
+</script>
+</body>
+</html>
