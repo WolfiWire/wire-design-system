@@ -381,7 +381,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 /* ─── BASE RESET ── */
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-html, body { width:100%; height:100%; overflow:hidden; font-family:var(--font-sans); font-size:var(--font-size-base); color:var(--wire-content-base-primary); background:var(--wire-bg-base-primary); }
+html, body { font-family:var(--font-sans); font-size:var(--font-size-base); color:var(--wire-content-base-primary); background:var(--wire-bg-base-primary); }
 button { font-family:var(--font-sans); cursor:pointer; }
 input, textarea { font-family:var(--font-sans); }
 
@@ -651,7 +651,7 @@ input, textarea { font-family:var(--font-sans); }
   font-size:var(--font-size-base); line-height:var(--line-height-base);
   white-space:nowrap; outline:none; text-decoration:none;
   transition:background 0.1s, box-shadow 0.1s;
-  min-height:36px; padding:var(--spacing-2) var(--spacing-4); border-radius:var(--radius-md);
+  min-height:36px; padding:var(--spacing-2) var(--spacing-4); border-radius:var(--radius-lg);
 }
 .wds-btn:focus-visible {
   box-shadow:0 0 0 2px var(--wire-bg-base-primary), 0 0 0 4px var(--wire-border-accent-focus);
@@ -659,10 +659,10 @@ input, textarea { font-family:var(--font-sans); }
 .wds-btn:disabled { opacity:0.4; cursor:not-allowed; pointer-events:none; }
 
 /* Sizes */
-.wds-btn-mini { min-height:24px; padding:var(--spacing-1) var(--spacing-2); font-size:var(--font-size-xs); border-radius:var(--radius-md); }
-.wds-btn-sm   { min-height:32px; padding:6px var(--spacing-3); font-size:var(--font-size-sm); border-radius:var(--radius-md); }
-.wds-btn-lg   { min-height:40px; padding:10px var(--spacing-5); border-radius:var(--radius-md); }
-.wds-btn-xl   { min-height:48px; padding:var(--spacing-3) var(--spacing-6); font-size:var(--font-size-md); border-radius:var(--radius-md); }
+.wds-btn-mini { min-height:24px; padding:var(--spacing-1) var(--spacing-2); font-size:var(--font-size-xs); border-radius:var(--radius-lg); }
+.wds-btn-sm   { min-height:32px; padding:6px var(--spacing-3); font-size:var(--font-size-sm); border-radius:var(--radius-lg); }
+.wds-btn-lg   { min-height:40px; padding:10px var(--spacing-5); border-radius:var(--radius-lg); }
+.wds-btn-xl   { min-height:48px; padding:var(--spacing-3) var(--spacing-6); font-size:var(--font-size-md); border-radius:var(--radius-lg); }
 .wds-btn-round { border-radius:var(--radius-full) !important; }
 
 /* Primary */
@@ -704,15 +704,15 @@ input, textarea { font-family:var(--font-sans); }
 
 :root {
   /* ── Color Primitives (static, no mode) ───────────────────── */
-  --gray-010: var(--background-base-secondary); --gray-020: var(--background-base-tertiary); --gray-030: var(--border-base-primary);
+  --gray-010: var(--wire-bg-base-secondary); --gray-020: var(--background-base-tertiary); --gray-030: var(--border-base-primary);
   --gray-040: var(--border-base-primary); --gray-050: #CBCED1; --gray-060: #9FA1A7;
   --gray-070: #676B71; --gray-080: #54585F; --gray-090: #34373D;
   --gray-095: #26272C; --gray-100: #17181A;
 
   /* ── Background tokens ────────────────────────────────────── */
   --background-base-primary:            #FFFFFF;
-  --background-base-primary-focus:      var(--background-base-secondary);
-  --background-base-secondary:          var(--background-base-secondary);
+  --background-base-primary-focus:      var(--wire-bg-base-secondary);
+  --background-base-secondary:          var(--wire-bg-base-secondary);
   --background-base-secondary-focus:    var(--border-base-primary);
   --background-base-tertiary:           var(--background-base-tertiary);
   --background-base-tertiary-focus:     var(--border-base-primary);
@@ -923,11 +923,10 @@ input, textarea { font-family:var(--font-sans); }
 
 *{box-sizing:border-box;margin:0;padding:0}
 
-body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-primary);background:var(--background-base-primary);line-height:1.6}
 
 /* Layout */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:220px;flex-shrink:0;border-right:1px solid var(--wire-border-base-primary);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--background-base-primary)}
+.sidebar{width:220px;flex-shrink:0;border-right:1px solid var(--wire-border-base-primary);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--wire-bg-base-primary)}
 .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--wire-border-base-primary);margin-bottom:16px}
 .sidebar-logo-name{font-size:13px;font-weight:600;color:var(--wire-content-base-primary)}
 .sidebar-logo-version{font-size:11px;color:var(--wire-content-base-secondary);margin-top:2px}
@@ -991,13 +990,13 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-p
 
 /* Component canvas */
 .component-canvas{background:var(--wire-bg-base-secondary);border:1px solid var(--wire-border-base-primary);border-radius:8px;padding:24px;display:flex;align-items:flex-start;gap:var(--spacing-4);flex-wrap:wrap;margin-bottom:16px}
-.component-canvas.dark{background:var(--background-inverted-primary)}
+.component-canvas.dark{background:var(--wire-bg-inverted-primary)}
 .component-canvas.centered{justify-content:center}
 
 /* States grid */
 .states-grid{display:flex;gap:var(--spacing-3);flex-wrap:wrap}
-.state-card{background:var(--background-base-primary);border:1px solid var(--wire-border-base-primary);border-radius:8px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:100px}
-.state-card.dark{background:var(--background-inverted-primary);border-color:var(--wire-bg-base-tertiary-focus)}
+.state-card{background:var(--wire-bg-base-primary);border:1px solid var(--wire-border-base-primary);border-radius:8px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:100px}
+.state-card.dark{background:var(--wire-bg-inverted-primary);border-color:var(--wire-bg-base-tertiary-focus)}
 .state-label{font-size:11px;color:var(--wire-content-base-secondary);font-weight:500}
 
 /* Props table */
@@ -1005,7 +1004,7 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-p
 .prop-card{background:var(--wire-bg-base-secondary);border:1px solid var(--wire-border-base-primary);border-radius:var(--radius-md);padding:10px 12px}
 .prop-name{font-size:11px;font-weight:600;color:var(--wire-content-base-secondary);margin-bottom:6px;font-family:var(--font-mono)}
 .prop-vals{display:flex;flex-wrap:wrap;gap:3px}
-.prop-val{font-size:11px;font-family:var(--font-mono);background:var(--background-base-primary);border:1px solid var(--wire-border-base-primary);border-radius:3px;padding:1px 5px;color:var(--wire-content-base-secondary)}
+.prop-val{font-size:11px;font-family:var(--font-mono);background:var(--wire-bg-base-primary);border:1px solid var(--wire-border-base-primary);border-radius:3px;padding:1px 5px;color:var(--wire-content-base-secondary)}
 
 /* Token usage pills */
 .token-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
@@ -1014,7 +1013,7 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-p
 
 /* Sidebar component styles */
 .wire-sidebar-demo{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--wire-border-base-primary);height:460px}
-.nav-rail{width:56px;background:var(--background-inverted-primary);display:flex;flex-direction:column;align-items:center;padding:10px 8px;flex-shrink:0}
+.nav-rail{width:56px;background:var(--wire-bg-inverted-primary);display:flex;flex-direction:column;align-items:center;padding:10px 8px;flex-shrink:0}
 .rail-top{display:flex;flex-direction:column;align-items:center;gap:var(--spacing-5);flex:1}
 .rail-bottom{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:4px}
 .team-av{width:32px;height:32px;border-radius:var(--radius-md);background:var(--wire-bg-base-tertiary);border:1px solid var(--wire-border-base-primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--wire-content-inverted-on-primary);cursor:pointer;font-family:var(--font-sans)}
@@ -1024,8 +1023,8 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-p
 .n-item{width:32px;height:32px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--wire-content-base-secondary);font-size:17px;transition:background 0.1s,color 0.1s;position:relative;flex-shrink:0}
 .n-item:hover{background:var(--background-base-secondary-focus);color:var(--content-base-secondary)}
 .n-item.active{background:var(--wire-bg-neutral-primary);color:var(--wire-content-inverted-on-primary)}
-.n-item.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--background-base-primary);border-radius:0 3px 3px 0}
-.product-nav{width:240px;background:var(--background-base-secondary);border-right:1px solid var(--border-base-primary);ay:flex;flex-direction:column;overflow:hidden}
+.n-item.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--wire-bg-base-primary);border-radius:0 3px 3px 0}
+.product-nav{width:240px;background:var(--wire-bg-base-secondary);border-right:1px solid var(--border-base-primary);ay:flex;flex-direction:column;overflow:hidden}
 .pnav-header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
 .pnav-title{font-size:15px;font-weight:600;color:var(--content-neutral-on-primary);font-family:var(--font-sans)}
 .hdr-actions{display:flex;gap:var(--spacing-1)}
@@ -1040,20 +1039,20 @@ body{font-family:var(--font-sans);font-size:14px;color:var(--wire-content-base-p
 .sec-label{font-size:10.5px;font-weight:600;color:var(--wire-content-base-secondary);letter-spacing:0.05em;text-transform:uppercase;padding:6px 8px 4px;font-family:var(--font-sans)}
 .c-item{display:flex;align-items:center;gap:var(--spacing-2);padding:0 8px;height:32px;border-radius:var(--radius-md);cursor:pointer;transition:background 0.1s}
 .c-item:hover{background:var(--background-base-tertiary)}
-.c-item.selected{background:var(--background-accent-secondary)}
+.c-item.selected{background:var(--wire-bg-accent-secondary)}
 .c-name{flex:1;font-size:13px;color:#676b71;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-family:var(--font-sans)}
 .c-item.selected .c-name{color:var(--content-neutral-on-primary);font-weight:600}
 .c-item.unread .c-name{color:var(--content-neutral-on-primary);font-weight:500}
 .ch-av{width:16px;height:16px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .usr-av{width:20px;height:20px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;border:1px solid var(--border-base-primary);position:relative;font-family:var(--font-sans)}
 .grp-av{width:16px;height:16px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-content-base-secondary);font-size:12px}
-.badge{background:var(--background-inverted-primary);color:var(--wire-content-inverted-on-primary);font-size:10px;font-weight:600;padding:2px 6px;border-radius:var(--radius-sm);flex-shrink:0;line-height:1.4;font-family:var(--font-sans)}
-.badge-icon{width:18px;height:18px;background:var(--background-inverted-primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--wire-content-inverted-on-primary);flex-shrink:0}
-.badge-muted{background:var(--background-base-primary);border:1px solid var(--border-base-primary);color:#676b71}
+.badge{background:var(--wire-bg-inverted-primary);color:var(--wire-content-inverted-on-primary);font-size:10px;font-weight:600;padding:2px 6px;border-radius:var(--radius-sm);flex-shrink:0;line-height:1.4;font-family:var(--font-sans)}
+.badge-icon{width:18px;height:18px;background:var(--wire-bg-inverted-primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--wire-content-inverted-on-primary);flex-shrink:0}
+.badge-muted{background:var(--wire-bg-base-primary);border:1px solid var(--border-base-primary);color:#676b71}
 .dot-av{position:absolute;bottom:-1px;right:-1px;width:6px;height:6px;border-radius:var(--radius-full);border:1.5px solid #fafafa}
 .dot-green{background:var(--wire-bg-positive-primary)}
-.dot-red{background:var(--background-danger-primary)}
-.main-placeholder{flex:1;background:var(--background-base-primary);display:flex;align-items:center;justify-content:center;color:var(--wire-content-base-secondary);font-size:12px;font-family:var(--font-sans)}
+.dot-red{background:var(--wire-bg-danger-primary)}
+.main-placeholder{flex:1;background:var(--wire-bg-base-primary);display:flex;align-items:center;justify-content:center;color:var(--wire-content-base-secondary);font-size:12px;font-family:var(--font-sans)}
 
 /* Utility */
 .tag{display:inline-block;font-size:10px;font-weight:500;background:var(--wire-bg-inverted-primary);color:var(--wire-content-base-secondary);border-radius:3px;padding:2px 6px;font-family:var(--font-mono)}
@@ -1079,7 +1078,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
   <div class="sidebar-logo">
     <div class="sidebar-logo-name">Wire Design System</div>
     <div class="sidebar-logo-version">v2 · June 2026</div>
-    <a href="prototype.html" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;font-weight:500;color:var(--wire-content-inverted-on-primary);background:var(--background-inverted-primary);padding:5px 10px;border-radius:6px;text-decoration:none;" onmouseover="this.style.background='#34373d'" onmouseout="this.style.background='#17181a'">
+    <a href="prototype.html" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;font-weight:500;color:var(--wire-content-inverted-on-primary);background:var(--wire-bg-inverted-primary);padding:5px 10px;border-radius:6px;text-decoration:none;" onmouseover="this.style.background='#34373d'" onmouseout="this.style.background='#17181a'">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H3M9 1V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Open prototype
     </a>
@@ -1087,6 +1086,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
   <div class="nav-group">
     <div class="nav-group-label">Foundation</div>
     <a class="nav-link active" href="#colors">Colors</a>
+    <a class="nav-link" href="#colors">Colors</a>
     <a class="nav-link" href="#spacing">Spacing</a>
     <a class="nav-link" href="#radius">Radius</a>
     <a class="nav-link" href="#typography">Typography</a>
@@ -1123,11 +1123,11 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
         <thead><tr><th>Swatch</th><th>Name</th><th>Hex</th></tr></thead>
         <tbody>
           <tr><td><div class="swatch" style="background:#0667c8"></div></td><td class="token-name">Blue</td><td class="token-value">#0667c8</td></tr>
-          <tr><td><div class="swatch" style="background:#0d9488"></div></td><td class="token-name">Petrol</td><td class="token-value">#0d9488</td></tr>
-          <tr><td><div class="swatch" style="background:#7c3aed"></div></td><td class="token-name">Purple</td><td class="token-value">#7c3aed</td></tr>
-          <tr><td><div class="swatch" style="background:#d97706"></div></td><td class="token-name">Amber</td><td class="token-value">#d97706</td></tr>
-          <tr><td><div class="swatch" style="background:#16a34a"></div></td><td class="token-name">Green</td><td class="token-value">#16a34a</td></tr>
-          <tr><td><div class="swatch" style="background:#dc2626"></div></td><td class="token-name">Red</td><td class="token-value">#dc2626</td></tr>
+          <tr><td><div class="swatch" style="background:#01718e"></div></td><td class="token-name">Petrol</td><td class="token-value">#01718e</td></tr>
+          <tr><td><div class="swatch" style="background:#8944ab"></div></td><td class="token-name">Purple</td><td class="token-value">#8944ab</td></tr>
+          <tr><td><div class="swatch" style="background:#a25915"></div></td><td class="token-name">Amber</td><td class="token-value">#a25915</td></tr>
+          <tr><td><div class="swatch" style="background:#1d7833"></div></td><td class="token-name">Green</td><td class="token-value">#1d7833</td></tr>
+          <tr><td><div class="swatch" style="background:#c20013"></div></td><td class="token-name">Red</td><td class="token-value">#c20013</td></tr>
         </tbody>
       </table>
     </div>
@@ -1137,10 +1137,10 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
       <table class="token-table">
         <thead><tr><th>Token</th><th>Light mode</th><th>Dark mode</th><th>Use</th></tr></thead>
         <tbody>
-          <tr><td class="token-name">Background/Base/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--background-base-primary);border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:var(--background-inverted-primary)"></div><span class="token-value">#17181a</span></div></td><td class="token-desc">App background</td></tr>
-          <tr><td class="token-name">Background/Base/Primary-focus</td><td><div class="swatch-row"><div class="swatch" style="background:#f4f4f5"></div><span class="token-value">#f4f4f5</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#34373d"></div><span class="token-value">#34373d</span></div></td><td class="token-desc">Selected/focus state</td></tr>
-          <tr><td class="token-name">Background/Inverted/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--background-inverted-primary)"></div><span class="token-value">#17181a</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:var(--background-base-primary);border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td class="token-desc">Badges, unread counts</td></tr>
-          <tr><td class="token-name">Background/Accent/Secondary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--background-accent-secondary)"></div><span class="token-value">#e7f0fa</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#0c2d4a"></div><span class="token-value">#0c2d4a</span></div></td><td class="token-desc">Selected conversation bg</td></tr>
+          <tr><td class="token-name">Background/Base/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--wire-bg-base-primary);border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:var(--wire-bg-inverted-primary)"></div><span class="token-value">#17181a</span></div></td><td class="token-desc">App background</td></tr>
+          <tr><td class="token-name">Background/Base/Primary-focus</td><td><div class="swatch-row"><div class="swatch" style="background:#fafafa"></div><span class="token-value">#fafafa</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#34373d"></div><span class="token-value">#34373d</span></div></td><td class="token-desc">Selected/focus state</td></tr>
+          <tr><td class="token-name">Background/Inverted/Primary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--wire-bg-inverted-primary)"></div><span class="token-value">#17181a</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:var(--wire-bg-base-primary);border:1px solid #e4e4e7"></div><span class="token-value">#ffffff</span></div></td><td class="token-desc">Badges, unread counts</td></tr>
+          <tr><td class="token-name">Background/Accent/Secondary</td><td><div class="swatch-row"><div class="swatch" style="background:var(--wire-bg-accent-secondary)"></div><span class="token-value">#e7f0fa</span></div></td><td><div class="swatch-row"><div class="swatch" style="background:#0c2d4a"></div><span class="token-value">#0c2d4a</span></div></td><td class="token-desc">Selected conversation bg</td></tr>
         </tbody>
       </table>
       <div class="note">Full token list in Figma: Wire Design System → Variables → Theme. 85 tokens total across Background, Content, Border, Bubble, Sheet, Backdrop groups.</div>
@@ -1309,13 +1309,13 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
         <thead><tr><th>Preview</th><th>Name</th><th>Used in</th><th>Source file</th></tr></thead>
         <tbody>
           <tr>
-            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:var(--wire-border-neutral-primary);"><div style="width:20px;height:20px;border-radius:6px;background:var(--background-accent-secondary);border:1px solid #CDE1F4;display:flex;align-items:center;justify-content:center;color:var(--wire-identity-blue);"><svg viewBox="0 0 17 16" fill="none" style="width:60%;height:60%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg></div></span></td>
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:var(--wire-border-neutral-primary);"><div style="width:20px;height:20px;border-radius:6px;background:var(--wire-bg-accent-secondary);border:1px solid #CDE1F4;display:flex;align-items:center;justify-content:center;color:var(--wire-identity-blue);"><svg viewBox="0 0 17 16" fill="none" style="width:60%;height:60%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg></div></span></td>
             <td class="token-name">Channel</td>
             <td class="token-desc">Channel avatar glyph — replaces text <code style="font-size:10.5px">#</code> in all channel avatar contexts</td>
             <td class="token-css">Iconography/Channel.svg</td>
           </tr>
           <tr>
-            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;"><div style="position:relative;width:20px;height:20px;border-radius:6px;background:var(--background-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:72%;height:52%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div></span></td>
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;"><div style="position:relative;width:20px;height:20px;border-radius:6px;background:var(--wire-bg-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:72%;height:52%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div></span></td>
             <td class="token-name">Group</td>
             <td class="token-desc">Group avatar glyph — three-person arrangement used inside the white rounded square group avatar</td>
             <td class="token-css">Iconography/Group.svg</td>
@@ -1357,7 +1357,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
     <div class="subsection">
       <div class="subsection-title">Anatomy</div>
       <div class="component-canvas dark" style="padding:16px;align-items:center;justify-content:center">
-        <nav style="width:56px;background:var(--background-inverted-primary);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:10px 8px;height:360px;border:1px solid var(--wire-border-base-primary)">
+        <nav style="width:56px;background:var(--wire-bg-inverted-primary);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:10px 8px;height:360px;border:1px solid var(--wire-border-base-primary)">
           <div style="display:flex;flex-direction:column;align-items:center;gap:20px;flex:1">
             <div class="team-av">W</div>
             <div class="user-av" style="font-size:9px;font-weight:600">KD<span class="presence"></span></div>
@@ -1408,7 +1408,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
     <div class="subsection">
       <div class="subsection-title">Tokens used</div>
       <div class="token-pills">
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-inverted-primary)"></span>Background/Base/Primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-inverted-primary)"></span>Background/Base/Primary</span>
         <span class="token-pill"><span class="pill-swatch" style="background:#34373d"></span>Background/Base/Primary-focus</span>
         <span class="token-pill"><span class="pill-swatch" style="background:#26272c"></span>Background/Base/Primary-hover</span>
         <span class="token-pill">radius/md · 6px</span>
@@ -1478,7 +1478,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
               <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#f0e6ff;color:#7c3aed">JO</div><span class="c-name">Jaqueline Olaho</span></div>
               <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#e0f2fe;color:#0284c7">DL<span class="dot-av dot-green"></span></div><span class="c-name">Dor Lewis</span><div class="badge-icon badge-muted"><i class="ph-bold ph-bell-slash" style="font-size:9px" aria-hidden="true"></i></div></div>
               <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#fce7f3;color:#be185d">DA</div><span class="c-name">Deniz Agha</span><div class="badge-icon"><i class="ph-bold ph-at" style="font-size:9px" aria-hidden="true"></i></div></div>
-              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:var(--background-accent-secondary);color:#0667c8">WL</div><span class="c-name">William Lobster</span></div>
+              <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:var(--wire-bg-accent-secondary);color:#0667c8">WL</div><span class="c-name">William Lobster</span></div>
               <div class="c-item" onclick="selConvDoc(this)"><div class="usr-av" style="background:#fef9ee;color:#d97706">MP<span class="dot-av dot-red"></span></div><span class="c-name">Marcel Pierrot</span></div>
             </div>
           </div>
@@ -1522,9 +1522,9 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
     <div class="subsection">
       <div class="subsection-title">Tokens used</div>
       <div class="token-pills">
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-base-secondary);border:1px solid #e4e4e7"></span>Background/Base/Secondary</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-accent-secondary)"></span>Background/Accent/Secondary</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-inverted-primary)"></span>Background/Inverted/Primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-base-secondary);border:1px solid #e4e4e7"></span>Background/Base/Secondary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-accent-secondary)"></span>Background/Accent/Secondary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-inverted-primary)"></span>Background/Inverted/Primary</span>
         <span class="token-pill"><span class="pill-swatch" style="background:#e5e8ea"></span>Border/Base/Primary</span>
         <span class="token-pill">radius/md · 6px</span>
         <span class="token-pill">spacing/2 · 8px</span>
@@ -1635,7 +1635,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
             <div style="position:relative;width:48px;height:48px;">
               <div style="width:48px;height:48px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:var(--wire-identity-amber);color:var(--wire-content-inverted-on-primary);box-shadow:0 0 0 1px var(--wire-border-base-primary);font-weight:600;font-size:20px;">PN</div>
-              <span style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-radius:9999px;background:var(--background-base-primary);box-shadow:inset 0 0 0 2px var(--wire-bg-danger-primary),0 0 0 2px #fff;"></span>
+              <span style="position:absolute;right:0;bottom:0;width:14px;height:14px;border-radius:9999px;background:var(--wire-bg-base-primary);box-shadow:inset 0 0 0 2px var(--wire-bg-danger-primary),0 0 0 2px #fff;"></span>
             </div>
             <span style="font-size:11px;color:var(--wire-content-base-secondary)">away</span>
           </div>
@@ -1675,7 +1675,7 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
           <div style="width:1px;background:#e4e4e7;height:40px;margin:0 4px;align-self:center;"></div>
           <!-- locked badge -->
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div style="position:relative;width:48px;height:48px;"><div style="position:relative;width:48px;height:48px;border-radius:13px;background:var(--channel-blue-bg);border:1px solid var(--channel-blue-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-blue);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg><div style="position:absolute;right:-2px;bottom:-2px;width:14px;height:14px;border-radius:4px;background:var(--background-inverted-primary);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;"><i class="ph-bold ph-lock" style="font-size:8px;color:var(--wire-content-inverted-on-primary);"></i></div></div></div>
+            <div style="position:relative;width:48px;height:48px;"><div style="position:relative;width:48px;height:48px;border-radius:13px;background:var(--channel-blue-bg);border:1px solid var(--channel-blue-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-blue);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg><div style="position:absolute;right:-2px;bottom:-2px;width:14px;height:14px;border-radius:4px;background:var(--wire-bg-inverted-primary);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;"><i class="ph-bold ph-lock" style="font-size:8px;color:var(--wire-content-inverted-on-primary);"></i></div></div></div>
             <span style="font-size:10px;color:var(--wire-content-base-secondary)">locked</span>
           </div>
         </div>
@@ -1688,19 +1688,19 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
       <div class="component-canvas">
         <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div style="position:relative;width:28px;height:28px;border-radius:8px;background:var(--background-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:72%;height:52%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
+            <div style="position:relative;width:28px;height:28px;border-radius:8px;background:var(--wire-bg-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:72%;height:52%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
             <span style="font-size:10px;color:var(--wire-content-base-secondary)">28px</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div style="position:relative;width:40px;height:40px;border-radius:11px;background:var(--background-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
+            <div style="position:relative;width:40px;height:40px;border-radius:11px;background:var(--wire-bg-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
             <span style="font-size:10px;color:var(--wire-content-base-secondary)">40px</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div style="position:relative;width:48px;height:48px;border-radius:13px;background:var(--background-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
+            <div style="position:relative;width:48px;height:48px;border-radius:13px;background:var(--wire-bg-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
             <span style="font-size:10px;color:var(--wire-content-base-secondary)">48px</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div style="position:relative;width:64px;height:64px;border-radius:18px;background:var(--background-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
+            <div style="position:relative;width:64px;height:64px;border-radius:18px;background:var(--wire-bg-base-primary);border:1px solid #DCE0E3;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 20 14" fill="none" style="width:70%;height:50%;display:block;"><path d="M3.6 7C2.71 7 1.98 6.21 1.98 5.19 1.97 4.18 2.72 3.39 3.6 3.39 4.48 3.39 5.22 4.14 5.22 5.18 5.22 6.21 4.49 7 3.6 7ZM.98 11.06C.26 11.06 0 10.76 0 10.23 0 8.93 1.42 7.32 3.6 7.32 4.47 7.32 5.19 7.57 5.72 7.91 4.57 8.81 4.04 10.3 4.56 11.06H.98Z" fill="#1D7833"/><path d="M9.92 6.89C8.83 6.89 7.93 5.93 7.92 4.7 7.92 3.49 8.83 2.54 9.92 2.54 11.01 2.54 11.92 3.47 11.92 4.69 11.92 5.93 11.01 6.89 9.92 6.89ZM6.82 11.08C5.99 11.08 5.71 10.82 5.71 10.34 5.71 9.07 7.33 7.33 9.92 7.33 12.5 7.33 14.12 9.07 14.12 10.34 14.12 10.82 13.84 11.08 13.01 11.08H6.82Z" fill="#8944AB"/><path d="M16.2 7C15.31 7 14.58 6.21 14.58 5.18 14.58 4.14 15.32 3.39 16.2 3.39 17.08 3.39 17.82 4.18 17.82 5.19 17.82 6.21 17.09 7 16.2 7ZM18.92 11.06H15.3C15.83 10.3 15.29 8.81 14.14 7.91 14.67 7.57 15.39 7.32 16.2 7.32 18.38 7.32 19.8 8.93 19.8 10.23 19.8 10.76 19.54 11.06 18.92 11.06Z" fill="#C20013"/></svg></div>
             <span style="font-size:10px;color:var(--wire-content-base-secondary)">64px</span>
           </div>
         </div>
@@ -1742,17 +1742,17 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
     <div class="subsection">
       <div class="subsection-title">Tokens used</div>
       <div class="token-pills">
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-accent-primary)"></span>--ws-avatar-blue</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-positive-primary)"></span>--ws-avatar-green</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-warning-primary)"></span>--ws-avatar-amber</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:#01718E"></span>--ws-avatar-petrol</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:#8944AB"></span>--ws-avatar-purple</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-danger-primary)"></span>--ws-avatar-red</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-accent-secondary)"></span>--ws-channel-*-bg</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:#DCE0E3"></span>--ws-border · hairline ring</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-positive-primary)"></span>--ws-availability-available</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-warning-primary)"></span>--ws-availability-busy</span>
-        <span class="token-pill"><span class="pill-swatch" style="background:var(--background-danger-primary)"></span>--ws-availability-away</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-accent-primary)"></span>--wire-identity-blue</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-positive-primary)"></span>--wire-identity-green</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-warning-primary)"></span>--wire-identity-amber</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#01718E"></span>--wire-identity-petrol</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#8944AB"></span>--wire-identity-purple</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-danger-primary)"></span>--wire-identity-red</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-accent-secondary)"></span>--wire-channel-*-bg</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:#DCE0E3"></span>--wire-border-base-primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-positive-primary)"></span>--wire-bg-positive-primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-warning-primary)"></span>--wire-bg-warning-primary</span>
+        <span class="token-pill"><span class="pill-swatch" style="background:var(--wire-bg-danger-primary)"></span>--wire-bg-danger-primary</span>
         <span class="token-pill">WDS/Body/Medium · initials</span>
       </div>
     </div>
@@ -1769,16 +1769,16 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
           <tr><td class="token-name">.av-channel</td><td class="token-desc">Channel avatar — rounded square, soft hue fill + border. Pair with <code style="font-size:11px">.av-channel-{size}</code></td></tr>
           <tr><td class="token-name">.av-group</td><td class="token-desc">Group avatar — white rounded square + hairline border, Phosphor users-three icon inside</td></tr>
           <tr><td class="token-name">.av-dot</td><td class="token-desc">Availability dot — absolute positioned, bottom-right. Always pair with a state class</td></tr>
-          <tr><td class="token-name">.av-dot-available</td><td class="token-desc">Green dot · <code style="font-size:11px">background:var(--background-positive-primary); box-shadow:0 0 0 2px #fff</code></td></tr>
-          <tr><td class="token-name">.av-dot-busy</td><td class="token-desc">Amber dot · <code style="font-size:11px">background:var(--background-warning-primary); box-shadow:0 0 0 2px #fff</code></td></tr>
+          <tr><td class="token-name">.av-dot-available</td><td class="token-desc">Green dot · <code style="font-size:11px">background:var(--wire-bg-positive-primary); box-shadow:0 0 0 2px #fff</code></td></tr>
+          <tr><td class="token-name">.av-dot-busy</td><td class="token-desc">Amber dot · <code style="font-size:11px">background:var(--wire-bg-warning-primary); box-shadow:0 0 0 2px #fff</code></td></tr>
           <tr><td class="token-name">.av-dot-away</td><td class="token-desc">White fill + red inset ring · <code style="font-size:11px">box-shadow:inset 0 0 0 2px #C20013, 0 0 0 2px #fff</code></td></tr>
         </tbody>
       </table>
     </div>
 
     <!-- Token alignment note -->
-    <div class="note" style="margin-top:0;background:var(--background-base-primary)beb;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;">
-      <strong style="color:#92400e;">Token alignment:</strong> <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">--ws-text</code> in the Claude Design export resolves to <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#000000</code>. WDS uses <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#17181A</code> (gray-100) as primary text to stay within the Wire gray scale. Treated as equivalent.
+    <div class="note" style="margin-top:0;background:var(--wire-bg-base-primary)beb;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;">
+      <strong style="color:#92400e;">Token alignment:</strong> <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">--wire-content-base-primary</code> in the Claude Design export resolves to <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#000000</code>. WDS uses <code style="font-size:11.5px;background:transparent;padding:0;color:#92400e">#17181A</code> (gray-100) as primary text to stay within the Wire gray scale. Treated as equivalent.
     </div>
 
     <div class="subsection" style="margin-top:24px">
@@ -1787,8 +1787,141 @@ hr.divider{border:none;border-top:1px solid var(--wire-border-base-primary);marg
     </div>
   </section>
 
-  <div style="height:64px"></div>
 
+  <hr class="divider"/>
+
+  <!-- ══════════════════════════════ BUTTON ══════════════════════════════ -->
+  <section class="section" id="button">
+    <div class="section-header">
+      <div class="section-title">Button</div>
+      <div class="section-desc">Five variants × five sizes × two roundness options × four states. Supports optional left/right icon slots (16×16px). Label is always <strong>Inter Medium (500)</strong>. All values reference Wire Design System tokens.</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Variants — Default size</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="wds-btn wds-btn-primary">Primary</button>
+          <button class="wds-btn wds-btn-secondary">Secondary</button>
+          <button class="wds-btn wds-btn-outline">Outline</button>
+          <button class="wds-btn wds-btn-ghost">Ghost</button>
+          <button class="wds-btn wds-btn-destructive">Destructive</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Sizes — Primary variant</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="wds-btn wds-btn-primary wds-btn-mini">Mini</button>
+          <button class="wds-btn wds-btn-primary wds-btn-sm">Small</button>
+          <button class="wds-btn wds-btn-primary">Default</button>
+          <button class="wds-btn wds-btn-primary wds-btn-lg">Large</button>
+          <button class="wds-btn wds-btn-primary wds-btn-xl">Extra Large</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Round (pill)</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="wds-btn wds-btn-primary wds-btn-round">Primary</button>
+          <button class="wds-btn wds-btn-secondary wds-btn-round">Secondary</button>
+          <button class="wds-btn wds-btn-outline wds-btn-round">Outline</button>
+          <button class="wds-btn wds-btn-ghost wds-btn-round">Ghost</button>
+          <button class="wds-btn wds-btn-destructive wds-btn-round">Destructive</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">States</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+            <span style="font-size:10.5px;color:var(--wire-content-base-secondary);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Default</span>
+            <button class="wds-btn wds-btn-primary">Label</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+            <span style="font-size:10.5px;color:var(--wire-content-base-secondary);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Hover</span>
+            <button class="wds-btn wds-btn-primary" style="background:var(--wire-bg-accent-primary-focus);">Label</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+            <span style="font-size:10.5px;color:var(--wire-content-base-secondary);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Focus</span>
+            <button class="wds-btn wds-btn-primary wds-btn-focus-demo">Label</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+            <span style="font-size:10.5px;color:var(--wire-content-base-secondary);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Disabled</span>
+            <button class="wds-btn wds-btn-primary" disabled>Label</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">With icons</div>
+      <div class="component-canvas">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="wds-btn wds-btn-primary"><i class="ph-bold ph-plus" style="font-size:14px;"></i> New</button>
+          <button class="wds-btn wds-btn-secondary"><i class="ph-bold ph-download-simple" style="font-size:14px;"></i> Download</button>
+          <button class="wds-btn wds-btn-outline">Share <i class="ph-bold ph-share" style="font-size:14px;"></i></button>
+          <button class="wds-btn wds-btn-destructive"><i class="ph-bold ph-trash" style="font-size:14px;"></i> Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Size specifications</div>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Padding H</th><th>Padding V</th><th>Font size</th><th>Radius</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">Mini</td><td class="token-value">24px</td><td class="token-css">--spacing-2 · 8px</td><td class="token-css">--spacing-1 · 4px</td><td class="token-css">--font-size-xs · 12px</td><td class="token-css">--radius-lg · 10px</td></tr>
+          <tr><td class="token-name">Small</td><td class="token-value">32px</td><td class="token-css">--spacing-3 · 12px</td><td class="token-value">6px</td><td class="token-css">--font-size-sm · 13px</td><td class="token-css">--radius-lg · 10px</td></tr>
+          <tr><td class="token-name">Default</td><td class="token-value">36px</td><td class="token-css">--spacing-4 · 16px</td><td class="token-css">--spacing-2 · 8px</td><td class="token-css">--font-size-base · 14px</td><td class="token-css">--radius-lg · 10px</td></tr>
+          <tr><td class="token-name">Large</td><td class="token-value">40px</td><td class="token-css">--spacing-5 · 20px</td><td class="token-value">10px</td><td class="token-css">--font-size-base · 14px</td><td class="token-css">--radius-lg · 10px</td></tr>
+          <tr><td class="token-name">Extra Large</td><td class="token-value">48px</td><td class="token-css">--spacing-6 · 24px</td><td class="token-css">--spacing-3 · 12px</td><td class="token-css">--font-size-md · 16px</td><td class="token-css">--radius-lg · 10px</td></tr>
+          <tr><td class="token-name">Round</td><td class="token-desc">any</td><td colspan="3" class="token-desc">Same padding as base size</td><td class="token-css">--radius-full · 9999px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Variant token mapping</div>
+      <table class="token-table">
+        <thead><tr><th>Variant</th><th>Background</th><th>Hover background</th><th>Text</th><th>Border</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">Primary</td><td class="token-css">--wire-bg-accent-primary</td><td class="token-css">--wire-bg-accent-primary-focus</td><td class="token-css">--wire-content-accent-on-primary</td><td class="token-desc">None</td></tr>
+          <tr><td class="token-name">Secondary</td><td class="token-css">--wire-bg-base-secondary</td><td class="token-css">--wire-bg-base-tertiary</td><td class="token-css">--wire-content-base-primary</td><td class="token-desc">None</td></tr>
+          <tr><td class="token-name">Outline</td><td class="token-desc">Transparent</td><td class="token-css">--wire-bg-base-tertiary</td><td class="token-css">--wire-content-base-primary</td><td class="token-css">--wire-border-base-primary</td></tr>
+          <tr><td class="token-name">Ghost</td><td class="token-desc">Transparent</td><td class="token-css">--wire-bg-base-tertiary</td><td class="token-css">--wire-content-base-secondary</td><td class="token-desc">None</td></tr>
+          <tr><td class="token-name">Destructive</td><td class="token-css">--wire-bg-danger-primary</td><td class="token-css">--wire-bg-danger-primary-focus</td><td class="token-css">--wire-content-danger-on-primary</td><td class="token-desc">None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">TypeScript interface</div>
+      <div class="ts-block"><pre><span class="ts-cm">// Button — Wire Design System</span>
+<span class="ts-kw">export type</span> <span class="ts-ty">ButtonVariant</span>  <span class="ts-op">=</span> <span class="ts-st">'primary'</span> <span class="ts-op">|</span> <span class="ts-st">'secondary'</span> <span class="ts-op">|</span> <span class="ts-st">'outline'</span> <span class="ts-op">|</span> <span class="ts-st">'ghost'</span> <span class="ts-op">|</span> <span class="ts-st">'destructive'</span><span class="ts-op">;</span>
+<span class="ts-kw">export type</span> <span class="ts-ty">ButtonSize</span>     <span class="ts-op">=</span> <span class="ts-st">'mini'</span> <span class="ts-op">|</span> <span class="ts-st">'sm'</span> <span class="ts-op">|</span> <span class="ts-st">'default'</span> <span class="ts-op">|</span> <span class="ts-st">'lg'</span> <span class="ts-op">|</span> <span class="ts-st">'xl'</span><span class="ts-op">;</span>
+<span class="ts-kw">export type</span> <span class="ts-ty">ButtonRoundness</span> <span class="ts-op">=</span> <span class="ts-st">'default'</span> <span class="ts-op">|</span> <span class="ts-st">'round'</span><span class="ts-op">;</span>
+
+<span class="ts-kw">export interface</span> <span class="ts-ty">ButtonProps</span> <span class="ts-op">{</span>
+  <span class="ts-pr">variant</span><span class="ts-op">?:</span>   <span class="ts-ty">ButtonVariant</span><span class="ts-op">;</span>   <span class="ts-cm">// default: 'primary'</span>
+  <span class="ts-pr">size</span><span class="ts-op">?:</span>      <span class="ts-ty">ButtonSize</span><span class="ts-op">;</span>      <span class="ts-cm">// default: 'default'</span>
+  <span class="ts-pr">roundness</span><span class="ts-op">?:</span> <span class="ts-ty">ButtonRoundness</span><span class="ts-op">;</span> <span class="ts-cm">// default: 'default'</span>
+  <span class="ts-pr">disabled</span><span class="ts-op">?:</span>  <span class="ts-ty">boolean</span><span class="ts-op">;</span>
+  <span class="ts-pr">leftIcon</span><span class="ts-op">?:</span>  <span class="ts-ty">ReactNode</span><span class="ts-op">;</span>
+  <span class="ts-pr">rightIcon</span><span class="ts-op">?:</span> <span class="ts-ty">ReactNode</span><span class="ts-op">;</span>
+  <span class="ts-pr">onClick</span><span class="ts-op">?:</span>   <span class="ts-op">() =&gt;</span> <span class="ts-ty">void</span><span class="ts-op">;</span>
+  <span class="ts-pr">children</span><span class="ts-op">:</span>  <span class="ts-ty">ReactNode</span><span class="ts-op">;</span>
+<span class="ts-op">}</span></pre></div>
+    </div>
+  </section>
+
+  <div style="height:64px"></div>
 </main>
 </div>
 
@@ -1823,6 +1956,36 @@ window.addEventListener('scroll',()=>{
     l.classList.toggle('active',l.getAttribute('href')==='#'+current);
   });
 },{passive:true});
+</script>
+
+<script>
+// Docs sidebar nav — highlight active section on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+
+function setActive(id) {
+  navLinks.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+  });
+}
+
+// Click handler
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// Scroll spy
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) setActive(entry.target.id);
+  });
+}, { threshold: 0.15, rootMargin: '-48px 0px -50% 0px' });
+
+sections.forEach(s => { if (s.id) observer.observe(s); });
 </script>
 </body>
 </html>
