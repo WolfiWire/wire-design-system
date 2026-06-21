@@ -409,10 +409,11 @@ input, textarea { font-family:var(--font-sans); }
 .psidebar-header {
   height:48px; flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between;
-  padding:0 var(--spacing-4);
+  padding:0 var(--spacing-3) 0 var(--spacing-4);
   border-bottom:0.5px solid var(--wire-border-base-primary);
+  gap:var(--spacing-2);
 }
-.psidebar-title { font-size:var(--font-size-base); font-weight:var(--font-weight-semibold); color:var(--wire-content-base-primary); }
+.psidebar-title { font-size:var(--font-size-base); font-weight:var(--font-weight-semibold); color:var(--wire-content-base-primary); display:flex; align-items:center; gap:var(--spacing-1); }
 .psidebar-actions { display:flex; gap:var(--spacing-1); }
 .icon-btn {
   width:28px; height:28px; border-radius:var(--radius-md);
@@ -672,7 +673,7 @@ input, textarea { font-family:var(--font-sans); }
 .wds-btn-primary:active:not(:disabled) { background:var(--wire-bg-accent-primary-focus); }
 
 /* Secondary */
-.wds-btn-secondary { background:var(--wire-bg-base-secondary); color:var(--wire-content-base-primary); }
+.wds-btn-secondary { background:var(--wire-bg-base-primary); color:var(--wire-content-base-primary); border:1px solid var(--wire-border-base-primary); }
 .wds-btn-secondary:hover:not(:disabled)  { background:var(--wire-bg-base-tertiary); }
 .wds-btn-secondary:active:not(:disabled) { background:var(--wire-bg-base-secondary-focus); }
 
@@ -760,7 +761,7 @@ input, textarea { font-family:var(--font-sans); }
 #page.dark-rail .n-label { color:rgba(255,255,255,0.45); }
 #page.dark-rail .n-item:hover .n-btn   { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
 #page.dark-rail .n-item:hover .n-label { color:rgba(255,255,255,0.8); }
-#page.dark-rail .n-item.active .n-btn   { color:#fff; }
+#page.dark-rail .n-item.active .n-btn   { background:rgba(255,255,255,0.1); color:#fff; }
 #page.dark-rail .n-item.active .n-label { color:#fff; }
 
 /* ── Light rail ── */
@@ -772,7 +773,7 @@ input, textarea { font-family:var(--font-sans); }
 #page.light-rail .n-label { color:rgba(0,0,0,0.35); }
 #page.light-rail .n-item:hover .n-btn   { background:rgba(0,0,0,0.07); color:rgba(0,0,0,0.7); }
 #page.light-rail .n-item:hover .n-label { color:rgba(0,0,0,0.7); }
-#page.light-rail .n-item.active .n-btn   { color:#000; }
+#page.light-rail .n-item.active .n-btn   { background:rgba(0,0,0,0.07); color:#000; }
 #page.light-rail .n-item.active .n-label { color:#000; }
 
 #app-window { flex:1; display:flex; overflow:hidden; margin:var(--spacing-1) var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:var(--wire-bg-base-primary); min-width:0; position:relative; z-index:1; }
@@ -877,10 +878,12 @@ input, textarea { font-family:var(--font-sans); }
     <!-- ── PRODUCT SIDEBAR (Conversations) ── -->
     <aside id="product-sidebar" aria-label="Conversations sidebar">
       <div class="psidebar-header">
-        <span class="psidebar-title" id="sidebar-title">Conversations</span>
+        <span class="psidebar-title" id="sidebar-title">
+          Conversations
+          <button class="icon-btn" title="Settings" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear" style="font-size:13px;"></i></button>
+        </span>
         <div class="psidebar-actions">
-          <button class="icon-btn" title="Settings"><i class="ph-bold ph-gear"></i></button>
-          <button class="icon-btn outlined" title="New conversation"><i class="ph-bold ph-plus"></i></button>
+          <button class="wds-btn wds-btn-secondary wds-btn-sm" title="New conversation" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-md);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
         </div>
       </div>
       <div class="psidebar-scroll">
@@ -963,10 +966,10 @@ input, textarea { font-family:var(--font-sans); }
       <div class="content-topbar" id="topbar-drive" style="display:none">
         <div class="topbar-title">
           Drive
-          <i class="ph-bold ph-gear" style="font-size:13px;color:var(--wire-content-base-secondary)"></i>
+          <button class="icon-btn" title="Drive settings" style="width:24px;height:24px;"><i class="ph-bold ph-gear" style="font-size:13px;"></i></button>
         </div>
         <div class="topbar-right">
-          <button class="wds-btn wds-btn-primary wds-btn-sm"><i class="ph-bold ph-plus" style="font-size:13px"></i> New</button>
+          <button class="wds-btn wds-btn-secondary wds-btn-sm" title="New file" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-md);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
         </div>
       </div>
 
