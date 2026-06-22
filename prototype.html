@@ -473,69 +473,83 @@ input, textarea { font-family:var(--font-sans); }
 .topbar-meta { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); }
 .topbar-right { display:flex; gap:var(--spacing-1); align-items:center; margin-left:auto; flex-shrink:0; }
 
-/* ─── MESSAGES ── */
-#view-conv { display:flex; flex-direction:column; flex:1; overflow:hidden; }
-.msg-list {
-  flex:1; overflow-y:auto; padding:var(--spacing-4);
-  display:flex; flex-direction:column; gap:var(--spacing-3);
-}
-.msg-list::-webkit-scrollbar { width:3px; }
-.msg-list::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
 
-.day-sep {
-  display:flex; align-items:center; gap:var(--spacing-2);
-  color:var(--wire-content-base-secondary); font-size:var(--font-size-xs); margin:var(--spacing-2) 0;
-}
-.day-sep::before, .day-sep::after { content:''; flex:1; height:0.5px; background:var(--wire-border-base-primary); }
 
-.msg-row { display:flex; gap:var(--spacing-2); align-items:flex-end; }
-.msg-row.sent { flex-direction:row-reverse; }
-.msg-av-wrap { width:28px; flex-shrink:0; }
-.msg-av {
-  width:28px; height:28px; border-radius:var(--radius-full);
-  display:flex; align-items:center; justify-content:center;
-  font-size:var(--font-size-xs); font-weight:var(--font-weight-semibold);
-  color:var(--wire-content-accent-on-primary); flex-shrink:0;
-  border:1px solid var(--wire-border-base-primary);
+
+/* ─── OWN MESSAGE BUBBLES ── */
+
+/* Message group wrapper — groups all bubbles from same sender in same minute */
+.own-msg-group {
+  display:flex; flex-direction:column; align-items:flex-end;
+  padding:0 var(--spacing-4) 0 80px;
+  margin-bottom:var(--spacing-3); /* gap between groups = 12px */
 }
-.msg-body { display:flex; flex-direction:column; gap:2px; max-width:62%; }
-.msg-row.sent .msg-body { align-items:flex-end; }
-.msg-sender { font-size:11px; font-weight:var(--font-weight-medium); color:var(--wire-content-accent-primary); margin-bottom:2px; }
-.msg-bubble {
-  padding:var(--spacing-2) var(--spacing-3);
-  border-radius:var(--radius-lg); border-bottom-left-radius:var(--radius-sm);
-  font-size:var(--font-size-sm); line-height:1.55; color:var(--wire-content-base-primary);
-  background:var(--wire-bg-base-tertiary);
+
+/* Individual bubble row */
+.own-msg-bubble {
+  background:var(--wire-bg-bubbles-primary);
+  border-radius:16px; /* all corners always 16px for own messages */
+  padding:10px;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:4px;
+  max-width:min(560px, 72%);
+  word-break:break-word;
+  margin-bottom:2px; /* gap within group between consecutive bubbles */
 }
-.msg-row.sent .msg-bubble {
+.own-msg-bubble:last-of-type { margin-bottom:0; }
+
+/* Text inside bubble */
+.own-msg-text {
+  font-family:var(--font-sans);
+  font-size:var(--font-size-base);
+  font-weight:var(--font-weight-regular);
+  line-height:22px;
+  color:var(--wire-content-bubbles-primary);
+  max-width:100%;
+}
+
+/* Status line — inside bubble, only on last/single bubble of group */
+.own-msg-status {
+  display:flex; align-items:center; gap:4px;
+  opacity:0.7;
+  justify-content:flex-end; width:100%;
+}
+.own-msg-time {
+  font-family:var(--font-sans);
+  font-size:12px; font-weight:var(--font-weight-regular);
+  line-height:16px; letter-spacing:0;
+  color:var(--wire-content-bubbles-primary);
+  white-space:nowrap; padding-right:4px;
+}
+.own-msg-checkmark {
+  color:var(--wire-content-bubbles-primary);
+  font-size:11px; line-height:1; flex-shrink:0;
+}
+
+/* Reactions — below the group, right-aligned */
+.own-msg-reactions {
+  display:flex; flex-wrap:wrap; gap:4px;
+  justify-content:flex-end;
+  padding:0 10px; margin-top:2px;
+  max-width:min(560px, 72%);
+}
+.reaction-pill-own {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
   background:var(--wire-bg-accent-secondary);
-  border-radius:var(--radius-lg); border-bottom-right-radius:var(--radius-sm); border-bottom-left-radius:var(--radius-lg);
+  border:1px solid var(--wire-bg-accent-primary);
+  cursor:pointer;
 }
-.msg-meta { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); }
-.msg-row.sent .msg-meta { text-align:right; }
-
-.reactions { display:flex; gap:var(--spacing-1); margin-top:var(--spacing-1); flex-wrap:wrap; }
-.reaction {
-  display:inline-flex; align-items:center; gap:3px;
-  font-size:11px; padding:2px 7px; border-radius:var(--radius-full);
-  background:var(--wire-bg-base-tertiary); border:0.5px solid var(--wire-border-base-primary);
-  color:var(--wire-content-base-secondary); cursor:pointer;
+.reaction-pill-other {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  cursor:pointer;
 }
-.reaction:hover { background:var(--wire-bg-base-tertiary-focus); }
-
-.file-bubble {
-  background:var(--wire-bg-base-tertiary); border-radius:var(--radius-lg); border-bottom-left-radius:var(--radius-sm);
-  padding:var(--spacing-3); display:flex; align-items:center; gap:var(--spacing-3);
-  border:0.5px solid var(--wire-border-base-primary); cursor:pointer;
-}
-.file-bubble:hover { background:var(--wire-bg-base-tertiary-focus); }
-.file-icon-wrap {
-  width:36px; height:36px; border-radius:var(--radius-md);
-  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
-}
-.file-info { min-width:0; }
-.file-name { font-size:var(--font-size-sm); font-weight:var(--font-weight-medium); color:var(--wire-content-base-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.file-meta { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); margin-top:2px; }
+.reaction-emoji { font-size:16px; line-height:1; }
+.reaction-count-own   { font-size:12px; font-weight:600; color:var(--wire-content-accent-primary); }
+.reaction-count-other { font-size:12px; font-weight:600; color:var(--wire-content-base-secondary); }
 
 /* ─── COMPOSER ── */
 .composer { flex-shrink:0; padding:var(--spacing-2) var(--spacing-4) var(--spacing-3); }
@@ -975,77 +989,9 @@ input, textarea { font-family:var(--font-sans); }
 
       <!-- ── CONVERSATION VIEW ── -->
       <div id="view-conv">
-        <div class="msg-list" id="msg-list">
+                <div class="msg-list" id="msg-list"></div>
 
-          <div class="day-sep">Today</div>
-
-          <!-- Message from Deniz -->
-          <div class="msg-row">
-            <div class="msg-av-wrap">
-              <div class="msg-av av-purple">DA</div>
-            </div>
-            <div class="msg-body">
-              <div class="msg-sender">Deniz Agha</div>
-              <div class="msg-bubble">Hi team, any news on the pitch deck? We have a meeting next week and should specify some of the details until then.</div>
-              <div class="msg-meta">10:32 AM</div>
-            </div>
-          </div>
-
-          <!-- File attachment -->
-          <div class="msg-row">
-            <div class="msg-av-wrap">
-              <div class="msg-av av-green">ML</div>
-            </div>
-            <div class="msg-body">
-              <div class="msg-sender" style="color:var(--wire-identity-green)">Marie Laurent</div>
-              <div class="file-bubble">
-                <div class="file-icon-wrap" style="background:#fee2e2;color:#991b1b;">
-                  <i class="ph-bold ph-file-pdf"></i>
-                </div>
-                <div class="file-info">
-                  <div class="file-name">Wire_Pitch_Deck_v3.pdf</div>
-                  <div class="file-meta">4.2 MB · Uploaded from desktop</div>
-                </div>
-                <i class="ph-bold ph-download-simple" style="font-size:16px;color:var(--wire-content-base-secondary);margin-left:auto;"></i>
-              </div>
-              <div class="msg-meta">10:35 AM</div>
-            </div>
-          </div>
-
-          <!-- Sent message -->
-          <div class="msg-row sent">
-            <div class="msg-body">
-              <div class="msg-bubble">Working on it! Will share a draft by Thursday. Marie's version looks great as a starting point.</div>
-              <div class="reactions">
-                <div class="reaction">👍 <span>12</span></div>
-                <div class="reaction">❤️ <span>4</span></div>
-              </div>
-              <div class="msg-meta">10:34 AM · Edited ✓✓</div>
-            </div>
-          </div>
-
-          <!-- Short reply -->
-          <div class="msg-row">
-            <div class="msg-av-wrap">
-              <div class="msg-av av-purple">DA</div>
-            </div>
-            <div class="msg-body">
-              <div class="msg-bubble">Perfect, thanks! Let's sync on Thursday then.</div>
-              <div class="msg-meta">10:38 AM</div>
-            </div>
-          </div>
-
-          <!-- Another sent message -->
-          <div class="msg-row sent">
-            <div class="msg-body">
-              <div class="msg-bubble">Sounds good 👍</div>
-              <div class="msg-meta">10:39 AM</div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Composer -->
+          <!-- Composer -->
         <div class="composer">
           <div class="composer-wrap">
             <input class="composer-input" id="composer-input" type="text" placeholder="Type a message" autocomplete="off"/>
@@ -1344,15 +1290,106 @@ input.addEventListener('keydown', e => {
 });
 sendBtn.addEventListener('click', () => { if (input.value.trim()) sendMessage(); });
 
+
+// ── Message data ──────────────────────────────────────────────────────────────
+const MESSAGES = [
+  { sender: 'self', time: '10:32', text: 'Working on it! Will share a draft by Thursday.', reactions: [{emoji:'👍', count:12, own:true},{emoji:'❤️', count:4, own:false}] },
+  { sender: 'self', time: '10:32', text: "Marie's version looks great as a starting point.", reactions: [] },
+  { sender: 'self', time: '10:34', text: 'Sounds good, let\'s plan for Thursday.', reactions: [] },
+  { sender: 'self', time: '10:34', text: 'Can everyone join at 10am?', reactions: [] },
+  { sender: 'self', time: '10:34', text: "I'll send the invite now.", reactions: [] },
+];
+
+function groupMessages(msgs) {
+  const groups = [];
+  msgs.forEach(msg => {
+    const last = groups[groups.length - 1];
+    if (last && last.sender === msg.sender && last.time === msg.time) {
+      last.bubbles.push(msg);
+    } else {
+      groups.push({ sender: msg.sender, time: msg.time, bubbles: [msg] });
+    }
+  });
+  return groups;
+}
+
+function renderMessages() {
+  const list = document.getElementById('msg-list');
+  list.innerHTML = '';
+
+  // Day separator
+  const sep = document.createElement('div');
+  sep.className = 'day-sep';
+  sep.textContent = 'Today';
+  list.appendChild(sep);
+
+  const groups = groupMessages(MESSAGES);
+  groups.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'own-msg-group';
+
+    group.bubbles.forEach((msg, i) => {
+      const isLast   = i === group.bubbles.length - 1;
+      const isSingle = group.bubbles.length === 1;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'own-msg-bubble';
+
+      // Text
+      const text = document.createElement('div');
+      text.className = 'own-msg-text';
+      text.textContent = msg.text;
+      bubble.appendChild(text);
+
+      // Status line — only on last or single bubble
+      if (isLast || isSingle) {
+        const status = document.createElement('div');
+        status.className = 'own-msg-status';
+        status.innerHTML =
+          '<span class="own-msg-time">' + msg.time + ' AM</span>' +
+          '<span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span>';
+        bubble.appendChild(status);
+      }
+
+      groupEl.appendChild(bubble);
+    });
+
+    // Reactions — from the last bubble's reactions, below group
+    const lastMsg = group.bubbles[group.bubbles.length - 1];
+    if (lastMsg.reactions && lastMsg.reactions.length > 0) {
+      const reactionsEl = document.createElement('div');
+      reactionsEl.className = 'own-msg-reactions';
+      lastMsg.reactions.forEach(r => {
+        const pill = document.createElement('div');
+        pill.className = r.own ? 'reaction-pill-own' : 'reaction-pill-other';
+        pill.innerHTML =
+          '<span class="reaction-emoji">' + r.emoji + '</span>' +
+          '<span class="' + (r.own ? 'reaction-count-own' : 'reaction-count-other') + '">' + r.count + '</span>';
+        reactionsEl.appendChild(pill);
+      });
+      groupEl.appendChild(reactionsEl);
+    }
+
+    list.appendChild(groupEl);
+  });
+
+  list.scrollTop = list.scrollHeight;
+}
+
+// Initial render
+renderMessages();
+
 function sendMessage() {
   const text = input.value.trim();
-  const row = document.createElement('div');
-  row.className = 'msg-row sent';
-  row.innerHTML = '<div class="msg-body"><div class="msg-bubble">' + text + '</div><div class="msg-meta">Just now</div></div>';
-  msgList.appendChild(row);
+  if (!text) return;
+  const now = new Date();
+  const hh = now.getHours().toString().padStart(2,'0');
+  const mm = now.getMinutes().toString().padStart(2,'0');
+  const timeStr = hh + ':' + mm;
+  MESSAGES.push({ sender:'self', time:timeStr, text, reactions:[] });
+  renderMessages();
   input.value = '';
   sendBtn.classList.remove('active');
-  msgList.scrollTop = msgList.scrollHeight;
 }
 </script>
 </body>
