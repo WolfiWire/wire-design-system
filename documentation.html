@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wire Design System 2.0 — Components</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   WIRE DESIGN SYSTEM — CSS TOKENS
+   Source: Wire Design System Figma (grkG8ylzSzIM0C1Nnaxn3l)
+   Auto-resolved from Figma variable collections.
+   Token naming: Figma path → CSS var (slashes → hyphens, lowercase)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── IDENTITY TINTS — fixed avatar colors (not accent-dependent) ── */
+  --wire-identity-blue:   #0667c8;  /* Light/Accent color/500 Blue   */
+  --wire-identity-green:  #1d7833;  /* Light/Accent color/500 Green  */
+  --wire-identity-amber:  #a25915;  /* Light/Accent color/500 Amber  */
+  --wire-identity-petrol: #01718e;  /* Light/Accent color/500 Petrol */
+  --wire-identity-purple: #8944ab;  /* Light/Accent color/500 Purple */
+  --wire-identity-red:    #c20013;  /* Light/Accent color/500 Red    */
+
+  /* ── CHANNEL AVATAR FILLS ── */
+  --wire-channel-blue-bg:     #e7f0fa; --wire-channel-blue-border:   #cde1f4;
+  --wire-channel-green-bg:    #e8f1ea; --wire-channel-green-border:  #d2e4d6;
+  --wire-channel-amber-bg:    #f6eee8; --wire-channel-amber-border:  #ecded0;
+  --wire-channel-petrol-bg:   #e5f1f3; --wire-channel-petrol-border: #cce2e7;
+  --wire-channel-purple-bg:   #f4edf7; --wire-channel-purple-border: #e7daee;
+  --wire-channel-red-bg:      #f9e6e8; --wire-channel-red-border:    #f3ccd0;
+  /* ── SPACING (platform-independent) ─────────────────────────── */
+  --spacing-0:  0px;
+  --spacing-1:  4px;
+  --spacing-2:  8px;
+  --spacing-3:  12px;
+  --spacing-4:  16px;
+  --spacing-5:  20px;
+  --spacing-6:  24px;
+  --spacing-8:  32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+
+  /* ── RADIUS ──────────────────────────────────────────────────── */
+  --radius-none: 0px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-base: 12px;
+  --radius-xl:   17px;
+  --radius-2xl:  22px;
+  --radius-full: 9999px;
+
+  /* ── TYPOGRAPHY / INTER (WDS additions) ─────────────────────── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-weight-light:    300;
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  --font-size-xs:   12px;
+  --font-size-sm:   13px;
+  --font-size-base: 14px;
+  --font-size-md:   16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   20px;
+  --line-height-xs:   16px;
+  --line-height-sm:   18px;
+  --line-height-base: 20px;
+  --line-height-md:   24px;
+
+  /* ── THEME TOKENS — LIGHT MODE (default) ─────────────────────
+     CSS var naming: --wire-{group}-{subgroup}-{variant}
+     Maps 1:1 to Figma Theme collection token names.
+     ───────────────────────────────────────────────────────────── */
+
+  /* Background / Base */
+  --wire-bg-base-primary:           #ffffff;
+  --wire-bg-base-primary-focus:     #fafafa;
+  --wire-bg-base-secondary:         #fafafa;
+  --wire-bg-base-secondary-focus:   #e5e8ea;
+  --wire-bg-base-tertiary:          #edeff0;
+  --wire-bg-base-tertiary-focus:    #dce0e3;
+
+  /* Background / Accent Color — Blue (default, overridden by data-accent) */
+  --wire-bg-accent-primary:         #0667c8;
+  --wire-bg-accent-primary-focus:   #043e78;
+  --wire-bg-accent-secondary:       #e7f0fa;
+  --wire-bg-accent-secondary-focus: #cde1f4;
+
+  /* Background / Danger */
+  --wire-bg-danger-primary:         #c20013;
+  --wire-bg-danger-primary-focus:   #74000b;
+  --wire-bg-danger-secondary:       #f9e6e8;
+  --wire-bg-danger-secondary-focus: #f3ccd0;
+
+  /* Background / Warning */
+  --wire-bg-warning-primary:        #a25915;
+  --wire-bg-warning-primary-focus:  #61350d;
+  --wire-bg-warning-secondary:      #f6eee8;
+
+  /* Background / Positive */
+  --wire-bg-positive-primary:       #1d7833;
+  --wire-bg-positive-primary-focus: #11481f;
+  --wire-bg-positive-secondary:     #e8f1ea;
+
+  /* Background / Neutral */
+  --wire-bg-neutral-primary:        #dce0e3;
+  --wire-bg-neutral-secondary:      #ffffff;
+
+  /* Background / Disabled */
+  --wire-bg-disabled-primary:       #cbced1;
+  --wire-bg-disabled-secondary:     #edeff0;
+
+  /* Background / Inverted */
+  --wire-bg-inverted-primary:       #17181a;
+  --wire-bg-inverted-primary-focus: #54585f;
+  --wire-bg-inverted-secondary:     #17181a;
+
+  /* Background / Backdrop */
+  --wire-bg-backdrop:               rgba(0,0,0,0.55);
+
+  /* Background / Sheet */
+  --wire-bg-sheet-primary:          #edeff0;
+  --wire-bg-sheet-secondary:        #ffffff;
+
+  /* Background / Bubbles */
+  --wire-bg-bubbles-primary:        #0667c8;
+  --wire-bg-bubbles-primary-focus:  #043e78;
+  --wire-bg-bubbles-secondary:      #0552a0;
+  --wire-bg-bubbles-others:         #edeff0;  /* others-chat-bubbles/primary */
+
+  /* Content / Base */
+  --wire-content-base-primary:      #000000;
+  --wire-content-base-secondary:    #676b71;
+
+  /* Content / Accent Color */
+  --wire-content-accent-primary:    #0667c8;
+  --wire-content-accent-on-primary: #ffffff;
+  --wire-content-accent-on-secondary: #0667c8;
+
+  /* Content / Danger */
+  --wire-content-danger-primary:    #c20013;
+  --wire-content-danger-on-primary: #ffffff;
+  --wire-content-danger-on-secondary: #c20013;
+
+  /* Content / Warning */
+  --wire-content-warning-primary:   #a25915;
+  --wire-content-warning-on-primary: #ffffff;
+
+  /* Content / Positive */
+  --wire-content-positive-primary:  #1d7833;
+  --wire-content-positive-on-primary: #ffffff;
+
+  /* Content / Neutral */
+  --wire-content-neutral-on-primary:   #17181a;
+  --wire-content-neutral-on-secondary: #17181a;
+
+  /* Content / Disabled */
+  --wire-content-disabled-primary:    #676b71;
+  --wire-content-disabled-on-primary: #54585f;
+
+  /* Content / Inverted */
+  --wire-content-inverted-on-primary: #ffffff;
+
+  /* Content / Bubbles */
+  --wire-content-bubbles-primary:     #ffffff;
+  --wire-content-bubbles-on-primary:  #cde1f4;
+  --wire-content-bubbles-on-secondary:#9bc2e9;
+  --wire-content-bubbles-others:      #000000;  /* others-chat-bubbles/on-primary */
+
+  /* Border / Base */
+  --wire-border-base-primary:         #dce0e3;
+  --wire-border-base-secondary:       #ffffff;
+  --wire-border-base-focus:           #6aa4de;
+
+  /* Border / Accent Color */
+  --wire-border-accent-primary:       #0667c8;
+  --wire-border-accent-secondary:     #cde1f4;
+  --wire-border-accent-focus:         #6aa4de;
+
+  /* Border / Danger */
+  --wire-border-danger-primary:       #c20013;
+  --wire-border-danger-secondary:     #f3ccd0;
+  --wire-border-danger-focus:         #da6671;
+
+  /* Border / Warning */
+  --wire-border-warning-primary:      #a25915;
+
+  /* Border / Positive */
+  --wire-border-positive-primary:     #1d7833;
+
+  /* Border / Neutral */
+  --wire-border-neutral-primary:      #676b71;
+  --wire-border-neutral-secondary:    #dce0e3;
+
+  /* Border / Disabled */
+  --wire-border-disabled-primary:     #dce0e3;
+
+  /* Border / Inverted */
+  --wire-border-inverted-primary:     #ffffff;
+
+  /* ── ACCENT COLOR RAMPS — Blue (default) ────────────────────── */
+  --wire-accent-050: #e7f0fa;
+  --wire-accent-100: #cde1f4;
+  --wire-accent-200: #9bc2e9;
+  --wire-accent-300: #6aa4de;
+  --wire-accent-400: #3885d3;
+  --wire-accent-500: #0667c8;
+  --wire-accent-600: #0552a0;
+  --wire-accent-700: #043e78;
+  --wire-accent-800: #022950;
+  --wire-accent-900: #021f3c;
+}
+
+/* ── DARK MODE ───────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --wire-bg-base-primary:           #17181a;
+  --wire-bg-base-primary-focus:     #34373d;
+  --wire-bg-base-secondary:         #26272c;
+  --wire-bg-base-secondary-focus:   #54585f;
+  --wire-bg-base-tertiary:          #34373d;
+  --wire-bg-base-tertiary-focus:    #54585f;
+  --wire-bg-accent-primary:         #54a6ff;
+  --wire-bg-accent-primary-focus:   #98caff;
+  --wire-bg-accent-secondary:       #224266;
+  --wire-bg-accent-secondary-focus: #326499;
+  --wire-bg-danger-primary:         #ff7770;
+  --wire-bg-danger-primary-focus:   #ffada9;
+  --wire-bg-danger-secondary:       #66302d;
+  --wire-bg-danger-secondary-focus: #994743;
+  --wire-bg-warning-primary:        #ffd426;
+  --wire-bg-warning-primary-focus:  #ffe57d;
+  --wire-bg-warning-secondary:      #66550f;
+  --wire-bg-positive-primary:       #30db5b;
+  --wire-bg-positive-primary-focus: #83e99d;
+  --wire-bg-positive-secondary:     #135824;
+  --wire-bg-neutral-primary:        #54585f;
+  --wire-bg-neutral-secondary:      #26272c;
+  --wire-bg-disabled-primary:       #54585f;
+  --wire-bg-disabled-secondary:     #26272c;
+  --wire-bg-inverted-primary:       #ffffff;
+  --wire-bg-inverted-primary-focus: #edeff0;
+  --wire-bg-inverted-secondary:     #54585f;
+  --wire-bg-sheet-primary:          #17181a;
+  --wire-bg-sheet-secondary:        #26272c;
+  --wire-bg-bubbles-primary:        #224266;
+  --wire-bg-bubbles-primary-focus:  #4385cc;
+  --wire-bg-bubbles-secondary:      #19324d;
+  --wire-content-base-primary:      #ffffff;
+  --wire-content-base-secondary:    #9fa1a7;
+  --wire-content-accent-primary:    #54a6ff;
+  --wire-content-accent-on-primary: #000000;
+  --wire-content-accent-on-secondary: #98caff;
+  --wire-content-danger-primary:    #ff7770;
+  --wire-content-danger-on-primary: #000000;
+  --wire-content-danger-on-secondary: #ffada9;
+  --wire-content-warning-primary:   #ffd426;
+  --wire-content-warning-on-primary: #000000;
+  --wire-content-positive-primary:  #30db5b;
+  --wire-content-positive-on-primary: #000000;
+  --wire-content-neutral-on-primary:   #ffffff;
+  --wire-content-neutral-on-secondary: #ffffff;
+  --wire-content-disabled-primary:    #9fa1a7;
+  --wire-content-disabled-on-primary: #cbced1;
+  --wire-content-inverted-on-primary: #000000;
+  --wire-content-bubbles-primary:     #ffffff;
+  --wire-content-bubbles-on-primary:  #76b8ff;
+  --wire-content-bubbles-on-secondary:#76b8ff;
+  --wire-border-base-primary:         #34373d;
+  --wire-border-base-secondary:       #34373d;
+  --wire-border-base-focus:           #bbdbff;
+  --wire-border-accent-primary:       #54a6ff;
+  --wire-border-accent-secondary:     #224266;
+  --wire-border-accent-focus:         #bbdbff;
+  --wire-border-danger-primary:       #ff7770;
+  --wire-border-danger-secondary:     #66302d;
+  --wire-border-danger-focus:         #e799a1;
+  --wire-border-warning-primary:      #ffd426;
+  --wire-border-positive-primary:     #30db5b;
+  --wire-border-neutral-primary:      #676b71;
+  --wire-border-neutral-secondary:    #34373d;
+  --wire-border-disabled-primary:     #34373d;
+  --wire-border-inverted-primary:     #17181a;
+  --wire-accent-050: #eef7ff;
+  --wire-accent-100: #ddedff;
+  --wire-accent-200: #bbdbff;
+  --wire-accent-300: #98caff;
+  --wire-accent-400: #76b8ff;
+  --wire-accent-500: #54a6ff;
+  --wire-accent-600: #4385cc;
+  --wire-accent-700: #326499;
+  --wire-accent-800: #224266;
+  --wire-accent-900: #19324d;
+
+  /* Identity / accent hues — dark mode (Color Primitives · Dark/{hue}/500) */
+  --wire-identity-blue:   #54a6ff;
+  --wire-identity-green:  #30db5b;
+  --wire-identity-amber:  #ffd426;
+  --wire-identity-petrol: #5de6ff;
+  --wire-identity-purple: #da8fff;
+  --wire-identity-red:    #ff7770;
+
+  /* Channel icon tints — dark mode (Color Primitives · Dark/{hue}/700) */
+  --wire-channel-blue-bg:   #326499; --wire-channel-blue-border:   #326499;
+  --wire-channel-green-bg:  #1d8337; --wire-channel-green-border:  #1d8337;
+  --wire-channel-amber-bg:  #997f17; --wire-channel-amber-border:  #997f17;
+  --wire-channel-petrol-bg: #388a99; --wire-channel-petrol-border: #388a99;
+  --wire-channel-purple-bg: #835699; --wire-channel-purple-border: #835699;
+  --wire-channel-red-bg:    #994743; --wire-channel-red-border:    #994743;
+}
+
+/* ── ACCENT COLOR OVERRIDES — Petrol ────────────────────────────── */
+[data-accent="petrol"] {
+  --wire-bg-accent-primary:           #01718e;
+  --wire-bg-accent-primary-focus:     #014352;
+  --wire-bg-accent-secondary:         #e5f1f3;
+  --wire-bg-accent-secondary-focus:   #cce2e7;
+  --wire-content-accent-primary:      #01718e;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #01718e;
+  --wire-border-accent-primary:       #01718e;
+  --wire-border-accent-secondary:     #cce2e7;
+  --wire-border-accent-focus:         #67a9b8;
+  --wire-accent-050: #e5f1f3; --wire-accent-100: #cce2e7;
+  --wire-accent-300: #67a9b8; --wire-accent-500: #01718e;
+  --wire-accent-600: #015a6e; --wire-accent-700: #014352;
+}
+[data-accent="purple"] {
+  --wire-bg-accent-primary:           #8944ab;
+  --wire-bg-accent-primary-focus:     #522967;
+  --wire-bg-accent-secondary:         #f4edf7;
+  --wire-bg-accent-secondary-focus:   #e7daee;
+  --wire-content-accent-primary:      #8944ab;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #8944ab;
+  --wire-border-accent-primary:       #8944ab;
+  --wire-border-accent-secondary:     #e7daee;
+  --wire-border-accent-focus:         #b88fcd;
+  --wire-accent-050: #f4edf7; --wire-accent-100: #e7daee;
+  --wire-accent-300: #b88fcd; --wire-accent-500: #8944ab;
+  --wire-accent-600: #6e3689; --wire-accent-700: #522967;
+}
+[data-accent="amber"] {
+  --wire-bg-accent-primary:           #a25915;
+  --wire-bg-accent-primary-focus:     #61350d;
+  --wire-bg-accent-secondary:         #f6eee8;
+  --wire-bg-accent-secondary-focus:   #ecded0;
+  --wire-content-accent-primary:      #a25915;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #a25915;
+  --wire-border-accent-primary:       #a25915;
+  --wire-border-accent-secondary:     #ecded0;
+  --wire-border-accent-focus:         #c79b73;
+  --wire-accent-050: #f6eee8; --wire-accent-100: #ecded0;
+  --wire-accent-300: #c79b73; --wire-accent-500: #a25915;
+  --wire-accent-600: #824711; --wire-accent-700: #61350d;
+}
+[data-accent="green"] {
+  --wire-bg-accent-primary:           #1d7833;
+  --wire-bg-accent-primary-focus:     #11481f;
+  --wire-bg-accent-secondary:         #e8f1ea;
+  --wire-bg-accent-secondary-focus:   #d2e4d6;
+  --wire-content-accent-primary:      #1d7833;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #1d7833;
+  --wire-border-accent-primary:       #1d7833;
+  --wire-border-accent-secondary:     #d2e4d6;
+  --wire-border-accent-focus:         #77ae85;
+  --wire-accent-050: #e8f1ea; --wire-accent-100: #d2e4d6;
+  --wire-accent-300: #77ae85; --wire-accent-500: #1d7833;
+  --wire-accent-600: #176029; --wire-accent-700: #11481f;
+}
+[data-accent="red"] {
+  --wire-bg-accent-primary:           #c20013;
+  --wire-bg-accent-primary-focus:     #74000b;
+  --wire-bg-accent-secondary:         #f9e6e8;
+  --wire-bg-accent-secondary-focus:   #f3ccd0;
+  --wire-content-accent-primary:      #c20013;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #c20013;
+  --wire-border-accent-primary:       #c20013;
+  --wire-border-accent-secondary:     #f3ccd0;
+  --wire-border-accent-focus:         #da6671;
+  --wire-accent-050: #f9e6e8; --wire-accent-100: #f3ccd0;
+  --wire-accent-300: #da6671; --wire-accent-500: #c20013;
+  --wire-accent-600: #9b000f; --wire-accent-700: #74000b;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   WDS COMPONENT CSS — token-based, no hardcoded values
+   ═══════════════════════════════════════════════════════════════════ */
+/* ─── BASE RESET ── */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; font-family:var(--font-sans); font-size:var(--font-size-base); color:var(--wire-content-base-primary); background:var(--wire-bg-base-primary); }
+button { font-family:var(--font-sans); cursor:pointer; }
+input, textarea { font-family:var(--font-sans); }
+
+
+/* ─── APP WINDOW ── */
+#app-window {
+  flex:1; display:flex; overflow:hidden;
+  position:relative; z-index:1;
+  margin:var(--spacing-1) var(--spacing-1) var(--spacing-1) 0;
+  border-radius:var(--radius-base);
+  border:0.5px solid var(--wire-border-base-primary);
+  background:var(--wire-bg-base-primary);
+  min-width:0;
+}
+
+/* ─── PRODUCT SIDEBAR ── */
+#product-sidebar {
+  width:248px; flex-shrink:0;
+  background:var(--wire-bg-base-secondary);
+  border-right:0.5px solid var(--wire-border-base-primary);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#product-sidebar.hidden { display:none; }
+
+.psidebar-header {
+  height:48px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--spacing-3) 0 var(--spacing-4);
+  border-bottom:0.5px solid var(--wire-border-base-primary);
+  gap:var(--spacing-2);
+}
+.psidebar-title { font-size:var(--font-size-base); font-weight:var(--font-weight-semibold); color:var(--wire-content-base-primary); display:flex; align-items:center; gap:var(--spacing-1); }
+.psidebar-actions { display:flex; gap:var(--spacing-1); }
+.icon-btn {
+  width:28px; height:28px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--wire-content-base-secondary); font-size:var(--font-size-base);
+  background:transparent; border:none; cursor:pointer;
+}
+.icon-btn:hover { background:var(--wire-border-base-primary); }
+.icon-btn.outlined { border:0.5px solid var(--wire-border-base-primary); }
+
+.psidebar-scroll { flex:1; overflow-y:auto; }
+.psidebar-scroll::-webkit-scrollbar { width:3px; }
+.psidebar-scroll::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
+
+.conv-section { padding:var(--spacing-2) var(--spacing-4); }
+.conv-section + .conv-section { border-top:0.5px solid var(--wire-border-base-primary); }
+.section-label {
+  font-size:var(--font-size-xs); font-weight:var(--font-weight-semibold);
+  letter-spacing:.05em; text-transform:uppercase;
+  color:var(--wire-content-base-secondary);
+  padding:var(--spacing-2) var(--spacing-2) var(--spacing-1);
+}
+.conv-item {
+  display:flex; align-items:center; gap:var(--spacing-2);
+  padding:var(--spacing-1) var(--spacing-2); height:32px; border-radius:var(--radius-md);
+  cursor:pointer;
+}
+.conv-item:hover { background:var(--wire-bg-base-tertiary); }
+.conv-item:focus-visible { outline:none; box-shadow:0 0 0 3px #d4d4d4; } /* sidebar/sidebar-ring */
+.conv-item.selected { background:var(--wire-bg-accent-secondary); }
+.conv-name {
+  flex:1; min-width:0;
+  font-family:var(--font-sans);
+  font-size:var(--font-size-sm); line-height:18px;
+  font-weight:var(--font-weight-regular);
+  color:var(--wire-content-base-primary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.conv-item.selected .conv-name { font-weight:var(--font-weight-semibold); }
+.conv-badge {
+  flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;
+  background:var(--wire-bg-inverted-primary); color:var(--wire-content-inverted-on-primary);
+  font-family:var(--font-sans); font-size:var(--font-size-xs); font-weight:var(--font-weight-bold);
+  line-height:14px; letter-spacing:0.25px;
+  padding:3px 6px; border-radius:var(--radius-md);
+}
+
+/* ─── CONTENT AREA ── */
+#content-area {
+  flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0;
+  background:var(--wire-bg-base-primary);
+}
+.topbar, .content-topbar {
+  height:48px; flex-shrink:0;
+  display:flex; align-items:center; padding:0 var(--spacing-4); gap:var(--spacing-2);
+  border-bottom:0.5px solid var(--wire-border-base-primary);
+}
+.topbar-title, .content-topbar > div:first-child {
+  font-size:var(--font-size-base); font-weight:var(--font-weight-semibold);
+  color:var(--wire-content-base-primary);
+  display:flex; align-items:center; gap:6px; flex:1; min-width:0;
+}
+.topbar-meta { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); }
+.topbar-right { display:flex; gap:var(--spacing-1); align-items:center; margin-left:auto; flex-shrink:0; }
+
+
+
+
+/* ─── OWN MESSAGE BUBBLES ── */
+
+/* Message group wrapper — groups all bubbles from same sender in same minute */
+.own-msg-group {
+  display:flex; flex-direction:column; align-items:flex-end;
+  padding:0 0 0 80px;
+  margin-bottom:var(--spacing-3); /* gap between groups = 12px */
+}
+
+/* Individual bubble row */
+.own-msg-bubble {
+  background:var(--wire-bg-bubbles-primary);
+  border-radius:16px; /* all corners always 16px for own messages */
+  padding:10px;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:4px;
+  word-break:break-word;
+  text-align:left;
+  margin-bottom:2px; /* gap within group between consecutive bubbles */
+}
+.own-msg-bubble:last-of-type { margin-bottom:0; }
+
+/* Text inside bubble */
+.own-msg-text {
+  font-family:var(--font-sans);
+  font-size:var(--font-size-base);
+  font-weight:var(--font-weight-regular);
+  line-height:22px;
+  color:var(--wire-content-bubbles-primary);
+  max-width:100%;
+  text-align:left;
+  width:100%;
+}
+
+/* Status line — inside bubble, only on last/single bubble of group */
+.own-msg-status {
+  display:flex; align-items:center; gap:4px;
+  opacity:0.7;
+  justify-content:flex-end; width:100%;
+}
+.own-msg-time {
+  font-family:var(--font-sans);
+  font-size:12px; font-weight:var(--font-weight-regular);
+  line-height:16px; letter-spacing:0;
+  color:var(--wire-content-bubbles-primary);
+  white-space:nowrap; padding-right:4px;
+}
+.own-msg-checkmark {
+  color:var(--wire-content-bubbles-primary);
+  font-size:11px; line-height:1; flex-shrink:0;
+}
+
+/* Reactions — below the group, right-aligned */
+.own-msg-reactions {
+  display:flex; flex-wrap:wrap; gap:4px;
+  justify-content:flex-end;
+  padding:0 10px; margin-top:2px;
+  max-width:min(560px, 72%);
+}
+.reaction-pill-own {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
+  background:var(--wire-bg-accent-secondary);
+  border:1px solid var(--wire-bg-accent-primary);
+  cursor:pointer;
+}
+.reaction-pill-other {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  cursor:pointer;
+}
+.reaction-emoji { font-size:16px; line-height:1; }
+.reaction-count-own   { font-size:12px; font-weight:600; color:var(--wire-content-accent-primary); }
+.reaction-count-other { font-size:12px; font-weight:600; color:var(--wire-content-base-secondary); }
+
+
+/── IMAGE BUBBLES ── */
+
+/* Image-solo bubble: no padding, image fills edge-to-edge
+   Bottom corners flat (3px), top corners keep bubble radius (16px) */
+.own-msg-bubble.img-solo {
+  padding:0;
+  overflow:hidden;
+  border-radius:16px;
+}
+.own-msg-bubble.img-solo .own-msg-status {
+  padding:4px 10px;
+}
+
+/* Image container */
+.own-msg-img-container {
+  overflow:hidden;
+  display:block;
+  background:var(--wire-bg-base-tertiary);
+  flex-shrink:0;
+}
+
+/* Landscape: 340px wide */
+.own-msg-img-container.landscape { width:340px; max-width:340px; }
+.own-msg-img-container.landscape img {
+  width:340px; height:255px;
+  object-fit:cover; display:block;
+}
+
+/* Portrait: 260px wide */
+.own-msg-img-container.portrait { width:260px; max-width:260px; }
+.own-msg-img-container.portrait img {
+  width:260px; height:346px;
+  object-fit:cover; display:block;
+}
+
+/* Square: 260×260 */
+.own-msg-img-container.square { width:260px; max-width:260px; }
+.own-msg-img-container.square img {
+  width:260px; height:260px;
+  object-fit:cover; display:block;
+}
+
+/* Inside padded bubble: inner radius on image */
+.own-msg-bubble .own-msg-img-container {
+  border-radius:var(--radius-lg);
+}
+/* img-solo: no inner radius — bubble clips via border-radius */
+.own-msg-bubble.img-solo .own-msg-img-container {
+  border-radius:0;
+}
+
+/* Media grid */
+.own-msg-media-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3px;
+  width:260px;
+  max-width:260px;
+  border-radius:var(--radius-md);
+  overflow:hidden;
+}
+.own-msg-media-grid .grid-cell {
+  position:relative; overflow:hidden;
+  background:var(--wire-bg-base-tertiary);
+  aspect-ratio:1/1;
+}
+.own-msg-media-grid .grid-cell.full-width {
+  grid-column:1 / -1; aspect-ratio:2/1;
+}
+.own-msg-media-grid .grid-cell img {
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.grid-cell-video-overlay {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.25);
+}
+.grid-cell-duration {
+  position:absolute; bottom:4px; right:6px;
+  font-size:11px; font-weight:var(--font-weight-medium);
+  color:var(--wire-content-inverted-on-primary);
+}
+.grid-cell-play {
+  width:32px; height:32px; border-radius:var(--radius-full);
+  background:rgba(255,255,255,0.85);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--wire-bg-inverted-primary);
+}
+
+* ─── OWN MESSAGE BUBBLES ── */
+
+/* Message group wrapper — groups all bubbles from same sender in same minute */
+.own-msg-group {
+  display:flex; flex-direction:column; align-items:flex-end;
+  padding:0 0 0 80px;
+  margin-bottom:var(--spacing-3); /* gap between groups = 12px */
+}
+
+/* Individual bubble row */
+.own-msg-bubble {
+  background:var(--wire-bg-bubbles-primary);
+  border-radius:16px; /* all corners always 16px for own messages */
+  padding:10px;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:4px;
+  word-break:break-word;
+  text-align:left;
+  margin-bottom:2px; /* gap within group between consecutive bubbles */
+}
+.own-msg-bubble:last-of-type { margin-bottom:0; }
+
+/* Text inside bubble */
+.own-msg-text {
+  font-family:var(--font-sans);
+  font-size:var(--font-size-base);
+  font-weight:var(--font-weight-regular);
+  line-height:22px;
+  color:var(--wire-content-bubbles-primary);
+  max-width:100%;
+}
+
+/* Status line — inside bubble, only on last/single bubble of group */
+.own-msg-status {
+  display:flex; align-items:center; gap:4px;
+  opacity:0.7;
+  justify-content:flex-end; width:100%;
+}
+.own-msg-time {
+  font-family:var(--font-sans);
+  font-size:12px; font-weight:var(--font-weight-regular);
+  line-height:16px; letter-spacing:0;
+  color:var(--wire-content-bubbles-primary);
+  white-space:nowrap; padding-right:4px;
+}
+.own-msg-checkmark {
+  color:var(--wire-content-bubbles-primary);
+  font-size:11px; line-height:1; flex-shrink:0;
+}
+
+/* Reactions — below the group, right-aligned */
+.own-msg-reactions {
+  display:flex; flex-wrap:wrap; gap:4px;
+  justify-content:flex-end;
+  padding:0 10px; margin-top:2px;
+  max-width:min(560px, 72%);
+}
+.reaction-pill-own {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
+  background:var(--wire-bg-accent-secondary);
+  border:1px solid var(--wire-bg-accent-primary);
+  cursor:pointer;
+}
+.reaction-pill-other {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 8px; border-radius:12px;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  cursor:pointer;
+}
+.reaction-emoji { font-size:16px; line-height:1; }
+.reaction-count-own   { font-size:12px; font-weight:600; color:var(--wire-content-accent-primary); }
+.reaction-count-other { font-size:12px; font-weight:600; color:var(--wire-content-base-secondary); }
+
+
+/* ─── IMAGE BUBBLES ── */
+
+/* Image-solo bubble: no padding, image fills edge-to-edge
+   Bottom corners flat (3px), top corners keep bubble radius (16px) */
+.own-msg-bubble.img-solo {
+  padding:0;
+  overflow:hidden;
+  border-radius:16px;
+}
+.own-msg-bubble.img-solo .own-msg-status {
+  padding:4px 10px;
+}
+
+/* Image container */
+.own-msg-img-container {
+  overflow:hidden; display:block;
+  background:var(--wire-bg-base-tertiary); flex-shrink:0;
+}
+
+/* Landscape: 340px wide, 4:3 ratio */
+.own-msg-img-container.landscape { width:340px; }
+.own-msg-img-container.landscape img { width:340px; height:255px; object-fit:cover; display:block; }
+
+/* Portrait: 260px wide, 3:4 ratio */
+.own-msg-img-container.portrait { width:260px; }
+.own-msg-img-container.portrait img { width:260px; height:346px; object-fit:cover; display:block; }
+
+/* Square: 260×260 */
+.own-msg-img-container.square { width:260px; }
+.own-msg-img-container.square img { width:260px; height:260px; object-fit:cover; display:block; }
+
+/* Inside padded bubble: inner radius */
+.own-msg-bubble .own-msg-img-container { border-radius:var(--radius-lg); }
+/* img-solo: no inner radius — bubble clips directly */
+.own-msg-bubble.img-solo .own-msg-img-container { border-radius:0; }
+
+/* Media grid — 260px wide, 2-col */
+.own-msg-media-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:3px; width:260px; max-width:260px;
+  border-radius:var(--radius-md); overflow:hidden;
+}
+.own-msg-media-grid .grid-cell {
+  position:relative; overflow:hidden;
+  background:var(--wire-bg-base-tertiary); aspect-ratio:1/1;
+}
+.own-msg-media-grid .grid-cell.full-width { grid-column:1 / -1; aspect-ratio:2/1; }
+.own-msg-media-grid .grid-cell img { width:100%; height:100%; object-fit:cover; display:block; }
+.grid-cell-video-overlay {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.25);
+}
+.grid-cell-duration {
+  position:absolute; bottom:4px; right:6px;
+  font-size:11px; font-weight:var(--font-weight-medium);
+  color:var(--wire-content-inverted-on-primary);
+}
+.grid-cell-play {
+  width:32px; height:32px; border-radius:var(--radius-full);
+  background:rgba(255,255,255,0.85);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--wire-bg-inverted-primary);
+}
+
+/* ─── FILE BUBBLES ── */
+
+/* File cell — inner container used in both solo and multipart */
+.own-msg-file-cell {
+  background:var(--wire-bg-bubbles-secondary);
+  border-radius:10px;
+  padding-top:8px;
+  width:250px;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+/* Secondary info row: icon + type/size */
+.own-msg-file-meta {
+  display:flex; align-items:center; gap:4px;
+  padding:0 8px;
+}
+.own-msg-file-icon {
+  width:13px; height:16px; flex-shrink:0;
+}
+.own-msg-file-type {
+  font-size:12px; font-weight:var(--font-weight-regular);
+  line-height:16px; color:var(--wire-content-bubbles-primary);
+  opacity:0.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  flex:1; min-width:0;
+}
+
+/* Filename */
+.own-msg-file-name {
+  padding:4px 8px 0;
+  min-height:38px; display:flex; align-items:flex-end;
+}
+.own-msg-file-name span {
+  font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
+  line-height:18px; color:var(--wire-content-bubbles-primary);
+  word-break:break-word;
+  /* letter-spacing: -0.08px per spec */
+  letter-spacing:-0.08px;
+}
+
+/* Thumbnail at bottom of cell */
+.own-msg-file-thumb {
+  height:94px; width:100%;
+  border-radius:9px;
+  overflow:hidden; margin-top:6px;
+  background:var(--wire-bg-bubbles-secondary);
+  flex-shrink:0;
+}
+.own-msg-file-thumb img {
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+/* No thumbnail variant — just bottom padding */
+.own-msg-file-cell.no-thumb {
+  padding-bottom:8px;
+}
+
+/* File-solo bubble: same as img-solo — no padding, cell fills bubble */
+.own-msg-bubble.file-solo {
+  padding:0;
+  overflow:hidden;
+  border-radius:16px;
+}
+.own-msg-bubble.file-solo .own-msg-file-cell {
+  border-radius:0; /* bubble clips */
+  width:100%;
+}
+.own-msg-bubble.file-solo .own-msg-status {
+  padding:4px 10px;
+  background:var(--wire-bg-bubbles-secondary);
+}
+
+/* ─── COMPOSER ── */
+
+
+/* ─── CONVERSATION VIEW LAYOUT ── */
+#view-conv {
+  flex:1; overflow-y:auto; min-height:0;
+}
+#view-conv::-webkit-scrollbar { width:3px; }
+#view-conv::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
+
+.conv-body {
+  max-width:1200px;
+  margin:0 auto;
+  padding:var(--spacing-4) var(--spacing-4) var(--spacing-2);
+  min-height:100%;
+  box-sizing:border-box;
+}
+
+.msg-list {
+  display:flex; flex-direction:column; align-items:stretch;
+}
+
+.msg-content-area { width:100%; }
+
+/* Composer bar — always visible at bottom, outside scroll */
+.conv-composer-bar {
+  flex-shrink:0;
+  width:100%;
+  background:var(--wire-bg-base-primary);
+}
+.conv-composer-bar.hidden { display:none; }
+.conv-composer-bar .composer {
+  max-width:1200px;
+  margin:0 auto;
+}
+
+.composer { flex-shrink:0; background:var(--wire-bg-base-primary);  padding:var(--spacing-2) var(--spacing-4) var(--spacing-3); }
+.composer-wrap {
+  background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-base); padding:var(--spacing-2) var(--spacing-3);
+  display:flex; align-items:center; gap:var(--spacing-2);
+}
+.composer-input {
+  flex:1; font-size:var(--font-size-sm); color:var(--wire-content-base-primary);
+  background:transparent; border:none; outline:none; font-family:var(--font-sans);
+}
+.composer-input::placeholder { color:var(--wire-content-base-secondary); }
+.composer-icons { display:flex; gap:var(--spacing-1); color:var(--wire-content-base-secondary); font-size:var(--font-size-md); }
+.composer-icons i { cursor:pointer; }
+.composer-icons i:hover { color:var(--wire-content-base-primary); }
+.send-btn {
+  width:28px; height:28px; border-radius:var(--radius-full);
+  background:var(--wire-bg-disabled-primary);
+  display:flex; align-items:center; justify-content:center;
+  font-size:var(--font-size-sm); color:var(--wire-content-inverted-on-primary); flex-shrink:0;
+  border:none; cursor:pointer;
+}
+.send-btn.active { background:var(--wire-bg-accent-primary); }
+
+/* ─── DRIVE ── */
+#view-drive { display:none; flex-direction:column; flex:1; overflow:hidden; min-height:0; }
+.drive-toolbar {
+  padding:var(--spacing-2) var(--spacing-4);
+  display:flex; align-items:center; gap:var(--spacing-2);
+  border-bottom:0.5px solid var(--wire-border-base-primary); flex-shrink:0;
+}
+.search-wrap {
+  flex:1; display:flex; align-items:center; gap:var(--spacing-2);
+  background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-md); padding:5px 10px;
+}
+.search-wrap input {
+  flex:1; border:none; outline:none; background:transparent;
+  font-size:var(--font-size-sm); color:var(--wire-content-base-primary); font-family:var(--font-sans);
+}
+.search-wrap input::placeholder { color:var(--wire-content-base-secondary); }
+.filter-btn {
+  display:flex; align-items:center; gap:var(--spacing-1); font-size:var(--font-size-xs);
+  padding:5px 10px; border-radius:var(--radius-md);
+  border:0.5px solid var(--wire-border-base-primary);
+  background:var(--wire-bg-base-primary); color:var(--wire-content-base-primary); cursor:pointer;
+}
+.filter-btn:hover { background:var(--wire-bg-base-tertiary); }
+
+.drive-table-wrap { flex:1; overflow:auto; }
+.drive-table { width:100%; border-collapse:collapse; font-size:var(--font-size-sm); }
+.drive-table th {
+  text-align:left; font-size:var(--font-size-xs); font-weight:var(--font-weight-semibold);
+  letter-spacing:.04em; text-transform:uppercase; color:var(--wire-content-base-secondary);
+  padding:8px 12px; border-bottom:0.5px solid var(--wire-border-base-primary);
+  position:sticky; top:0; background:var(--wire-bg-base-primary); z-index:1;
+}
+.drive-table td {
+  padding:8px 12px; border-bottom:0.5px solid var(--wire-bg-base-tertiary);
+  color:var(--wire-content-base-secondary); white-space:nowrap; vertical-align:middle;
+}
+.drive-table tr:hover td { background:var(--wire-bg-base-secondary); }
+.drive-table td:first-child { color:var(--wire-content-base-primary); font-weight:var(--font-weight-medium); }
+.drive-table td.check { width:36px; padding-left:var(--spacing-4); }
+.check-box {
+  width:15px; height:15px; border-radius:var(--radius-sm);
+  border:1.5px solid var(--wire-border-base-primary); display:inline-block; cursor:pointer;
+}
+.file-type-icon {
+  width:22px; height:22px; border-radius:var(--radius-sm);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:var(--font-size-xs); margin-right:var(--spacing-2); vertical-align:middle; flex-shrink:0;
+}
+.tag-chip {
+  display:inline-flex; font-size:var(--font-size-xs); font-weight:var(--font-weight-medium);
+  padding:2px 8px; border-radius:var(--radius-full);
+}
+.tag-chip.red { background:var(--wire-bg-danger-secondary); color:var(--wire-content-danger-primary); }
+.tag-chip.blue { background:var(--wire-bg-accent-secondary); color:var(--wire-content-accent-primary); }
+
+/* ─── AVATAR COMPONENT ── */
+.av {
+  border-radius:var(--radius-full);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:var(--font-weight-semibold); color:var(--wire-content-accent-on-primary);
+  flex-shrink:0; position:relative;
+  box-shadow:0 0 0 1px var(--wire-border-base-primary);
+}
+.av-20 { width:20px; height:20px; font-size:8px;  letter-spacing:.02em; }
+.av-28 { width:28px; height:28px; font-size:11px; letter-spacing:.02em; }
+.av-40 { width:40px; height:40px; font-size:16px; letter-spacing:.02em; }
+.av-48 { width:48px; height:48px; font-size:20px; letter-spacing:.02em; }
+.av-64 { width:64px; height:64px; font-size:26px; letter-spacing:.02em; }
+.av-blue   { background:var(--wire-accent-500); }
+.av-green  { background:var(--wire-identity-green); }
+.av-amber  { background:var(--wire-identity-amber); }
+.av-petrol { background:var(--wire-identity-petrol); }
+.av-purple { background:var(--wire-identity-purple); }
+.av-red    { background:var(--wire-identity-red); }
+.av-dot {
+  position:absolute; bottom:-3px; right:-3px;
+  border-radius:var(--radius-full);
+}
+.av-20 .av-dot, .av-28 .av-dot { width:7px; height:7px; }
+.av-dot-available { background:var(--wire-bg-positive-primary); box-shadow:0 0 0 2px var(--wire-bg-base-secondary); }
+.av-dot-busy      { background:var(--wire-bg-warning-primary);  box-shadow:0 0 0 2px var(--wire-bg-base-secondary); }
+.av-dot-away      { background:var(--wire-bg-base-primary); box-shadow:inset 0 0 0 2px var(--wire-bg-danger-primary), 0 0 0 2px var(--wire-bg-base-secondary); }
+
+/* ─── BUTTON COMPONENT ── */
+.wds-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:var(--spacing-2); border:none; cursor:pointer;
+  font-family:var(--font-sans); font-weight:var(--font-weight-medium);
+  font-size:var(--font-size-base); line-height:var(--line-height-base);
+  white-space:nowrap; outline:none; text-decoration:none;
+  transition:background 0.1s, box-shadow 0.1s;
+  min-height:36px; padding:var(--spacing-2) var(--spacing-4); border-radius:var(--radius-lg);
+}
+.wds-btn:focus-visible {
+  box-shadow:0 0 0 2px var(--wire-bg-base-primary), 0 0 0 4px var(--wire-border-accent-focus);
+}
+.wds-btn:disabled { opacity:0.4; cursor:not-allowed; pointer-events:none; }
+
+/* Sizes */
+.wds-btn-mini { min-height:24px; padding:var(--spacing-1) var(--spacing-2); font-size:var(--font-size-xs); border-radius:var(--radius-lg); }
+.wds-btn-sm   { min-height:32px; padding:6px var(--spacing-3); font-size:var(--font-size-sm); border-radius:var(--radius-lg); }
+.wds-btn-lg   { min-height:40px; padding:10px var(--spacing-5); border-radius:var(--radius-lg); }
+.wds-btn-xl   { min-height:48px; padding:var(--spacing-3) var(--spacing-6); font-size:var(--font-size-md); border-radius:var(--radius-lg); }
+.wds-btn-round { border-radius:var(--radius-full) !important; }
+
+/* Primary */
+.wds-btn-primary { background:var(--wire-bg-accent-primary); color:var(--wire-content-accent-on-primary); }
+.wds-btn-primary:hover:not(:disabled)  { background:var(--wire-bg-accent-primary-focus); }
+.wds-btn-primary:active:not(:disabled) { background:var(--wire-bg-accent-primary-focus); }
+
+/* Secondary */
+.wds-btn-secondary { background:var(--wire-bg-base-primary); color:var(--wire-content-base-primary); border:1px solid var(--wire-border-base-primary); }
+.wds-btn-secondary:hover:not(:disabled)  { background:var(--wire-bg-base-tertiary); }
+.wds-btn-secondary:active:not(:disabled) { background:var(--wire-bg-base-secondary-focus); }
+
+/* Outline */
+.wds-btn-outline { background:transparent; color:var(--wire-content-base-primary); border:1px solid var(--wire-border-base-primary); }
+.wds-btn-outline:hover:not(:disabled)  { background:var(--wire-bg-base-tertiary); }
+.wds-btn-outline:active:not(:disabled) { background:var(--wire-bg-base-secondary-focus); }
+
+/* Ghost */
+.wds-btn-ghost { background:transparent; color:var(--wire-content-base-secondary); }
+.wds-btn-ghost:hover:not(:disabled)  { background:var(--wire-bg-base-tertiary); }
+.wds-btn-ghost:active:not(:disabled) { background:var(--wire-bg-base-secondary-focus); }
+
+/* Destructive */
+.wds-btn-destructive { background:var(--wire-bg-danger-primary); color:var(--wire-content-danger-on-primary); }
+.wds-btn-destructive:hover:not(:disabled)  { background:var(--wire-bg-danger-primary-focus); }
+.wds-btn-destructive:active:not(:disabled) { background:var(--wire-bg-danger-primary-focus); }
+
+/* Focus demo (static, for docs) */
+.wds-btn-focus-demo { box-shadow:0 0 0 2px var(--wire-bg-base-primary), 0 0 0 4px var(--wire-border-accent-focus); }
+
+
+/* ─── PROTOTYPE-SPECIFIC ── */
+#page {
+  width:100vw; height:100vh;
+  display:flex; align-items:stretch;
+  background: linear-gradient(145deg, #043e78 0%, #004455 50%, #000d10 100%);
+  transition:background 0.4s ease;
+  overflow:hidden;
+}
+#rail {
+  width:64px; flex-shrink:0;
+  background:transparent;
+  display:flex; flex-direction:column; align-items:center;
+  padding:12px 12px 8px;
+  position:relative; z-index:1;
+}
+.rail-top    { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-6); flex:1; }
+.rail-bottom { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-4); padding-bottom:0; }
+.rail-items  { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-4); }
+
+.team-av {
+  width:32px; height:32px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; letter-spacing:-.3px;
+}
+.user-av {
+  width:24px; height:24px; border-radius:var(--radius-full);
+  background:var(--wire-identity-blue);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:600; color:#fff;
+  position:relative;
+}
+.presence {
+  position:absolute; bottom:-1px; right:-1px;
+  width:7px; height:7px; border-radius:var(--radius-full);
+  background:var(--wire-bg-positive-primary);
+}
+
+/* Nav item — column wrapper */
+.n-item {
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; cursor:pointer; flex-shrink:0;
+  background:transparent; border:none; padding:0;
+}
+/* Icon button — 32×32 */
+.n-btn {
+  width:32px; height:32px; border-radius:var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:background 0.1s;
+}
+/* Label */
+.n-label {
+  font-size:10px; font-weight:300; line-height:1;
+  letter-spacing:0.01em; white-space:nowrap;
+  font-family:var(--font-sans);
+}
+
+/* ── Dark rail (default) ── */
+#page.dark-rail .team-av  { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+#page.dark-rail .user-av  { box-shadow:0 0 0 1.5px rgba(255,255,255,0.25); }
+#page.dark-rail .presence { box-shadow:0 0 0 1.5px rgba(0,0,0,0.5); }
+
+#page.dark-rail .n-btn   { color:rgba(255,255,255,0.45); }
+#page.dark-rail .n-label { color:rgba(255,255,255,0.45); }
+#page.dark-rail .n-item:hover .n-btn   { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
+#page.dark-rail .n-item:hover .n-label { color:rgba(255,255,255,0.8); }
+#page.dark-rail .n-item.active .n-btn   { background:rgba(255,255,255,0.1); color:#fff; }
+#page.dark-rail .n-item.active .n-label { color:#fff; }
+
+/* ── Light rail ── */
+#page.light-rail .team-av  { background:rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.15); color:#000; }
+#page.light-rail .user-av  { box-shadow:0 0 0 1.5px rgba(0,0,0,0.15); }
+#page.light-rail .presence { box-shadow:0 0 0 1.5px rgba(255,255,255,0.9); }
+
+#page.light-rail .n-btn   { color:rgba(0,0,0,0.35); }
+#page.light-rail .n-label { color:rgba(0,0,0,0.35); }
+#page.light-rail .n-item:hover .n-btn   { background:rgba(0,0,0,0.07); color:rgba(0,0,0,0.7); }
+#page.light-rail .n-item:hover .n-label { color:rgba(0,0,0,0.7); }
+#page.light-rail .n-item.active .n-btn   { background:rgba(0,0,0,0.07); color:#000; }
+#page.light-rail .n-item.active .n-label { color:#000; }
+
+#app-window { flex:1; display:flex; overflow:hidden; margin:var(--spacing-1) var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:var(--wire-bg-base-primary); min-width:0; position:relative; z-index:1; }
+
+/* ─── BG PICKER ── */
+#bg-picker {
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  display:flex; gap:6px; align-items:center;
+  background:rgba(0,0,0,0.5); backdrop-filter:blur(8px);
+  border-radius:var(--radius-full); padding:6px 10px;
+  z-index:100;
+}
+#picker-label {
+  font-size:10px; color:rgba(255,255,255,0.5); margin-right:2px;
+  letter-spacing:.04em; text-transform:uppercase; font-weight:500;
+}
+.bg-swatch {
+  width:20px; height:20px; border-radius:var(--radius-full);
+  cursor:pointer; border:2px solid transparent;
+  transition:border-color .15s; flex-shrink:0;
+}
+.bg-swatch.active { border-color:#fff; }
+.bg-swatch:hover  { border-color:rgba(255,255,255,0.6); }
+
+/* ─── THEME TOGGLE ── */
+#theme-toggle {
+  position:fixed; bottom:16px; right:16px; z-index:100;
+  width:32px; height:32px; border-radius:var(--radius-full);
+  background:rgba(0,0,0,0.45); backdrop-filter:blur(8px);
+  border:0.5px solid rgba(255,255,255,0.15);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:rgba(255,255,255,0.7); font-size:14px;
+  transition:background .15s, color .15s;
+}
+#theme-toggle:hover { background:rgba(0,0,0,0.65); color:#fff; }
+
+/* ─── UNIFORM BUBBLE PADDING ─────────────────────────────────────
+   Every bubble uses a consistent 8px padding on all four sides; the
+   asset (image, file cell, media grid) sits inside that padding.
+   This overrides the earlier edge-to-edge special-casing on the solo
+   image/file bubbles so the whole bubble system is uniform. */
+.own-msg-bubble,
+.own-msg-bubble.img-solo,
+.own-msg-bubble.file-solo { padding:8px; }
+
+/* text & status are inset by the bubble padding only (no own padding) */
+.own-msg-text   { padding-left:0; padding-right:0; }
+.own-msg-status { padding-left:0; padding-right:0; }
+.own-msg-bubble.img-solo .own-msg-status,
+.own-msg-bubble.file-solo .own-msg-status { padding:0; background:transparent; }
+
+/* inset assets keep a rounded inner radius (no square edge-to-edge corners) */
+.own-msg-bubble.img-solo .own-msg-img-container { border-radius:var(--radius-lg); }
+.own-msg-bubble.file-solo .own-msg-file-cell { border-radius:10px; }
+
+/* ─── OTHER (RECEIVED) MESSAGE BUBBLES ── */
+
+/* Group wrapper — left aligned, mirror of own (right gutter instead of left) */
+.other-msg-group {
+  display:flex; flex-direction:column; align-items:flex-start;
+  padding:0 80px 0 0;
+  margin-bottom:var(--spacing-3);
+}
+/* Row holds optional avatar gutter + bubble; avatar bottom-aligned */
+.other-msg-row { display:flex; align-items:flex-end; margin-bottom:2px; }
+.other-msg-row:last-child { margin-bottom:0; }
+/* Reserved 40px avatar gutter (group convos) so stacked bubbles stay aligned */
+.other-msg-avatar-gutter {
+  width:40px; flex-shrink:0;
+  display:flex; align-items:flex-end; justify-content:flex-start;
+  padding:0 6px 0 8px; box-sizing:border-box;
+}
+
+.other-msg-bubble {
+  background:var(--wire-bg-base-tertiary);
+  border-radius:16px; padding:8px;
+  display:flex; flex-direction:column; align-items:flex-start;
+  gap:4px; word-break:break-word; text-align:left;
+  margin-bottom:0; max-width:100%;
+}
+.other-msg-bubble:last-of-type { margin-bottom:0; }
+.other-msg-bubble.fixed270 { width:270px; }
+
+/* Sender name (group only) — follows accent (base/primary), semibold 12 */
+.other-msg-sender {
+  display:flex; align-items:center; gap:4px; max-width:100%;
+  font-family:var(--font-sans); font-size:12px;
+  font-weight:var(--font-weight-semibold); line-height:16px;
+  color:var(--wire-content-accent-primary);
+}
+.other-msg-sender .name-text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.other-guest-badge {
+  background:var(--wire-bg-accent-secondary); color:var(--wire-content-accent-primary);
+  font-style:italic; font-size:12px; line-height:16px;
+  padding:1px 4px; border-radius:4px; flex-shrink:0;
+}
+
+.other-msg-text {
+  font-family:var(--font-sans); font-size:var(--font-size-base);
+  font-weight:var(--font-weight-regular); line-height:22px;
+  color:var(--wire-content-base-primary);
+  max-width:100%; text-align:left; width:100%;
+}
+
+/* Status — timestamp only (no delivery tick on received) */
+.other-msg-status {
+  display:flex; align-items:center; gap:4px; opacity:0.7;
+  justify-content:flex-start; width:100%;
+}
+.other-msg-time {
+  font-family:var(--font-sans); font-size:12px;
+  font-weight:var(--font-weight-regular); line-height:16px;
+  color:var(--wire-content-base-primary); white-space:nowrap;
+}
+
+/* Reactions — left aligned; indent past avatar gutter in group convos */
+.other-msg-reactions {
+  display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-start;
+  padding:0 10px; margin-top:2px; max-width:min(560px,72%);
+}
+.other-msg-reactions.indent { padding-left:50px; }
+
+/* 26px avatar */
+.av-26 { width:26px; height:26px; font-size:10px; letter-spacing:.02em; }
+
+/* Received images — same scale as own */
+.other-msg-bubble.img-solo { padding:0; overflow:hidden; border-radius:16px; }
+.other-msg-bubble.img-solo .other-msg-status { padding:4px 10px; }
+.other-msg-bubble.img-solo .other-msg-sender,
+.other-msg-bubble.vid-solo .other-msg-sender { padding:10px 10px 0; }
+.other-msg-img-container { overflow:hidden; display:block; background:var(--wire-bg-base-tertiary); flex-shrink:0; }
+.other-msg-img-container.landscape { width:340px; max-width:340px; }
+.other-msg-img-container.landscape img { width:340px; height:255px; object-fit:cover; display:block; }
+.other-msg-img-container.portrait { width:260px; max-width:260px; }
+.other-msg-img-container.portrait img { width:260px; height:346px; object-fit:cover; display:block; }
+.other-msg-img-container.square { width:260px; max-width:260px; }
+.other-msg-img-container.square img { width:260px; height:260px; object-fit:cover; display:block; }
+.other-msg-bubble .other-msg-img-container { border-radius:var(--radius-lg); }
+.other-msg-bubble.img-solo .other-msg-img-container { border-radius:0; }
+
+/* Video / audio — shared between variants */
+.own-msg-bubble.vid-solo, .other-msg-bubble.vid-solo { padding:0; overflow:hidden; border-radius:16px; }
+.own-msg-bubble.vid-solo .own-msg-status,
+.other-msg-bubble.vid-solo .other-msg-status { padding:4px 10px; }
+.msg-vid-container { position:relative; width:340px; max-width:340px; overflow:hidden; background:var(--wire-bg-base-tertiary); flex-shrink:0; }
+.msg-vid-container img { width:340px; height:191px; object-fit:cover; display:block; }
+.msg-vid-play {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:40px; height:40px; border-radius:var(--radius-full);
+  background:rgba(255,255,255,0.92); display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--wire-content-accent-primary);
+}
+.msg-vid-meta {
+  position:absolute; left:0; right:0; bottom:0; height:40px;
+  display:flex; align-items:flex-end; justify-content:flex-end; padding:0 10px 6px;
+  background:linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+}
+.msg-vid-meta span { font-size:11px; color:#fff; letter-spacing:0.06px; }
+
+.msg-audio { display:flex; gap:8px; align-items:center; width:100%; }
+.msg-audio-play {
+  width:40px; height:40px; border-radius:var(--radius-full);
+  background:var(--wire-bg-base-primary); box-shadow:0 0 0 1px var(--wire-border-base-primary);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; color:var(--wire-content-accent-primary); flex-shrink:0; padding-left:2px;
+}
+.msg-audio-body { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; }
+.msg-waveform { display:flex; align-items:center; gap:2px; height:32px; }
+.msg-waveform .bar { width:2px; border-radius:1px; background:var(--wire-border-base-primary); flex-shrink:0; }
+.msg-waveform .bar.played { background:var(--wire-content-accent-primary); }
+.msg-audio-time { display:flex; justify-content:space-between; width:100%; }
+.msg-audio-time .played { font-size:12px; line-height:16px; color:var(--wire-content-accent-primary); }
+.msg-audio-time .total  { font-size:12px; line-height:16px; opacity:0.7; color:var(--wire-content-base-primary); }
+
+/* Received file (single) — info sits directly on grey bubble, light-theme icon, no nested cell */
+.other-msg-file { display:flex; flex-direction:column; gap:4px; width:100%; }
+.other-msg-file-meta { display:flex; align-items:center; gap:4px; width:100%; }
+.other-msg-file-icon { width:13px; height:16px; flex-shrink:0; }
+.other-msg-file-type {
+  font-size:12px; line-height:16px; color:var(--wire-content-base-primary); opacity:0.7;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0;
+}
+.other-msg-file-name {
+  font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
+  line-height:18px; letter-spacing:-0.08px; color:var(--wire-content-base-primary); word-break:break-word;
+}
+
+/* Media placeholders — never let a media bubble render empty when the image src is unavailable */
+.own-msg-img-container, .other-msg-img-container, .msg-vid-container { position:relative; }
+.own-msg-img-container.landscape, .other-msg-img-container.landscape { height:255px; }
+.own-msg-img-container.portrait,  .other-msg-img-container.portrait  { height:346px; }
+.own-msg-img-container.square,    .other-msg-img-container.square    { height:260px; }
+.msg-vid-container { height:191px; }
+.own-msg-img-container img, .other-msg-img-container img { position:relative; z-index:1; }
+.media-ph {
+  position:absolute; inset:0; z-index:0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--wire-content-base-secondary); opacity:.45; font-size:30px;
+}
+
+/* ─── CONVERSATION HEADER (avatar + title + tabs) ── */
+.conv-header {
+  display:flex; flex-direction:column; flex-shrink:0;
+  background:var(--wire-bg-base-secondary);
+  border-bottom:0.5px solid var(--wire-border-base-primary);
+}
+.conv-header-row {
+  display:flex; align-items:center; justify-content:space-between;
+  height:40px; padding:0 var(--spacing-4);
+}
+.conv-header-title { display:flex; align-items:center; gap:var(--spacing-2); min-width:0; }
+.conv-header-avatar { display:inline-flex; align-items:center; flex-shrink:0; }
+.conv-header-name {
+  font-family:var(--font-sans); font-size:var(--font-size-sm);
+  font-weight:var(--font-weight-semibold); color:var(--wire-content-base-primary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* Tabs row */
+.conv-tabs {
+  position:relative; display:flex; align-items:flex-end; gap:var(--spacing-2);
+  height:40px; padding:0 var(--spacing-4);
+}
+.conv-tabs::after {
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:rgba(0,0,47,0.15);
+}
+.conv-tab {
+  position:relative; display:flex; align-items:center; justify-content:center;
+  height:100%; padding:0 var(--spacing-1);
+  background:none; border:none; cursor:pointer;
+}
+.conv-tab > span {
+  display:block; padding:4px;
+  font-family:var(--font-sans); font-size:var(--font-size-xs); line-height:16px;
+  letter-spacing:0.04px; font-weight:var(--font-weight-regular);
+  color:var(--wire-content-base-secondary);
+}
+.conv-tab.active > span { font-weight:var(--font-weight-medium); color:var(--wire-content-base-primary); }
+.conv-tab.active::after {
+  content:''; position:absolute; left:0; right:0; bottom:1px; height:4px;
+  background:var(--wire-bg-accent-primary); border-radius:3px 3px 0 0;
+}
+
+/* ─── Received bubbles: uniform 8px asset handling (mirror of the own-message system) ──
+   Solo image/video sit INSIDE 8px padding with rounded inner corners (not edge-to-edge),
+   status/sender are inset by the bubble padding only, and the bubble shares the same
+   width logic as own (no fixed cap) so longer text expands to fill the available width. */
+.other-msg-bubble.img-solo,
+.other-msg-bubble.vid-solo { padding:8px; overflow:visible; }
+.other-msg-text   { padding-left:0; padding-right:0; }
+.other-msg-status { padding-left:0; padding-right:0; }
+.other-msg-bubble.img-solo .other-msg-status,
+.other-msg-bubble.vid-solo .other-msg-status { padding:0; background:transparent; }
+.other-msg-bubble.img-solo .other-msg-sender,
+.other-msg-bubble.vid-solo .other-msg-sender { padding:0; }
+.other-msg-bubble.img-solo .other-msg-img-container { border-radius:var(--radius-lg); }
+.other-msg-bubble.vid-solo .msg-vid-container { border-radius:var(--radius-lg); }
+
+/* Caption + media: the media (image / grid) defines the bubble width and the caption
+   wraps to it, instead of a long caption widening the bubble and leaving a gap beside
+   the asset. Scoped via :has() to bubbles that actually contain a fixed-width asset. */
+.other-msg-bubble:has(.other-msg-img-container) .other-msg-text,
+.other-msg-bubble:has(.own-msg-media-grid) .other-msg-text,
+.own-msg-bubble:has(.own-msg-img-container) .own-msg-text,
+.own-msg-bubble:has(.own-msg-media-grid) .own-msg-text {
+  width:0; min-width:100%;
+}
+
+</style>
+<style>
+/* ===================== DOCS CHROME ===================== */
+html { scroll-behavior:smooth; }
+html, body { width:auto; height:auto; overflow:visible; }
+body { display:block; background:var(--wire-bg-base-secondary); color:var(--wire-content-base-primary);
+       font-family:var(--font-sans); font-size:var(--font-size-base); -webkit-font-smoothing:antialiased; }
+.ds-topbar { position:sticky; top:0; z-index:50; height:56px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--spacing-6); background:var(--wire-bg-base-primary); border-bottom:1px solid var(--wire-border-base-primary); }
+.ds-brand { display:flex; align-items:baseline; gap:10px; }
+.ds-logo { font-weight:var(--font-weight-bold); font-size:18px; letter-spacing:-0.02em; color:var(--wire-content-base-primary); }
+.ds-brand-sub { font-size:var(--font-size-sm); color:var(--wire-content-base-secondary); }
+.ds-brand-sub b { color:var(--wire-content-accent-primary); font-weight:var(--font-weight-semibold); }
+.ds-topbar-right { display:flex; align-items:center; gap:var(--spacing-4); }
+.ds-ver { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); }
+.ds-theme { width:34px; height:34px; border-radius:var(--radius-md); display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--wire-border-base-primary); background:var(--wire-bg-base-primary); color:var(--wire-content-base-secondary); cursor:pointer; font-size:16px; }
+.ds-theme:hover { background:var(--wire-bg-base-tertiary); color:var(--wire-content-base-primary); }
+
+.ds-shell { max-width:1180px; margin:0 auto; display:flex; gap:var(--spacing-12); padding:0 var(--spacing-6); align-items:flex-start; }
+.ds-nav { position:sticky; top:80px; width:212px; flex-shrink:0; padding:var(--spacing-8) 0; }
+.ds-nav-group { margin-bottom:var(--spacing-6); }
+.ds-nav-label { font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--wire-content-base-secondary); margin-bottom:var(--spacing-2); font-weight:var(--font-weight-semibold); }
+.ds-nav a { display:block; padding:5px 10px; border-radius:var(--radius-md); font-size:var(--font-size-sm); color:var(--wire-content-base-secondary); text-decoration:none; }
+.ds-nav a:hover { background:var(--wire-bg-base-tertiary); color:var(--wire-content-base-primary); }
+.ds-nav a.active { background:var(--wire-bg-accent-secondary); color:var(--wire-content-accent-primary); font-weight:var(--font-weight-medium); }
+
+.ds-main { flex:1; min-width:0; padding:var(--spacing-10) 0 120px; }
+.ds-hero { padding-bottom:var(--spacing-10); border-bottom:1px solid var(--wire-border-base-primary); margin-bottom:var(--spacing-12); }
+.ds-hero h1 { font-size:34px; line-height:1.12; letter-spacing:-0.02em; font-weight:var(--font-weight-bold); margin-bottom:var(--spacing-3); }
+.ds-hero p { font-size:var(--font-size-md); color:var(--wire-content-base-secondary); max-width:60ch; line-height:1.6; }
+.ds-meta { margin-top:var(--spacing-5); display:flex; gap:var(--spacing-2); flex-wrap:wrap; }
+.ds-chip { font-size:var(--font-size-xs); padding:4px 10px; border-radius:var(--radius-full); background:var(--wire-bg-base-tertiary); color:var(--wire-content-base-secondary); }
+
+.ds-section { scroll-margin-top:80px; margin-bottom:var(--spacing-16); }
+.ds-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--wire-content-accent-primary); font-weight:var(--font-weight-semibold); }
+.ds-section > h2 { font-size:24px; letter-spacing:-0.01em; font-weight:var(--font-weight-bold); margin:6px 0 var(--spacing-3); }
+.ds-lead { color:var(--wire-content-base-secondary); max-width:64ch; line-height:1.6; margin-bottom:var(--spacing-6); }
+.ds-h3 { font-size:var(--font-size-md); font-weight:var(--font-weight-semibold); margin:var(--spacing-8) 0 var(--spacing-3); }
+
+.ds-canvas { background:var(--wire-bg-base-primary); border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-lg); padding:var(--spacing-6); }
+.ds-canvas--chat { padding:var(--spacing-5) var(--spacing-6); }
+.ds-canvas + .ds-canvas { margin-top:var(--spacing-3); }
+.ds-row { display:flex; flex-wrap:wrap; gap:var(--spacing-3); align-items:center; }
+.ds-chat { max-width:560px; }
+.ds-cap { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); margin-bottom:var(--spacing-3); font-weight:var(--font-weight-medium); }
+
+.ds-swatches { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:var(--spacing-3); }
+.ds-swatch { border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-md); overflow:hidden; background:var(--wire-bg-base-primary); }
+.ds-swatch .chip { height:54px; }
+.ds-swatch .chip.bordered { box-shadow:inset 0 0 0 1px var(--wire-border-base-primary); }
+.ds-swatch .meta { padding:8px 10px; }
+.ds-swatch .tok { font-family:var(--font-mono); font-size:11px; color:var(--wire-content-base-primary); word-break:break-all; line-height:1.3; }
+.ds-swatch .hex { font-size:11px; color:var(--wire-content-base-secondary); margin-top:2px; }
+
+.ds-spec { width:100%; border-collapse:collapse; margin-top:var(--spacing-4); font-size:var(--font-size-sm); }
+.ds-spec th, .ds-spec td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--wire-border-base-primary); vertical-align:top; }
+.ds-spec th { font-weight:var(--font-weight-semibold); color:var(--wire-content-base-secondary); font-size:11px; text-transform:uppercase; letter-spacing:0.04em; }
+.ds-spec td:first-child { color:var(--wire-content-base-primary); font-weight:var(--font-weight-medium); white-space:nowrap; }
+.ds-tok { font-family:var(--font-mono); font-size:0.92em; background:var(--wire-bg-base-tertiary); color:var(--wire-content-base-primary); padding:1px 6px; border-radius:4px; white-space:nowrap; }
+
+.ds-typerow { display:flex; align-items:baseline; gap:var(--spacing-5); padding:10px 0; border-bottom:1px solid var(--wire-border-base-primary); }
+.ds-typerow .lab { width:170px; flex-shrink:0; font-family:var(--font-mono); font-size:11px; color:var(--wire-content-base-secondary); }
+.ds-typerow .samp { color:var(--wire-content-base-primary); }
+.ds-weights { display:flex; gap:var(--spacing-8); flex-wrap:wrap; margin-top:var(--spacing-2); }
+.ds-weight { font-size:22px; color:var(--wire-content-base-primary); }
+.ds-weight span { display:block; font-size:11px; font-family:var(--font-mono); color:var(--wire-content-base-secondary); margin-top:6px; font-weight:var(--font-weight-regular); }
+
+.ds-scale-row { display:flex; align-items:center; gap:var(--spacing-4); padding:7px 0; }
+.ds-scale-row .lab { width:150px; font-family:var(--font-mono); font-size:11px; color:var(--wire-content-base-secondary); }
+.ds-bar { height:14px; background:var(--wire-bg-accent-primary); border-radius:2px; }
+.ds-radii { display:flex; gap:var(--spacing-4); flex-wrap:wrap; }
+.ds-radius { width:84px; height:84px; background:var(--wire-bg-accent-secondary); border:1px solid var(--wire-border-accent-secondary);
+  display:flex; align-items:flex-end; justify-content:center; padding:6px; font-family:var(--font-mono); font-size:10px; color:var(--wire-content-accent-primary); }
+
+.ds-note { font-size:var(--font-size-sm); color:var(--wire-content-base-secondary); line-height:1.6; margin-top:var(--spacing-4); }
+.ds-note b { color:var(--wire-content-base-primary); font-weight:var(--font-weight-semibold); }
+.ds-sidebar-demo { width:248px; background:var(--wire-bg-base-secondary); border:1px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-lg); padding:var(--spacing-2); display:flex; flex-direction:column; gap:2px; }
+.ds-hdr-demo { max-width:660px; border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-lg); overflow:hidden; }
+
+@media (max-width:880px){
+  .ds-shell { flex-direction:column; gap:0; }
+  .ds-nav { position:static; width:100%; display:flex; flex-wrap:wrap; gap:4px; padding:var(--spacing-3) 0; border-bottom:1px solid var(--wire-border-base-primary); }
+  .ds-nav-group { margin:0; display:contents; }
+  .ds-nav-label { display:none; }
+  .ds-hero h1 { font-size:27px; }
+}
+</style>
+</head>
+<body>
+<header class="ds-topbar">
+  <div class="ds-brand"><span class="ds-logo">Wire</span><span class="ds-brand-sub">Design System <b>2.0</b></span></div>
+  <div class="ds-topbar-right">
+    <span class="ds-ver">Component reference</span>
+    <button class="ds-theme" id="ds-theme" type="button" aria-label="Toggle dark mode"><i class="ph-bold ph-moon"></i></button>
+  </div>
+</header>
+<div class="ds-shell">
+  <nav class="ds-nav" id="ds-nav">
+    <div class="ds-nav-group">
+      <div class="ds-nav-label">Foundations</div>
+      <a href="#colors">Colour tokens</a>
+      <a href="#type">Typography</a>
+      <a href="#space">Spacing &amp; radius</a>
+    </div>
+    <div class="ds-nav-group">
+      <div class="ds-nav-label">Components</div>
+      <a href="#buttons">Buttons</a>
+      <a href="#sidebar-item">Sidebar item</a>
+      <a href="#conv-header">Conversation header</a>
+      <a href="#bubbles-own">Chat bubbles — Own</a>
+      <a href="#bubbles-received">Chat bubbles — Received</a>
+    </div>
+  </nav>
+  <main class="ds-main">
+    <section class="ds-hero">
+      <h1>Wire Design System 2.0</h1>
+      <p>The components and tokens behind the new Wire desktop experience. Every example on this page is rendered with the same CSS that ships in the prototype, so what you see is the component itself — not a picture of it. Toggle the theme to watch the tokens adapt.</p>
+      <div class="ds-meta"><span class="ds-chip">Inter</span><span class="ds-chip">Light &amp; dark</span><span class="ds-chip">Token-driven</span><span class="ds-chip">Prototype-accurate</span></div>
+    </section>
+
+    <section id="colors" class="ds-section">
+      <div class="ds-eyebrow">Foundations</div><h2>Colour tokens</h2>
+      <p class="ds-lead">Colours are referenced through semantic tokens, never raw hex. The swatches below pull their fill from the live CSS variable, so they re-colour when you switch themes; the hex shown is the light-mode value.</p>
+      <h3 class="ds-h3">Backgrounds</h3><div class="ds-swatches"><div class="ds-swatch"><div class="chip bordered" style="background:var(--wire-bg-base-primary)"></div><div class="meta"><div class="tok">--wire-bg-base-primary</div><div class="hex">#FFFFFF</div></div></div><div class="ds-swatch"><div class="chip bordered" style="background:var(--wire-bg-base-secondary)"></div><div class="meta"><div class="tok">--wire-bg-base-secondary</div><div class="hex">#FAFAFA</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-base-tertiary)"></div><div class="meta"><div class="tok">--wire-bg-base-tertiary</div><div class="hex">#EDEFF0</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-inverted-primary)"></div><div class="meta"><div class="tok">--wire-bg-inverted-primary</div><div class="hex">#17181A</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-accent-primary)"></div><div class="meta"><div class="tok">--wire-bg-accent-primary</div><div class="hex">#0667C8</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-accent-secondary)"></div><div class="meta"><div class="tok">--wire-bg-accent-secondary</div><div class="hex">#E7F0FA</div></div></div></div>
+      <h3 class="ds-h3">Content (foreground)</h3><div class="ds-swatches"><div class="ds-swatch"><div class="chip" style="background:var(--wire-content-base-primary)"></div><div class="meta"><div class="tok">--wire-content-base-primary</div><div class="hex">#000000</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-content-base-secondary)"></div><div class="meta"><div class="tok">--wire-content-base-secondary</div><div class="hex">#676B71</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-content-accent-primary)"></div><div class="meta"><div class="tok">--wire-content-accent-primary</div><div class="hex">#0667C8</div></div></div><div class="ds-swatch"><div class="chip bordered" style="background:var(--wire-content-inverted-on-primary)"></div><div class="meta"><div class="tok">--wire-content-inverted-on-primary</div><div class="hex">#FFFFFF</div></div></div></div>
+      <h3 class="ds-h3">Chat bubbles</h3><div class="ds-swatches"><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-bubbles-primary)"></div><div class="meta"><div class="tok">--wire-bg-bubbles-primary</div><div class="hex">#0667C8</div></div></div><div class="ds-swatch"><div class="chip bordered" style="background:var(--wire-content-bubbles-primary)"></div><div class="meta"><div class="tok">--wire-content-bubbles-primary</div><div class="hex">#FFFFFF</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-bg-base-tertiary)"></div><div class="meta"><div class="tok">--wire-bg-base-tertiary</div><div class="hex">#EDEFF0</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-content-base-primary)"></div><div class="meta"><div class="tok">--wire-content-base-primary</div><div class="hex">#000000</div></div></div></div>
+      <p class="ds-note">Own messages use <span class="ds-tok">--wire-bg-bubbles-primary</span> on <span class="ds-tok">--wire-content-bubbles-primary</span>. Received messages use the neutral base tokens <span class="ds-tok">--wire-bg-base-tertiary</span> and <span class="ds-tok">--wire-content-base-primary</span> so they adapt correctly in dark mode.</p>
+      <h3 class="ds-h3">Identity (avatars &amp; channels)</h3><div class="ds-swatches"><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-blue)"></div><div class="meta"><div class="tok">--wire-identity-blue</div><div class="hex">#0667C8</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-green)"></div><div class="meta"><div class="tok">--wire-identity-green</div><div class="hex">#1D7833</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-amber)"></div><div class="meta"><div class="tok">--wire-identity-amber</div><div class="hex">#A25915</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-petrol)"></div><div class="meta"><div class="tok">--wire-identity-petrol</div><div class="hex">#01718E</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-purple)"></div><div class="meta"><div class="tok">--wire-identity-purple</div><div class="hex">#8944AB</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-identity-red)"></div><div class="meta"><div class="tok">--wire-identity-red</div><div class="hex">#C20013</div></div></div></div>
+      <h3 class="ds-h3">Border</h3><div class="ds-swatches"><div class="ds-swatch"><div class="chip" style="background:var(--wire-border-base-primary)"></div><div class="meta"><div class="tok">--wire-border-base-primary</div><div class="hex">#DCE0E3</div></div></div><div class="ds-swatch"><div class="chip" style="background:var(--wire-border-base-focus)"></div><div class="meta"><div class="tok">--wire-border-base-focus</div><div class="hex">#6AA4DE</div></div></div></div>
+    </section>
+
+    <section id="type" class="ds-section">
+      <div class="ds-eyebrow">Foundations</div><h2>Typography</h2>
+      <p class="ds-lead">A single family — <b>Inter</b> — across the product, on a compact scale tuned for dense conversation UI. Sizes are tokens (<span class="ds-tok">--font-size-*</span>); weights map to <span class="ds-tok">--font-weight-*</span>.</p>
+      <div class="ds-canvas"><div class="ds-typerow"><div class="lab">--font-size-xl · 20</div><div class="samp" style="font-size:20px;font-weight:600;line-height:1.4">Conversation &amp; product titles</div></div><div class="ds-typerow"><div class="lab">--font-size-lg · 18</div><div class="samp" style="font-size:18px;font-weight:500;line-height:1.4">Section headings</div></div><div class="ds-typerow"><div class="lab">--font-size-md · 16</div><div class="samp" style="font-size:16px;font-weight:500;line-height:1.4">Emphasis &amp; large body</div></div><div class="ds-typerow"><div class="lab">--font-size-base · 14</div><div class="samp" style="font-size:14px;font-weight:400;line-height:1.4">Message body — the workhorse text size</div></div><div class="ds-typerow"><div class="lab">--font-size-sm · 13</div><div class="samp" style="font-size:13px;font-weight:400;line-height:1.4">Sidebar labels, secondary controls</div></div><div class="ds-typerow"><div class="lab">--font-size-xs · 12</div><div class="samp" style="font-size:12px;font-weight:400;line-height:1.4">Sender names, timestamps, badges</div></div><div class="ds-weights"><div class="ds-weight" style="font-weight:400">Secure by design<span>Regular · 400</span></div><div class="ds-weight" style="font-weight:500">Secure by design<span>Medium · 500</span></div><div class="ds-weight" style="font-weight:600">Secure by design<span>Semibold · 600</span></div><div class="ds-weight" style="font-weight:700">Secure by design<span>Bold · 700</span></div></div></div>
+    </section>
+
+    <section id="space" class="ds-section">
+      <div class="ds-eyebrow">Foundations</div><h2>Spacing &amp; radius</h2>
+      <p class="ds-lead">Spacing follows a 4px base step (<span class="ds-tok">--spacing-*</span>). Corner radii (<span class="ds-tok">--radius-*</span>) range from controls to fully rounded avatars.</p>
+      <div class="ds-canvas"><div class="ds-scale-row"><div class="lab">--spacing-1 · 4px</div><div class="ds-bar" style="width:4px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-2 · 8px</div><div class="ds-bar" style="width:8px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-3 · 12px</div><div class="ds-bar" style="width:12px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-4 · 16px</div><div class="ds-bar" style="width:16px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-5 · 20px</div><div class="ds-bar" style="width:20px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-6 · 24px</div><div class="ds-bar" style="width:24px"></div></div><div class="ds-scale-row"><div class="lab">--spacing-8 · 32px</div><div class="ds-bar" style="width:32px"></div></div><h3 class="ds-h3">Radius</h3><div class="ds-radii"><div class="ds-radius" style="border-radius:4px">sm · 4</div><div class="ds-radius" style="border-radius:6px">md · 6</div><div class="ds-radius" style="border-radius:10px">lg · 10</div><div class="ds-radius" style="border-radius:12px">base · 12</div><div class="ds-radius" style="border-radius:9999px">full</div></div></div>
+    </section>
+
+    <section id="buttons" class="ds-section">
+      <div class="ds-eyebrow">Component</div><h2>Buttons</h2>
+      <p class="ds-lead">Five intents on a shared base. Labels are verbs that name the action and keep that name through the flow.</p>
+      <div class="ds-canvas">
+        <div class="ds-row">
+          <button class="wds-btn wds-btn-primary">Send message</button>
+          <button class="wds-btn wds-btn-secondary">Cancel</button>
+          <button class="wds-btn wds-btn-outline">Add people</button>
+          <button class="wds-btn wds-btn-ghost">Skip</button>
+          <button class="wds-btn wds-btn-destructive">Delete</button>
+          <button class="wds-btn wds-btn-primary" disabled>Disabled</button>
+        </div>
+        <div class="ds-row" style="margin-top:16px">
+          <button class="wds-btn wds-btn-primary"><i class="ph-bold ph-phone-call"></i> Start call</button>
+          <button class="wds-btn wds-btn-secondary"><i class="ph-bold ph-paperclip"></i> Attach</button>
+          <button class="wds-btn wds-btn-primary wds-btn-round"><i class="ph-bold ph-arrow-up"></i></button>
+        </div>
+        <div class="ds-row" style="margin-top:16px">
+          <button class="wds-btn wds-btn-secondary wds-btn-mini">Mini</button>
+          <button class="wds-btn wds-btn-secondary wds-btn-sm">Small</button>
+          <button class="wds-btn wds-btn-secondary">Base</button>
+          <button class="wds-btn wds-btn-secondary wds-btn-lg">Large</button>
+          <button class="wds-btn wds-btn-secondary wds-btn-xl">Extra large</button>
+        </div>
+      </div>
+      <table class="ds-spec">
+        <tr><th>Intent</th><th>Background</th><th>Foreground</th><th>Border</th></tr>
+        <tr><td>Primary</td><td><span class="ds-tok">--wire-bg-accent-primary</span></td><td><span class="ds-tok">--wire-content-accent-on-primary</span></td><td>—</td></tr>
+        <tr><td>Secondary</td><td><span class="ds-tok">--wire-bg-base-primary</span></td><td><span class="ds-tok">--wire-content-base-primary</span></td><td><span class="ds-tok">--wire-border-base-primary</span></td></tr>
+        <tr><td>Outline</td><td>transparent</td><td><span class="ds-tok">--wire-content-base-primary</span></td><td><span class="ds-tok">--wire-border-base-primary</span></td></tr>
+        <tr><td>Ghost</td><td>transparent</td><td><span class="ds-tok">--wire-content-base-secondary</span></td><td>—</td></tr>
+        <tr><td>Destructive</td><td><span class="ds-tok">--wire-bg-danger-primary</span></td><td><span class="ds-tok">--wire-content-danger-on-primary</span></td><td>—</td></tr>
+      </table>
+      <table class="ds-spec">
+        <tr><th>Size</th><th>Min height</th><th>Padding</th><th>Font</th></tr>
+        <tr><td>Mini</td><td>24px</td><td>4 / 8</td><td>12</td></tr>
+        <tr><td>Small</td><td>32px</td><td>6 / 12</td><td>13</td></tr>
+        <tr><td>Base</td><td>36px</td><td>8 / 16</td><td>14 · medium</td></tr>
+        <tr><td>Large</td><td>40px</td><td>10 / 20</td><td>14</td></tr>
+        <tr><td>Extra large</td><td>48px</td><td>12 / 24</td><td>16</td></tr>
+      </table>
+      <p class="ds-note">Radius <span class="ds-tok">--radius-lg</span> (10px) on every size; <span class="ds-tok">.wds-btn-round</span> switches to <span class="ds-tok">--radius-full</span>. Focus shows a 2px halo plus a 2px <span class="ds-tok">--wire-border-accent-focus</span> ring; disabled drops to 40% opacity.</p>
+    </section>
+
+    <section id="sidebar-item" class="ds-section">
+      <div class="ds-eyebrow">Component</div><h2>Sidebar item</h2>
+      <p class="ds-lead">The expanded first-level row used throughout the conversation list. Default rows carry a regular-weight label; the active row gets the accent-secondary background and a semibold label; unread is signalled by a dark count badge.</p>
+      <div class="ds-canvas"><div class="ds-sidebar-demo"><div class="conv-item selected" data-conv="prodeng" tabindex="0">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--wire-channel-purple-bg);border:1px solid var(--wire-channel-purple-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-purple);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"></path></svg></div>
+            <span class="conv-name">Product &amp; Engineering</span>
+          </div><div class="conv-item" data-conv="marketing" tabindex="0">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--wire-channel-blue-bg);border:1px solid var(--wire-channel-blue-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-blue);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"></path></svg></div>
+            <span class="conv-name">Marketing Team</span>
+          </div><div class="conv-item unread" data-conv="design" tabindex="0">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--wire-channel-green-bg);border:1px solid var(--wire-channel-green-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-green);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"></path></svg></div>
+            <span class="conv-name">Design System</span>
+            <span class="conv-badge">3</span>
+          </div></div></div>
+      <table class="ds-spec">
+        <tr><th>Property</th><th>Value</th></tr>
+        <tr><td>Height</td><td>32px</td></tr>
+        <tr><td>Padding</td><td>4 / 8 (<span class="ds-tok">--spacing-1</span> / <span class="ds-tok">--spacing-2</span>)</td></tr>
+        <tr><td>Radius</td><td><span class="ds-tok">--radius-md</span> (6px)</td></tr>
+        <tr><td>Label</td><td>13 / 18, weight 400 → 600 when active · <span class="ds-tok">--wire-content-base-primary</span></td></tr>
+        <tr><td>Active background</td><td><span class="ds-tok">--wire-bg-accent-secondary</span></td></tr>
+        <tr><td>Focus ring</td><td>0 0 0 3px #D4D4D4 (keyboard only)</td></tr>
+        <tr><td>Count badge</td><td><span class="ds-tok">--wire-bg-inverted-primary</span> · white · 12/14 bold · 3/6 · radius 6</td></tr>
+      </table>
+    </section>
+
+    <section id="conv-header" class="ds-section">
+      <div class="ds-eyebrow">Component</div><h2>Conversation header</h2>
+      <p class="ds-lead">Two rows: the selected conversation's avatar, title and chevron with call actions on the right; below it the tab bar switching between <b>Conversations</b> and <b>Shared Drive</b>, with a 4px accent indicator under the active tab on a hairline track.</p>
+      <div class="ds-canvas"><div class="ds-hdr-demo"><div class="conv-header" id="topbar-conv">
+        <div class="conv-header-row">
+          <div class="conv-header-title">
+            <span class="conv-header-avatar" id="conv-header-avatar"><div style="width:20px;height:20px;border-radius:6px;background:var(--wire-channel-purple-bg);border:1px solid var(--wire-channel-purple-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wire-identity-purple);"><svg viewBox="0 0 17 16" fill="none" style="width:57%;height:57%;display:block;"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"></path></svg></div></span>
+            <span class="conv-header-name" id="conv-title-name">Product &amp; Engineering</span>
+            <i class="ph-bold ph-caret-right" style="font-size:11px;color:var(--wire-content-base-secondary)"></i>
+          </div>
+          <div class="topbar-right">
+            <button class="icon-btn" title="Video call"><i class="ph-bold ph-video-camera"></i></button>
+            <button class="icon-btn" title="Search in conversation"><i class="ph-bold ph-magnifying-glass"></i></button>
+            <button class="icon-btn" title="More"><i class="ph-bold ph-dots-three"></i></button>
+          </div>
+        </div>
+        <div class="conv-tabs" role="tablist">
+          <button class="conv-tab active" id="tab-conversations" role="tab" type="button"><span>Conversations</span></button>
+          <button class="conv-tab" id="tab-drive" role="tab" type="button"><span>Shared Drive</span></button>
+        </div>
+      </div></div></div>
+      <table class="ds-spec">
+        <tr><th>Property</th><th>Value</th></tr>
+        <tr><td>Rows</td><td>40px each, 16px horizontal padding</td></tr>
+        <tr><td>Avatar</td><td>cloned from the selected list item (channel / group / 1:1 identity)</td></tr>
+        <tr><td>Title</td><td>13 · semibold · <span class="ds-tok">--wire-content-base-primary</span></td></tr>
+        <tr><td>Active tab</td><td>12 · medium · 4px <span class="ds-tok">--wire-bg-accent-primary</span> indicator</td></tr>
+        <tr><td>Inactive tab</td><td>12 · regular · <span class="ds-tok">--wire-content-base-secondary</span></td></tr>
+        <tr><td>Track</td><td>1px rgba(0,0,47,0.15) hairline</td></tr>
+      </table>
+    </section>
+
+    <section id="bubbles-own" class="ds-section">
+      <div class="ds-eyebrow">Component</div><h2>Chat bubbles — Own</h2>
+      <p class="ds-lead">Messages you send: right-aligned, <span class="ds-tok">--wire-bg-bubbles-primary</span> on white, with a delivery tick beside the timestamp. Assets sit inside 8px padding with rounded inner corners; a long caption wraps to the asset width.</p>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Text, with reactions</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble"><div class="own-msg-text">Sounds good — I'll have the draft ready by Thursday.</div><div class="own-msg-status"><span class="own-msg-time">09:01 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div><div class="own-msg-reactions"><div class="reaction-pill-own"><span class="reaction-emoji">👍</span><span class="reaction-count-own">3</span></div><div class="reaction-pill-other"><span class="reaction-emoji">❤️</span><span class="reaction-count-other">2</span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Image with caption</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble"><div class="own-msg-text">Here is the square crop:</div><div class="own-msg-img-container square"><div class="media-ph"><i class="ph-bold ph-image"></i></div><img src="https://wolfiwire.github.io/wire-design-system/images/VariantSquare.png" alt="Photo"></div><div class="own-msg-status"><span class="own-msg-time">09:02 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Multiple assets — media grid</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble"><div class="own-msg-text">All three reference shots:</div><div class="own-msg-media-grid"><div class="grid-cell"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantLandscape.png" alt=""></div><div class="grid-cell"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantPortrait.png" alt=""></div><div class="grid-cell full-width"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantSquare.png" alt=""></div></div><div class="own-msg-status"><span class="own-msg-time">09:04 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">File with caption</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble"><div class="own-msg-text">Updated brief attached:</div><div class="own-msg-file-cell no-thumb"><div class="own-msg-file-meta"><div class="own-msg-file-icon"><img width="13" height="13" alt="PDF" style="flex-shrink: 0; width: 13px; height: 13px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDEzIDE2IiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNMi41IDAuNUgxMC40OThDMTEuNjAyNCAwLjUgMTIuNDk4IDEuMzk1NjYgMTIuNDk4IDIuNVYxMS41MDM5QzEyLjQ5OCAxMi4xNjAxIDEyLjIzOTYgMTIuNzkwMiAxMS43NzkzIDEzLjI1NzhMMTAuMzA4NiAxNC43NTFDOS44Mzg4NyAxNS4yMjgxIDkuMTk3ODMgMTUuNDk3IDguNTI4MzIgMTUuNDk3MUgyLjVDMS4zOTU3OCAxNS40OTcxIDAuNTAwMTggMTQuNjAyMiAwLjUgMTMuNDk4VjIuNUMwLjUgMS4zOTU2NiAxLjM5NTY2IDAuNSAyLjUgMC41WiIgZmlsbD0iI0ZGRjJGMSIgc3Ryb2tlPSIjOTk0NzQzIi8+CiAgPHBhdGggZD0iTTQgNUg5IiBzdHJva2U9IiM5OTQ3NDMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik00IDdIOSIgc3Ryb2tlPSIjOTk0NzQzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNCA5SDcuNSIgc3Ryb2tlPSIjOTk0NzQzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMTIuNDk4IDExLjVDMTAuMjg5IDExLjUgOC40OTkgMTMuMjkgOC40OTkgMTUuNDk4IiBzdHJva2U9IiM5OTQ3NDMiLz4KICA8cmVjdCB4PSIxLjUiIHk9IjkuNSIgd2lkdGg9IjYiIGhlaWdodD0iNCIgcng9IjEiIGZpbGw9IiM5OTQ3NDMiLz4KICA8dGV4dCB4PSI0LjUiIHk9IjEzLjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlcixzYW5zLXNlcmlmIiBmb250LXNpemU9IjIuOCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI0ZGRjJGMSIgbGV0dGVyLXNwYWNpbmc9IjAuMTUiPlBERjwvdGV4dD4KPC9zdmc+"></div><div class="own-msg-file-type">PDF · 540 KB</div></div><div class="own-msg-file-name"><span>Creative_Brief_v3.pdf</span></div></div><div class="own-msg-status"><span class="own-msg-time">09:03 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Voice message</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble fixed270"><div class="msg-audio"><div class="msg-audio-play"><i class="ph-fill ph-play"></i></div><div class="msg-audio-body"><div class="msg-waveform"><div class="bar played" style="height: 5px;"></div><div class="bar played" style="height: 19px;"></div><div class="bar played" style="height: 24px;"></div><div class="bar played" style="height: 18px;"></div><div class="bar played" style="height: 8px;"></div><div class="bar played" style="height: 7px;"></div><div class="bar played" style="height: 6px;"></div><div class="bar played" style="height: 12px;"></div><div class="bar played" style="height: 13px;"></div><div class="bar played" style="height: 5px;"></div><div class="bar played" style="height: 18px;"></div><div class="bar played" style="height: 26px;"></div><div class="bar played" style="height: 24px;"></div><div class="bar played" style="height: 12px;"></div><div class="bar played" style="height: 11px;"></div><div class="bar played" style="height: 17px;"></div><div class="bar played" style="height: 13px;"></div><div class="bar played" style="height: 7px;"></div><div class="bar played" style="height: 5px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 19px;"></div><div class="bar" style="height: 20px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 13px;"></div><div class="bar" style="height: 24px;"></div><div class="bar" style="height: 24px;"></div><div class="bar" style="height: 15px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 9px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 9px;"></div><div class="bar" style="height: 8px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 22px;"></div><div class="bar" style="height: 26px;"></div><div class="bar" style="height: 18px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 18px;"></div><div class="bar" style="height: 20px;"></div><div class="bar" style="height: 13px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 6px;"></div></div><div class="msg-audio-time"><span class="played">0:21</span><span class="total">0:48</span></div></div></div><div class="own-msg-status"><span class="own-msg-time">09:05 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Video</div><div class="ds-chat"><div class="own-msg-group"><div class="own-msg-bubble vid-solo"><div class="msg-vid-container"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantLandscape.png" alt="Video"><div class="msg-vid-play"><i class="ph-fill ph-play"></i></div><div class="msg-vid-meta"><span>2:14 • 8.4 MB</span></div></div><div class="own-msg-status"><span class="own-msg-time">09:06 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div>
+      <table class="ds-spec">
+        <tr><th>Property</th><th>Value</th></tr>
+        <tr><td>Background / text</td><td><span class="ds-tok">--wire-bg-bubbles-primary</span> / <span class="ds-tok">--wire-content-bubbles-primary</span></td></tr>
+        <tr><td>Padding</td><td>8px (assets inset, rounded <span class="ds-tok">--radius-lg</span>)</td></tr>
+        <tr><td>Radius</td><td>16px</td></tr>
+        <tr><td>Alignment</td><td>right; 80px gutter on the opposite side</td></tr>
+        <tr><td>Status</td><td>timestamp + <i class="ph-bold ph-checks"></i> delivery tick</td></tr>
+      </table>
+    </section>
+
+    <section id="bubbles-received" class="ds-section">
+      <div class="ds-eyebrow">Component</div><h2>Chat bubbles — Received</h2>
+      <p class="ds-lead">Messages from others: left-aligned, <span class="ds-tok">--wire-bg-base-tertiary</span> on <span class="ds-tok">--wire-content-base-primary</span>, timestamp only. In channels and groups the first bubble of a stack shows the sender name and the last shows a 26px avatar; guests get a badge. One-to-one conversations drop both. Asset and width behaviour mirrors own bubbles.</p>
+      <h3 class="ds-h3">Group &amp; channel</h3>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Stacked text — sender name + avatar</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"></div><div class="other-msg-bubble"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="other-msg-text">Morning! Quick update before the review.</div></div></div><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble"><div class="other-msg-text">Tickets are all moved to review.</div><div class="other-msg-status"><span class="other-msg-time">09:10 AM</span></div></div></div><div class="other-msg-reactions indent"><div class="reaction-pill-own"><span class="reaction-emoji">✅</span><span class="reaction-count-own">4</span></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">External guest — badge</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-green">TB</div></div><div class="other-msg-bubble"><div class="other-msg-sender"><span class="name-text">Tom Berger</span><span class="other-guest-badge">Guest</span></div><div class="other-msg-text">Sharing the latest numbers now.</div><div class="other-msg-status"><span class="other-msg-time">09:18 AM</span></div></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Image with caption</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="other-msg-text">Found a spot for the offsite:</div><div class="other-msg-img-container landscape"><div class="media-ph"><i class="ph-bold ph-image"></i></div><img src="https://wolfiwire.github.io/wire-design-system/images/VariantLandscape.png" alt="Photo"></div><div class="other-msg-status"><span class="other-msg-time">09:11 AM</span></div></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Multiple assets — media grid</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="other-msg-text">Reference shots:</div><div class="own-msg-media-grid"><div class="grid-cell"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantLandscape.png" alt=""></div><div class="grid-cell"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantPortrait.png" alt=""></div><div class="grid-cell full-width"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantSquare.png" alt=""></div></div><div class="other-msg-status"><span class="other-msg-time">09:14 AM</span></div></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">File with caption</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble fixed270"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="other-msg-text">Planning doc:</div><div class="other-msg-file"><div class="other-msg-file-meta"><div class="other-msg-file-icon"><img width="13" height="13" alt="DOC" style="flex-shrink: 0; width: 13px; height: 13px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDEzIDE2IiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNMi41IDAuNUgxMC40OThDMTEuNjAyNCAwLjUgMTIuNDk4IDEuMzk1NjYgMTIuNDk4IDIuNVYxMS41MDM5QzEyLjQ5OCAxMi4xNjAxIDEyLjIzOTYgMTIuNzkwMiAxMS43NzkzIDEzLjI1NzhMMTAuMzA4NiAxNC43NTFDOS44Mzg4NyAxNS4yMjgxIDkuMTk3ODMgMTUuNDk3IDguNTI4MzIgMTUuNDk3MUgyLjVDMS4zOTU3OCAxNS40OTcxIDAuNTAwMTggMTQuNjAyMiAwLjUgMTMuNDk4VjIuNUMwLjUgMS4zOTU2NiAxLjM5NTY2IDAuNSAyLjUgMC41WiIgZmlsbD0iI0U3RjBGQSIgc3Ryb2tlPSIjMDQzRTc4Ij48L3BhdGg+IDxwYXRoIGQ9Ik0zLjk5OTI3IDQuOTk5ODdIOC45OTg0MiIgc3Ryb2tlPSIjMDQzRTc4IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjwvcGF0aD4gPHBhdGggZD0iTTMuOTk5MjcgNi45OTk0OUg4Ljk5ODQyIiBzdHJva2U9IiMwNDNFNzgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PC9wYXRoPiA8cGF0aCBkPSJNMy45OTkyNyA4Ljk5OUg3LjQ5ODY3IiBzdHJva2U9IiMwNDNFNzgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PC9wYXRoPiA8cGF0aCBkPSJNMTIuNDk4IDExLjQ5ODZDMTAuMjg5MiAxMS40OTg2IDguNDk4NjkgMTMuMjg5MiA4LjQ5ODY5IDE1LjQ5OCIgc3Ryb2tlPSIjMDQzRTc4Ij48L3BhdGg+Cjwvc3ZnPg=="></div><div class="other-msg-file-type">DOC (92 KB)</div></div><div class="other-msg-file-name">Q3_Planning_2026.docx</div></div><div class="other-msg-status"><span class="other-msg-time">09:13 AM</span></div></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Voice message</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble fixed270"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="msg-audio"><div class="msg-audio-play"><i class="ph-fill ph-play"></i></div><div class="msg-audio-body"><div class="msg-waveform"><div class="bar played" style="height: 5px;"></div><div class="bar played" style="height: 19px;"></div><div class="bar played" style="height: 24px;"></div><div class="bar played" style="height: 18px;"></div><div class="bar played" style="height: 8px;"></div><div class="bar played" style="height: 7px;"></div><div class="bar played" style="height: 6px;"></div><div class="bar played" style="height: 12px;"></div><div class="bar played" style="height: 13px;"></div><div class="bar played" style="height: 5px;"></div><div class="bar played" style="height: 18px;"></div><div class="bar played" style="height: 26px;"></div><div class="bar played" style="height: 24px;"></div><div class="bar played" style="height: 12px;"></div><div class="bar played" style="height: 11px;"></div><div class="bar played" style="height: 17px;"></div><div class="bar played" style="height: 13px;"></div><div class="bar played" style="height: 7px;"></div><div class="bar" style="height: 5px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 19px;"></div><div class="bar" style="height: 20px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 13px;"></div><div class="bar" style="height: 24px;"></div><div class="bar" style="height: 24px;"></div><div class="bar" style="height: 15px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 9px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 9px;"></div><div class="bar" style="height: 8px;"></div><div class="bar" style="height: 11px;"></div><div class="bar" style="height: 22px;"></div><div class="bar" style="height: 26px;"></div><div class="bar" style="height: 18px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 18px;"></div><div class="bar" style="height: 20px;"></div><div class="bar" style="height: 13px;"></div><div class="bar" style="height: 6px;"></div><div class="bar" style="height: 6px;"></div></div><div class="msg-audio-time"><span class="played">0:30</span><span class="total">1:12</span></div></div></div><div class="other-msg-status"><span class="other-msg-time">09:12 AM</span></div></div></div></div></div></div>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">Video</div><div class="ds-chat"><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-avatar-gutter"><div class="av av-26 av-purple">MV</div></div><div class="other-msg-bubble vid-solo"><div class="other-msg-sender"><span class="name-text">Mara Voss</span></div><div class="msg-vid-container"><img src="https://wolfiwire.github.io/wire-design-system/images/VariantLandscape.png" alt="Video"><div class="msg-vid-play"><i class="ph-fill ph-play"></i></div><div class="msg-vid-meta"><span>0:42 • 3.1 MB</span></div></div><div class="other-msg-status"><span class="other-msg-time">09:15 AM</span></div></div></div></div></div></div>
+      <h3 class="ds-h3">One-to-one</h3>
+      <div class="ds-canvas ds-canvas--chat"><div class="ds-cap">No avatar or sender name</div><div class="ds-chat"><div class="msg-content-area"><div class="day-sep">Today</div><div class="other-msg-group"><div class="other-msg-row"><div class="other-msg-bubble"><div class="other-msg-text">Are you joining the standup?</div><div class="other-msg-status"><span class="other-msg-time">17:30 AM</span></div></div></div></div><div class="own-msg-group"><div class="own-msg-bubble"><div class="own-msg-text">2 minutes late — starting now.</div><div class="own-msg-status"><span class="own-msg-time">17:30 AM</span><span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span></div></div></div></div></div></div>
+      <table class="ds-spec">
+        <tr><th>Property</th><th>Value</th></tr>
+        <tr><td>Background / text</td><td><span class="ds-tok">--wire-bg-base-tertiary</span> / <span class="ds-tok">--wire-content-base-primary</span></td></tr>
+        <tr><td>Padding</td><td>8px (assets inset, rounded <span class="ds-tok">--radius-lg</span>)</td></tr>
+        <tr><td>Sender name</td><td>12 · semibold · accent (first of stack, group only)</td></tr>
+        <tr><td>Avatar</td><td>26px, last of stack, group only</td></tr>
+        <tr><td>Status</td><td>timestamp only — no delivery tick</td></tr>
+        <tr><td>Width</td><td>grows with content; no fixed cap</td></tr>
+      </table>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('ds-theme'), root=document.documentElement;
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark';
+    if(dark){root.removeAttribute('data-theme'); btn.innerHTML='<i class="ph-bold ph-moon"></i>';}
+    else{root.setAttribute('data-theme','dark'); btn.innerHTML='<i class="ph-bold ph-sun"></i>';}
+  });
+  var links=[].slice.call(document.querySelectorAll('.ds-nav a'));
+  var map={}; links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var obs=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map[e.target.id]; if(a)a.classList.add('active'); } });
+  },{rootMargin:'-72px 0px -70% 0px',threshold:0});
+  document.querySelectorAll('.ds-section').forEach(function(s){obs.observe(s);});
+})();
+</script>
+</body>
+</html>
