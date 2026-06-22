@@ -1885,6 +1885,7 @@ document.querySelectorAll('.conv-item').forEach(item => {
       ? section.querySelector('.section-label').textContent : '';
     const isOneToOne = /1:1/.test(label);
     CONV_MODE = isOneToOne ? 'oneToone' : 'group';
+    CURRENT_CONV = item.dataset.conv;
 
     syncConvHeader(item);       // avatar + title in the header
     setConvTab('conversations'); // selecting a conversation lands on the Conversations tab
@@ -1911,61 +1912,106 @@ sendBtn.addEventListener('click', () => { if (input.value.trim()) sendMessage();
 
 
 // ── Message data ──────────────────────────────────────────────────────────────
-const MESSAGES = [
-  { sender: 'Mara Voss', color: 'purple', initials: 'MV', time: '10:28', type: 'text',
-    text: 'Hi team, any news on the pitch deck?', reactions: [] },
-  { sender: 'Mara Voss', color: 'purple', initials: 'MV', time: '10:28', type: 'text',
-    text: 'We have a meeting next week.', reactions: [] },
-  { sender: 'Mara Voss', color: 'purple', initials: 'MV', time: '10:28', type: 'text',
-    text: 'We should lock the details before then.',
-    reactions: [{emoji:'👍', count:12, own:true},{emoji:'❤️', count:16, own:false}] },
-  { sender: 'Tom Berger', color: 'green', initials: 'TB', external: true, time: '10:29', type: 'text',
-    text: 'Sharing the revised numbers shortly.', reactions: [] },
-  { sender: 'Mara Voss', color: 'purple', initials: 'MV', time: '10:30', type: 'image-solo',
-    image: 'images/VariantLandscape.png', aspectRatio: 'landscape', reactions: [] },
-  { sender: 'Tom Berger', color: 'green', initials: 'TB', external: true, time: '10:31', type: 'video-solo',
-    thumb: 'images/VariantLandscape.png', duration: '1:54', filesize: '1.2 MB', reactions: [] },
-  { sender: 'Mara Voss', color: 'purple', initials: 'MV', time: '10:31', type: 'audio',
-    duration: '12:23', played: '08:23', reactions: [] },
-  { sender: 'Tom Berger', color: 'green', initials: 'TB', external: true, time: '10:32', type: 'file-solo',
-    filename: 'CDR_20220120_Accessibility_Review_Final.pdf', filesize: '336 KB',
-    filetype: 'PDF', thumb: null, reactions: [] },
-  { sender: 'self', time: '10:32', type: 'text',
-    text: 'Working on it! Will share a draft by Thursday.',
-    reactions: [{emoji:'👍', count:12, own:true},{emoji:'❤️', count:4, own:false}] },
-  { sender: 'self', time: '10:32', type: 'text',
-    text: "Marie's version looks great as a starting point.", reactions: [] },
-  { sender: 'self', time: '10:34', type: 'text',
-    text: "Sounds good, let's plan for Thursday.", reactions: [] },
-  { sender: 'self', time: '10:34', type: 'text',
-    text: 'Can everyone join at 10am?', reactions: [] },
-  { sender: 'self', time: '10:34', type: 'text',
-    text: "I'll send the invite now.", reactions: [] },
-  { sender: 'self', time: '10:36', type: 'image-solo',
-    image: 'images/VariantLandscape.png', aspectRatio: 'landscape', reactions: [] },
-  { sender: 'self', time: '10:37', type: 'image-solo',
-    image: 'images/VariantPortrait.png', aspectRatio: 'portrait', reactions: [] },
-  { sender: 'self', time: '10:38', type: 'image-with-text',
-    text: 'And here is the frog I photographed!',
-    image: 'images/VariantSquare.png', aspectRatio: 'square', reactions: [] },
-  { sender: 'self', time: '10:41', type: 'file-solo',
-    filename: 'Wire_Pitch_Deck_v3.pdf', filesize: '4.2 MB',
-    filetype: 'PDF',
-    thumb: null,
-    reactions: [] },
-  { sender: 'self', time: '10:42', type: 'file-with-text',
-    text: 'Here is the updated brief:',
-    filename: 'CDR_20220120_Accessibility_Review_Final.pdf', filesize: '336 KB',
-    filetype: 'PDF',
-    reactions: [] },
-  { sender: 'self', time: '10:40', type: 'media-grid',
-    text: 'All three shots:',
-    media: [
-      { type: 'image', src: 'images/VariantLandscape.png' },
-      { type: 'image', src: 'images/VariantPortrait.png' },
-      { type: 'image', src: 'images/VariantSquare.png' },
-    ], reactions: [] },
-];
+// Per-conversation threads, keyed by the sidebar item's data-conv.
+// Channels/Groups render with the group layout (avatar + name); 1:1 with the 1:1 layout.
+const CONVERSATIONS = {
+  // ── Channel · Product & Engineering — long, multi-person, files + media ──
+  prodeng: [
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28', type:'text', text:'Morning all — sprint review is at 2pm. Quick heads up before then.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28', type:'text', text:'Can everyone make sure their tickets are updated?', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:29', type:'text', text:'Done on my side. Moved the two API tickets to review.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:30', type:'file-with-text', text:'Here is the updated revenue model:', filename:'Q3_Revenue_Model_v4.xlsx', filesize:'284 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'10:31', type:'text', text:"Thanks Tom. I'll fold these into the deck.", reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:32', type:'image-with-text', text:'Also — found a great spot for the team offsite 🌴', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[{emoji:'😍', count:5, own:false},{emoji:'👍', count:3, own:true}] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33', type:'text', text:'That looks amazing.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33', type:'text', text:'Count me in.', reactions:[] },
+    { sender:'self', time:'10:34', type:'text', text:'Booking it. Details to follow.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:36', type:'video-solo', thumb:'images/VariantLandscape.png', duration:'2:14', filesize:'8.4 MB', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:37', type:'audio', duration:'0:48', played:'0:21', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:38', type:'text', text:'One more thing before the review: we still need a decision on the onboarding flow. The current design adds an extra interstitial step that is hurting conversion in the funnel test. I would suggest we drop it and go straight to the workspace. Thoughts?', reactions:[] },
+    { sender:'self', time:'10:39', type:'text', text:"Agreed, let's drop it.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:39', type:'text', text:'+1', reactions:[{emoji:'✅', count:4, own:true}] },
+  ],
+
+  // ── Channel · Marketing Team — medium, images ──
+  marketing: [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:15', type:'text', text:'Campaign assets are ready for review.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:15', type:'image-solo', image:'images/VariantPortrait.png', aspectRatio:'portrait', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'09:16', type:'text', text:'Looking sharp. Can we get a square crop for Instagram?', reactions:[] },
+    { sender:'self', time:'09:17', type:'text', text:'On it — square version coming up.', reactions:[] },
+    { sender:'self', time:'09:18', type:'image-with-text', text:'Here is the square crop:', image:'images/VariantSquare.png', aspectRatio:'square', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:20', type:'text', text:'Perfect, ship it.', reactions:[{emoji:'🎉', count:2, own:false}] },
+  ],
+
+  // ── Channel · Design System — medium-long, media grid + file ──
+  design: [
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02', type:'text', text:'Pushed the new chat bubble specs to Figma.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02', type:'text', text:'Own, 1:1, and group variants are all in there now.', reactions:[] },
+    { sender:'self', time:'11:03', type:'text', text:'Saw them — the grouping states look great.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:05', type:'media-grid', text:'Reference shots for the new empty states:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'11:06', type:'text', text:"Love these. I'll wire them into the prototype.", reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:08', type:'file-solo', filename:'Wire_DS_Tokens_v2.pdf', filesize:'1.1 MB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'11:09', type:'text', text:'Thanks!', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:10', type:'text', text:'Once the bubbles are in, we should do a quick QA pass across light and dark mode. I noticed a couple of contrast issues on the received bubbles in dark.', reactions:[] },
+    { sender:'self', time:'11:11', type:'text', text:'Good catch — adding it to the list.', reactions:[] },
+  ],
+
+  // ── Channel · General — short ──
+  general: [
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'08:45', type:'text', text:'Coffee machine on the 3rd floor is fixed ☕', reactions:[{emoji:'🙌', count:6, own:true}] },
+    { sender:'self', time:'08:46', type:'text', text:'Hero.', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'08:46', type:'text', text:'Anytime 😄', reactions:[] },
+  ],
+
+  // ── Group · Q3 Planning — medium, file ──
+  q3: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'14:20', type:'file-with-text', text:'Sharing the Q3 planning doc — please add your items by Friday.', filename:'Q3_Planning_2026.docx', filesize:'92 KB', filetype:'DOC', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'14:22', type:'text', text:'Added the design milestones.', reactions:[] },
+    { sender:'self', time:'14:25', type:'text', text:"Engineering capacity is in. We're tight but doable.", reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'14:26', type:'text', text:'Thanks both 🙏', reactions:[{emoji:'👍', count:2, own:false}] },
+  ],
+
+  // ── Group · Marketing Team — short ──
+  'marketing-grp': [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'16:40', type:'text', text:'Quick one — are we still on for the launch call tomorrow?', reactions:[] },
+    { sender:'self', time:'16:41', type:'text', text:'Yes, 10am.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'16:41', type:'text', text:'Great, see you then.', reactions:[] },
+  ],
+
+  // ── 1:1 · Jaqueline Olaho — medium, file ──
+  jo: [
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:05', type:'text', text:'Hey! Did you get a chance to look at the brief?', reactions:[] },
+    { sender:'self', time:'13:06', type:'text', text:'Yes — mostly good. One section needs tightening.', reactions:[] },
+    { sender:'self', time:'13:06', type:'text', text:"I'll send notes this afternoon.", reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:07', type:'text', text:'Perfect, thank you 🙌', reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:10', type:'file-with-text', text:'Here is the latest version btw:', filename:'Creative_Brief_v3.pdf', filesize:'540 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'13:12', type:'text', text:'Got it.', reactions:[] },
+  ],
+
+  // ── 1:1 · Dor Lewis — short ──
+  dl: [
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'17:30', type:'text', text:'Are you joining the standup?', reactions:[] },
+    { sender:'self', time:'17:30', type:'text', text:'2 min late, starting now.', reactions:[] },
+  ],
+
+  // ── 1:1 · Deniz Agha — medium, image ──
+  da: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:15', type:'image-with-text', text:'Check out the venue for the workshop:', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[] },
+    { sender:'self', time:'10:16', type:'text', text:"Whoa, that's gorgeous.", reactions:[] },
+    { sender:'self', time:'10:16', type:'text', text:'How many does it fit?', reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:17', type:'text', text:'Up to 30. Plenty of room.', reactions:[] },
+    { sender:'self', time:'10:18', type:'text', text:'Book it 🎉', reactions:[] },
+  ],
+
+  // ── 1:1 · Marcel Pierrot — short ──
+  mp: [
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:00', type:'text', text:'Lunch?', reactions:[] },
+    { sender:'self', time:'12:01', type:'text', text:'Give me 15.', reactions:[] },
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:01', type:'text', text:'👍', reactions:[] },
+  ],
+};
+
+let CURRENT_CONV = 'prodeng';
 
 function groupMessages(msgs) {
   const groups = [];
@@ -2320,7 +2366,7 @@ function renderMessages() {
   area.appendChild(sep);
   list.appendChild(area);
 
-  const groups = groupMessages(MESSAGES);
+  const groups = groupMessages(CONVERSATIONS[CURRENT_CONV] || []);
   groups.forEach(group => {
     const variant = group.sender === 'self' ? 'self' : 'other';
 
@@ -2426,7 +2472,7 @@ function sendMessage() {
   const hh = now.getHours().toString().padStart(2,'0');
   const mm = now.getMinutes().toString().padStart(2,'0');
   const timeStr = hh + ':' + mm;
-  MESSAGES.push({ sender:'self', time:timeStr, text, reactions:[] });
+  (CONVERSATIONS[CURRENT_CONV] || (CONVERSATIONS[CURRENT_CONV] = [])).push({ sender:'self', time:timeStr, type:'text', text, reactions:[] });
   renderMessages();
   input.value = '';
   sendBtn.classList.remove('active');
