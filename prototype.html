@@ -408,7 +408,7 @@ input, textarea { font-family:var(--font-sans); }
 #app-window {
   flex:1; display:flex; overflow:hidden;
   position:relative; z-index:1;
-  margin:var(--spacing-1) var(--spacing-1) var(--spacing-1) 0;
+  margin:36px var(--spacing-1) var(--spacing-1) 0;
   border-radius:var(--radius-base);
   border:0.5px solid var(--wire-border-base-primary);
   background:var(--wire-bg-base-primary);
@@ -417,11 +417,14 @@ input, textarea { font-family:var(--font-sans); }
 
 /* ─── PRODUCT SIDEBAR ── */
 #product-sidebar {
-  width:248px; flex-shrink:0;
-  background:var(--wire-bg-base-secondary);
+  width:20%; min-width:240px; flex-shrink:0;
+  background:rgba(255,255,255,0.92);
   border-right:0.5px solid var(--wire-border-base-primary);
   display:flex; flex-direction:column; overflow:hidden;
 }
+[data-theme="dark"] #product-sidebar { background:rgba(0,0,0,0.45); }
+/* Sidebar elements carry no fill of their own — only the sidebar's translucent surface, so the page shows through */
+.psidebar-search .search-wrap { background:transparent; }
 #product-sidebar.hidden { display:none; }
 
 .psidebar-header {
@@ -1086,7 +1089,7 @@ input, textarea { font-family:var(--font-sans); }
   width:64px; flex-shrink:0;
   background:transparent;
   display:flex; flex-direction:column; align-items:center;
-  padding:12px 12px 8px;
+  padding:8px 4px 16px 4px;
   position:relative; z-index:1;
 }
 .rail-top    { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-6); flex:1; }
@@ -1154,15 +1157,11 @@ input, textarea { font-family:var(--font-sans); }
 #page.light-rail .n-item.active .n-btn   { background:rgba(0,0,0,0.07); color:#000; }
 #page.light-rail .n-item.active .n-label { color:#000; }
 
-#app-window { flex:1; display:flex; overflow:hidden; margin:var(--spacing-1) var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:var(--wire-bg-base-primary); min-width:0; position:relative; z-index:1; }
+#app-window { flex:1; display:flex; overflow:hidden; margin:36px var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:transparent; min-width:0; position:relative; z-index:1; }
 
 /* ─── BG PICKER ── */
 #bg-picker {
-  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
-  display:flex; gap:6px; align-items:center;
-  background:rgba(0,0,0,0.5); backdrop-filter:blur(8px);
-  border-radius:var(--radius-full); padding:6px 10px;
-  z-index:100;
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
 }
 #picker-label {
   font-size:10px; color:rgba(255,255,255,0.5); margin-right:2px;
@@ -1216,12 +1215,12 @@ input, textarea { font-family:var(--font-sans); }
   margin-bottom:var(--spacing-3);
 }
 /* Row holds optional avatar gutter + bubble; avatar bottom-aligned */
-.other-msg-row { display:flex; align-items:flex-end; margin-bottom:2px; }
+.other-msg-row { display:flex; align-items:flex-start; margin-bottom:2px; }
 .other-msg-row:last-child { margin-bottom:0; }
 /* Reserved 40px avatar gutter (group convos) so stacked bubbles stay aligned */
 .other-msg-avatar-gutter {
   width:40px; flex-shrink:0;
-  display:flex; align-items:flex-end; justify-content:flex-start;
+  display:flex; align-items:flex-start; justify-content:flex-start;
   padding:0 6px 0 8px; box-sizing:border-box;
 }
 
@@ -1419,6 +1418,157 @@ input, textarea { font-family:var(--font-sans); }
   width:0; min-width:100%;
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   GLOBAL SEARCH — entry points + unified modal
+   ════════════════════════════════════════════════════════════════════ */
+
+/* (1) Floating global field — sits on top of the app, on the page background */
+.global-search-float {
+  position:fixed; top:4px; left:calc((100vw + 64px) / 2); transform:translateX(-50%);
+  z-index:60; width:35vw; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:flex-start; gap:var(--spacing-2);
+  padding:6px 16px; cursor:text;
+  background:transparent;
+  border:1px solid transparent; border-radius:var(--radius-md);
+  transition:background .12s, color .12s;
+}
+body:has(#page.dark-rail) .global-search-float  { background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.2); }
+body:has(#page.dark-rail) .global-search-float:hover  { background:rgba(255,255,255,0.16); color:rgba(255,255,255,0.85); }
+body:has(#page.light-rail) .global-search-float { background:rgba(0,0,0,0.07); color:rgba(0,0,0,0.5); border-color:rgba(0,0,0,0.15); }
+body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.12); color:rgba(0,0,0,0.7); }
+.global-search-float:focus-visible { outline:none; box-shadow:0 0 0 2px var(--wire-border-accent-focus); }
+.global-search-float i { font-size:14px; flex-shrink:0; }
+.global-search-float .gsf-placeholder { font-size:var(--font-size-sm); }
+.global-search-float .gsf-kbd { display:none; }
+
+/* (2) Conversation-list search field (reuses .search-wrap) */
+.psidebar-search { padding:0 var(--spacing-3) var(--spacing-2); flex-shrink:0; }
+
+/* (3) Unified search modal */
+#search-overlay {
+  position:fixed; inset:0; z-index:200; display:none;
+  align-items:flex-start; justify-content:center; padding-top:88px;
+  background:rgba(0,0,0,0.4); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+}
+#search-overlay.open { display:flex; }
+.search-modal {
+  width:min(640px, 92vw); max-height:72vh; display:flex; flex-direction:column;
+  background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-base); box-shadow:0 28px 70px -18px rgba(0,0,0,0.55); overflow:hidden;
+  animation:search-pop .14s ease-out;
+}
+@keyframes search-pop { from { opacity:0; transform:translateY(-8px) scale(.99); } to { opacity:1; transform:none; } }
+.search-modal-field {
+  display:flex; align-items:center; gap:var(--spacing-2);
+  padding:var(--spacing-3) var(--spacing-3) var(--spacing-3) var(--spacing-4);
+  border-bottom:0.5px solid var(--wire-border-base-primary);
+}
+.search-modal-field > i.ph-magnifying-glass { font-size:16px; color:var(--wire-content-base-secondary); flex-shrink:0; }
+#search-scope-chip {
+  display:none; align-items:center; gap:5px; flex-shrink:0; white-space:nowrap;
+  font-size:var(--font-size-xs); font-weight:500;
+  padding:4px 5px 4px 9px; border-radius:var(--radius-sm);
+  background:var(--wire-bg-base-secondary); color:var(--wire-content-base-primary);
+  border:0.5px solid var(--wire-border-base-primary);
+}
+#search-scope-chip.show { display:inline-flex; }
+#search-scope-chip button { border:none; background:none; cursor:pointer; color:var(--wire-content-base-secondary); display:flex; padding:1px; border-radius:3px; }
+#search-scope-chip button:hover { color:var(--wire-content-base-primary); background:var(--wire-bg-base-tertiary); }
+#search-input {
+  flex:1; min-width:40px; border:none; outline:none; background:transparent;
+  font-size:var(--font-size-base); color:var(--wire-content-base-primary); font-family:var(--font-sans);
+}
+#search-input::placeholder { color:var(--wire-content-base-secondary); }
+.search-clear { border:none; background:none; cursor:pointer; font-size:var(--font-size-sm); color:var(--wire-content-base-secondary); padding:2px 6px; flex-shrink:0; }
+.search-clear:hover { color:var(--wire-content-base-primary); }
+.search-close { border:none; background:none; cursor:pointer; color:var(--wire-content-base-secondary); display:flex; padding:5px; border-radius:var(--radius-sm); flex-shrink:0; }
+.search-close:hover { background:var(--wire-bg-base-tertiary); color:var(--wire-content-base-primary); }
+.search-tabs {
+  display:flex; gap:2px; padding:var(--spacing-2) var(--spacing-3);
+  border-bottom:0.5px solid var(--wire-border-base-primary); overflow-x:auto; flex-shrink:0;
+}
+.search-tabs::-webkit-scrollbar { height:0; }
+.search-tab {
+  border:none; background:none; cursor:pointer; white-space:nowrap; font-family:var(--font-sans);
+  font-size:var(--font-size-sm); font-weight:500; color:var(--wire-content-base-secondary);
+  padding:6px 10px; border-radius:var(--radius-md); display:flex; align-items:center; gap:6px;
+}
+.search-tab:hover { background:var(--wire-bg-base-tertiary); }
+.search-tab.active { background:var(--wire-bg-base-secondary); color:var(--wire-content-base-primary); }
+.search-tab .tab-count { font-size:10px; font-weight:600; opacity:.7; }
+.search-results { overflow-y:auto; flex:1; padding:var(--spacing-2) 0; }
+.search-section-label {
+  font-size:10px; font-weight:600; color:var(--wire-content-base-secondary);
+  padding:var(--spacing-3) var(--spacing-4) var(--spacing-1); text-transform:uppercase; letter-spacing:.5px;
+}
+.search-result { display:flex; align-items:center; gap:var(--spacing-3); padding:7px var(--spacing-4); cursor:pointer; }
+.search-result:hover, .search-result.active { background:var(--wire-bg-base-tertiary); }
+.search-result .sr-avatar { width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.search-result .sr-avatar > * { transform:scale(1.7); }
+.sr-file-ic { width:30px; height:30px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary); transform:none !important; }
+.sr-file-ic i { font-size:15px; }
+.search-result .sr-body { flex:1; min-width:0; }
+.search-result .sr-name { font-size:var(--font-size-sm); font-weight:500; color:var(--wire-content-base-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.search-result .sr-meta { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.search-result mark { background:color-mix(in srgb, var(--wire-border-accent-focus) 30%, transparent); color:inherit; border-radius:2px; padding:0 1px; }
+.search-empty { padding:var(--spacing-10) var(--spacing-4); text-align:center; color:var(--wire-content-base-secondary); font-size:var(--font-size-sm); }
+/* ════════════════════════════════════════════════════════════════════
+   SETTINGS MODAL
+   ════════════════════════════════════════════════════════════════════ */
+#settings-overlay { position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+#settings-overlay.open { display:flex; }
+.settings-modal { width:min(840px,94vw); height:min(560px,86vh); display:flex; flex-direction:column; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:var(--radius-base); box-shadow:0 28px 70px -18px rgba(0,0,0,0.55); overflow:hidden; animation:search-pop .14s ease-out; }
+.settings-head { display:flex; align-items:center; justify-content:space-between; padding:var(--spacing-4) var(--spacing-5); border-bottom:0.5px solid var(--wire-border-base-primary); flex-shrink:0; }
+.settings-head h2 { font-size:var(--font-size-lg); font-weight:var(--font-weight-bold); color:var(--wire-content-base-primary); margin:0; }
+.settings-body { flex:1; display:flex; min-height:0; }
+.settings-nav { width:248px; flex-shrink:0; border-right:0.5px solid var(--wire-border-base-primary); padding:var(--spacing-3); overflow-y:auto; }
+.settings-nav-group { font-size:var(--font-size-xs); font-weight:var(--font-weight-semibold); color:var(--wire-content-base-secondary); text-transform:uppercase; letter-spacing:.5px; padding:var(--spacing-3) var(--spacing-2) var(--spacing-1); }
+.settings-nav-group:first-child { padding-top:var(--spacing-1); }
+.settings-nav-item { display:flex; align-items:center; gap:var(--spacing-3); padding:8px 10px; border-radius:var(--radius-md); cursor:pointer; font-size:var(--font-size-sm); color:var(--wire-content-base-primary); }
+.settings-nav-item i { font-size:18px; color:var(--wire-content-base-secondary); flex-shrink:0; }
+.settings-nav-item:hover { background:var(--wire-bg-base-tertiary); }
+.settings-nav-item.active { background:var(--wire-bg-accent-secondary); color:var(--wire-bg-accent-primary); font-weight:var(--font-weight-medium); }
+.settings-nav-item.active i { color:var(--wire-bg-accent-primary); }
+.settings-content-wrap { flex:1; display:flex; flex-direction:column; min-width:0; }
+.settings-content { flex:1; overflow-y:auto; padding:var(--spacing-5) var(--spacing-6); }
+.settings-section { display:none; }
+.settings-section.active { display:block; }
+.settings-section h3 { font-size:var(--font-size-base); font-weight:var(--font-weight-semibold); margin:0 0 var(--spacing-5); color:var(--wire-content-base-primary); }
+.settings-placeholder { height:100%; min-height:240px; display:flex; align-items:center; justify-content:center; color:var(--wire-content-base-secondary); font-size:var(--font-size-sm); }
+.settings-field { margin-bottom:var(--spacing-5); max-width:420px; }
+.settings-field .field-label { display:block; font-size:var(--font-size-sm); font-weight:var(--font-weight-medium); color:var(--wire-content-base-primary); margin-bottom:6px; }
+.settings-field .field-hint { font-size:var(--font-size-xs); color:var(--wire-content-base-secondary); margin-top:4px; }
+.text-input { width:100%; box-sizing:border-box; padding:9px 12px; font-family:var(--font-sans); font-size:var(--font-size-sm); color:var(--wire-content-base-primary); background:var(--wire-bg-base-secondary); border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-md); outline:none; }
+.text-input:focus { border-color:var(--wire-bg-accent-primary); }
+.avatar-row { display:flex; align-items:center; gap:var(--spacing-4); margin-bottom:var(--spacing-5); }
+.avatar-lg { width:64px; height:64px; border-radius:100px; background:var(--wire-identity-blue); display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:600; flex-shrink:0; }
+.avatar-change { font-size:var(--font-size-sm); color:var(--wire-bg-accent-primary); cursor:pointer; font-weight:var(--font-weight-medium); background:none; border:none; padding:0; }
+.status-options { display:flex; flex-direction:column; gap:6px; max-width:420px; }
+.status-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-md); cursor:pointer; font-size:var(--font-size-sm); color:var(--wire-content-base-primary); }
+.status-opt:hover { background:var(--wire-bg-base-tertiary); }
+.status-opt.active { border-color:var(--wire-bg-accent-primary); background:var(--wire-bg-accent-secondary); }
+.status-dot { width:11px; height:11px; border-radius:100px; flex-shrink:0; }
+.status-opt .check { margin-left:auto; color:var(--wire-bg-accent-primary); opacity:0; font-size:14px; }
+.status-opt.active .check { opacity:1; }
+.accent-row { display:flex; gap:12px; }
+.accent-swatch { width:28px; height:28px; border-radius:100px; cursor:pointer; border:2px solid var(--wire-bg-base-primary); box-shadow:0 0 0 1px var(--wire-border-base-primary); }
+.accent-swatch.active { box-shadow:0 0 0 2px var(--wire-content-base-primary); }
+.settings-footer { flex-shrink:0; border-top:0.5px solid var(--wire-border-base-primary); padding:var(--spacing-3) var(--spacing-5); background:var(--wire-bg-base-primary); }
+.settings-footer #bg-picker { position:static; transform:none; background:transparent; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; z-index:auto; }
+.settings-footer #picker-label { color:var(--wire-content-base-secondary); }
+.settings-footer .bg-swatch.active { border-color:var(--wire-content-base-primary); }
+.settings-footer .bg-swatch:hover { border-color:var(--wire-content-base-secondary); }
+.theme-options { display:inline-flex; gap:4px; padding:3px; background:var(--wire-bg-base-secondary); border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-md); }
+.theme-opt { display:inline-flex; align-items:center; gap:7px; padding:7px 16px; border:none; background:transparent; border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-sans); font-size:var(--font-size-sm); color:var(--wire-content-base-secondary); }
+.theme-opt i { font-size:15px; }
+.theme-opt.active { background:var(--wire-bg-base-primary); color:var(--wire-content-base-primary); box-shadow:0 1px 2px rgba(0,0,0,0.1); }
+.bg-row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.bg-row .bg-swatch { width:28px; height:28px; border:2px solid var(--wire-bg-base-primary); box-shadow:0 0 0 1px var(--wire-border-base-primary); }
+.bg-row .bg-swatch.active { border-color:var(--wire-bg-base-primary); box-shadow:0 0 0 2px var(--wire-content-base-primary); }
+/* Own messages: bubble + right-side avatar gutter (avatar top-aligned, first of stack) */
+.own-msg-row { display:flex; align-items:flex-start; justify-content:flex-end; width:100%; }
+.own-msg-avatar-gutter { width:40px; flex-shrink:0; display:flex; align-items:flex-start; justify-content:flex-end; padding:0 8px 0 6px; box-sizing:border-box; }
+.own-msg-reactions.indent { padding-right:46px; }
 </style>
 </head>
 <body>
@@ -1431,7 +1581,6 @@ input, textarea { font-family:var(--font-sans); }
   <!-- ── NAV RAIL ── -->
   <nav id="rail" aria-label="Primary navigation">
     <div class="rail-top">
-      <div class="team-av">W</div>
       <div class="user-av">KD<span class="presence"></span></div>
       <div class="rail-items">
         <div class="n-item active" data-product="conv" title="Conversations">
@@ -1446,14 +1595,14 @@ input, textarea { font-family:var(--font-sans); }
           <div class="n-btn"><svg width="16px" height="14px" viewBox="0 0 18 16" fill="none"> <path d="M16.0037 4.97014C16.0037 4.31873 15.2947 3.9586 14.8196 4.36857L13.6081 5.61316V10.2581L14.8196 11.6129C15.2649 11.9973 15.9155 11.7051 15.9953 11.1304L16.0037 11.0113V4.97014ZM7.7171 1V2.58065H6.17652V1H7.7171ZM17.5 11.0113C17.5 12.9697 15.3434 14.1074 13.8719 12.8363L13.7976 12.7719L13.7316 12.6978L13.4436 12.3759L13.4001 12.4738C13.01 13.2738 12.4102 13.9374 11.6733 14.3843L11.5247 14.4708C10.9594 14.7836 10.3707 14.8986 9.7829 14.9506C9.2134 15.001 8.51942 15 7.7171 15H6.17652C5.3743 15 4.6802 15.001 4.11072 14.9506C3.59638 14.9051 3.08118 14.8116 2.58183 14.5793L2.36891 14.4708C1.61406 14.053 0.992137 13.4132 0.574485 12.6317L0.49349 12.4738C0.202089 11.8762 0.0945091 11.2544 0.0459281 10.6312C-0.00120059 10.0266 2.5042e-06 9.28926 2.89289e-06 8.43397V7.56603C2.50459e-06 6.71074 -0.00120061 5.97343 0.0459281 5.36883C0.0945091 4.74561 0.202089 4.12385 0.49349 3.52621L0.574485 3.36832C0.992137 2.58685 1.61406 1.94697 2.36891 1.52924L2.58183 1.42074C3.08118 1.18842 3.59638 1.0949 4.11072 1.0494C4.6802 0.999039 5.37431 1 6.17652 1V2.58065L5.08016 2.58594C4.11943 2.60228 3.53532 2.66756 3.06279 2.92906L2.86907 3.04725C2.4268 3.34003 2.06499 3.75467 1.82365 4.2495L1.76603 4.37828C1.49636 5.03461 1.49633 5.91286 1.49633 7.56603V8.43397L1.50134 9.60181C1.51669 10.625 1.57823 11.2472 1.82365 11.7505C2.09941 12.3159 2.53208 12.7772 3.06279 13.0709C3.53532 13.3324 4.11943 13.3977 5.08016 13.4141L6.17652 13.4194H7.7171L8.81346 13.4141C9.69414 13.3991 10.2579 13.3426 10.7098 13.1318L10.83 13.0709C11.2946 12.8138 11.684 12.4282 11.9589 11.9569L12.07 11.7505C12.3972 11.0794 12.3973 10.1973 12.3973 8.43397V7.56603C12.3973 5.91298 12.3972 5.03459 12.1276 4.37828L12.07 4.2495C11.8287 3.7547 11.4668 3.34005 11.0245 3.04725L10.83 2.92906C10.3576 2.66767 9.77387 2.60229 8.81346 2.58594L7.7171 2.58065V1C8.51942 1 9.2134 0.999011 9.7829 1.0494C10.3707 1.1014 10.9594 1.2164 11.5247 1.52924L11.6733 1.61568C12.4103 2.06263 13.01 2.72618 13.4001 3.52621L13.4294 3.5906L13.7759 3.23513L13.8226 3.18838L13.8719 3.14516C15.3434 1.87412 17.5 3.01182 17.5 4.97014V11.0113Z" fill="currentColor"/> <path d="M4.75737 4.25525C4.96117 4.25531 5.15005 4.3401 5.27837 4.53279L6.08981 5.74962L6.17382 5.88556C6.24482 6.01585 6.27837 6.13125 6.27837 6.23956L6.2739 6.30753C6.25211 6.46454 6.15562 6.60753 6.01028 6.76916C5.90866 6.88089 5.68903 7.20629 5.68588 7.21095C6.25671 8.11757 6.87079 8.76548 7.72073 9.37558C7.72073 9.37558 8.02854 9.13932 8.13271 9.03007C8.3062 8.84962 8.46076 8.74512 8.63047 8.74498C8.7664 8.74498 8.91792 8.80906 9.0916 8.93755L10.2507 9.8136C10.4279 9.95008 10.5 10.1425 10.5 10.3432L10.4937 10.4461C10.4671 10.6852 10.3497 10.9233 10.1747 11.1305L10.0424 11.2712C9.72398 11.5747 9.34343 11.713 8.91734 11.713L8.7118 11.6988C7.67248 11.5617 6.46732 10.4331 5.44459 9.34537C4.42181 8.26128 3.60775 7.23893 3.50983 6.16593L3.5 5.94975C3.50007 5.50372 3.6241 5.09439 3.90036 4.74897L4.02815 4.60453C4.25091 4.37564 4.50819 4.25525 4.75737 4.25525Z" fill="currentColor"/> </svg></div>
           <span class="n-label">Meet</span>
         </div>
-        <div class="n-item" title="Search">
+        <div class="n-item" id="nav-search" title="Search">
           <div class="n-btn"><i class="ph-bold ph-magnifying-glass" style="font-size:16px;"></i></div>
           <span class="n-label">Search</span>
         </div>
       </div>
     </div>
     <div class="rail-bottom">
-      <div class="n-item" aria-label="Settings">
+      <div class="n-item" aria-label="Settings" data-opens-settings>
         <div class="n-btn"><i class="ph-bold ph-gear" style="font-size:16px;"></i></div>
         <span class="n-label">Settings</span>
       </div>
@@ -1489,7 +1638,7 @@ input, textarea { font-family:var(--font-sans); }
       <div class="psidebar-header">
         <span class="psidebar-title" id="sidebar-title">
           Conversations
-          <button class="icon-btn" title="Settings" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear" style="font-size:13px;"></i></button>
+          <button class="icon-btn" title="Settings" data-opens-settings style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear" style="font-size:13px;"></i></button>
         </span>
         <div class="psidebar-actions">
           <button class="wds-btn wds-btn-secondary wds-btn-sm" title="New conversation" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-md);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
@@ -1567,7 +1716,7 @@ input, textarea { font-family:var(--font-sans); }
           </div>
           <div class="topbar-right">
             <button class="icon-btn" title="Video call"><i class="ph-bold ph-video-camera"></i></button>
-            <button class="icon-btn" title="Search in conversation"><i class="ph-bold ph-magnifying-glass"></i></button>
+            <button class="icon-btn" id="conv-search-btn" title="Search in conversation"><i class="ph-bold ph-magnifying-glass"></i></button>
             <button class="icon-btn" title="More"><i class="ph-bold ph-dots-three"></i></button>
           </div>
         </div>
@@ -1719,17 +1868,7 @@ input, textarea { font-family:var(--font-sans); }
 </div>
 </div><!-- /#page -->
 
-<!-- ── BG PICKER ── -->
-<div id="bg-picker" aria-label="Page background picker">
-  <span id="picker-label">Background</span>
-  <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#004455 50%,#000d10)" data-bg="b1" data-rail="dark" title="Blue › Petrol"></div>
-  <div class="bg-swatch" style="background:linear-gradient(145deg,#01455a,#0d3a20 55%,#020a05)" data-bg="b2" data-rail="dark" title="Petrol › Green"></div>
-  <div class="bg-swatch" style="background:linear-gradient(145deg,#2e1540,#032050 55%,#000510)" data-bg="b3" data-rail="dark" title="Purple › Blue"></div>
-  <div class="bg-swatch" style="background:linear-gradient(145deg,#2d1242,#013040 55%,#000a0c)" data-bg="b4" data-rail="dark" title="Purple › Petrol"></div>
-  <div class="bg-swatch" style="background:linear-gradient(145deg,#4a2008,#3a0008 55%,#0a0002)" data-bg="b5" data-rail="dark" title="Amber › Red"></div>
-  <div class="bg-swatch" style="background:linear-gradient(145deg,#0d3018,#022450 55%,#00060f)" data-bg="b6" data-rail="dark" title="Green › Blue"></div>
-  <div class="bg-swatch" style="background:#e8e4dc" data-bg="light" data-rail="light" title="Light"></div>
-</div>
+<!-- ── BG PICKER moved into Settings → Appearance footer ── -->
   <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#015a6e 50%,#000d10)" data-bg="b" data-rail="dark" title="B — Blue › Petrol"></div>
   <div class="bg-swatch" style="background:radial-gradient(ellipse at 5% 100%,#6b3485,transparent 60%),radial-gradient(ellipse at 95% 0%,#7a3d0f,transparent 60%),#0a080c" data-bg="c" data-rail="dark" title="C — Purple · Amber"></div>
   <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 0%,#0d3060,transparent 55%),radial-gradient(ellipse at 100% 0%,#3d1a60,transparent 55%),radial-gradient(ellipse at 100% 100%,#01354a,transparent 55%),radial-gradient(ellipse at 0% 100%,#0d3020,transparent 55%),#060810" data-bg="d" data-rail="dark" title="D — 4-colour mesh"></div>
@@ -1753,11 +1892,131 @@ input, textarea { font-family:var(--font-sans); }
 </div>
 
 
-<button id="theme-toggle" title="Toggle dark / light mode" onclick="toggleTheme()">
-  <i class="ph-bold ph-moon" id="theme-icon"></i>
-</button>
+<!-- dark/light toggle moved into Settings → Appearance -->
 
 
+
+<!-- ── GLOBAL SEARCH: floating field ── -->
+<div class="global-search-float" id="global-search-float" role="button" tabindex="0" aria-label="Search Wire">
+  <i class="ph-bold ph-magnifying-glass"></i>
+  <span class="gsf-placeholder">Search Wire</span>
+  <span class="gsf-kbd">⌘K</span>
+</div>
+
+<!-- ── GLOBAL SEARCH: unified modal ── -->
+<div id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal">
+    <div class="search-modal-field">
+      <i class="ph-bold ph-magnifying-glass"></i>
+      <span id="search-scope-chip">
+        <span id="search-scope-name"></span>
+        <button id="search-scope-clear" title="Search everywhere"><i class="ph-bold ph-x" style="font-size:10px;"></i></button>
+      </span>
+      <input type="text" id="search-input" placeholder="Search Wire" autocomplete="off"/>
+      <button class="search-clear" id="search-clear" style="display:none">Clear</button>
+      <button class="search-close" id="search-close" title="Close (Esc)"><i class="ph-bold ph-x" style="font-size:15px;"></i></button>
+    </div>
+    <div class="search-tabs" id="search-tabs"></div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+
+<!-- ── SETTINGS MODAL ── -->
+<div id="settings-overlay" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="settings-modal">
+    <div class="settings-head">
+      <h2>Settings</h2>
+      <button class="search-close" id="settings-close" title="Close (Esc)"><i class="ph-bold ph-x" style="font-size:16px;"></i></button>
+    </div>
+    <div class="settings-body">
+      <nav class="settings-nav">
+        <div class="settings-nav-group">Personal information</div>
+        <div class="settings-nav-item" data-section="account"><i class="ph-bold ph-user-circle"></i>Account</div>
+        <div class="settings-nav-item" data-section="devices"><i class="ph-bold ph-devices"></i>Devices</div>
+        <div class="settings-nav-item" data-section="backup"><i class="ph-bold ph-cloud-arrow-up"></i>Backup</div>
+        <div class="settings-nav-group">Preferences</div>
+        <div class="settings-nav-item active" data-section="appearance"><i class="ph-bold ph-palette"></i>Appearance</div>
+        <div class="settings-nav-item" data-section="conversations"><i class="ph-bold ph-chat-circle"></i>Conversations</div>
+        <div class="settings-nav-item" data-section="calls"><i class="ph-bold ph-phone"></i>Calls</div>
+        <div class="settings-nav-item" data-section="privacy"><i class="ph-bold ph-lock-simple"></i>Privacy &amp; Security</div>
+        <div class="settings-nav-item" data-section="notifications"><i class="ph-bold ph-bell"></i>Notifications</div>
+        <div class="settings-nav-group">Resources</div>
+        <div class="settings-nav-item" data-section="support"><i class="ph-bold ph-question"></i>Support</div>
+        <div class="settings-nav-item" data-section="about"><i class="ph-bold ph-info"></i>About</div>
+      </nav>
+      <div class="settings-content-wrap">
+        <div class="settings-content">
+          <section class="settings-section active" data-section="appearance">
+            <h3>Appearance</h3>
+            <div class="avatar-row">
+              <div class="avatar-lg" id="settings-avatar">KD</div>
+              <div>
+                <button class="avatar-change">Change picture</button>
+                <div class="field-hint">PNG or JPG, up to 5&nbsp;MB</div>
+              </div>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Display name</label>
+              <input class="text-input" type="text" value="Kasimir Dengler"/>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Username</label>
+              <input class="text-input" type="text" value="@kasimir.dengler"/>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Status</label>
+              <div class="status-options" id="status-options">
+                <div class="status-opt active" data-status="available"><span class="status-dot" style="background:#1d7833"></span>Available<i class="ph-bold ph-check check"></i></div>
+                <div class="status-opt" data-status="busy"><span class="status-dot" style="background:#cc8800"></span>Busy<i class="ph-bold ph-check check"></i></div>
+                <div class="status-opt" data-status="away"><span class="status-dot" style="background:#c20013"></span>Away<i class="ph-bold ph-check check"></i></div>
+                <div class="status-opt" data-status="none"><span class="status-dot" style="background:transparent;box-shadow:0 0 0 1.5px var(--wire-border-base-primary) inset"></span>Nothing<i class="ph-bold ph-check check"></i></div>
+              </div>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Accent color</label>
+              <div class="accent-row" id="accent-row">
+                <div class="accent-swatch active" data-accent="blue" style="background:#0667c8" title="Blue"></div>
+                <div class="accent-swatch" data-accent="green" style="background:#1d7833" title="Green"></div>
+                <div class="accent-swatch" data-accent="red" style="background:#c20013" title="Red"></div>
+                <div class="accent-swatch" data-accent="amber" style="background:#cc8800" title="Amber"></div>
+                <div class="accent-swatch" data-accent="purple" style="background:#8944ab" title="Purple"></div>
+                <div class="accent-swatch" data-accent="petrol" style="background:#01718e" title="Petrol"></div>
+              </div>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Theme</label>
+              <div class="theme-options" id="theme-options">
+                <button class="theme-opt active" data-theme-mode="light"><i class="ph-bold ph-sun"></i>Light</button>
+                <button class="theme-opt" data-theme-mode="dark"><i class="ph-bold ph-moon"></i>Dark</button>
+              </div>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Background</label>
+              <div class="bg-row" id="bg-picker" aria-label="Page background picker">
+                <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#004455 50%,#000d10)" data-bg="b1" data-rail="dark" title="Blue › Petrol"></div>
+                <div class="bg-swatch" style="background:linear-gradient(145deg,#01455a,#0d3a20 55%,#020a05)" data-bg="b2" data-rail="dark" title="Petrol › Green"></div>
+                <div class="bg-swatch" style="background:linear-gradient(145deg,#2e1540,#032050 55%,#000510)" data-bg="b3" data-rail="dark" title="Purple › Blue"></div>
+                <div class="bg-swatch" style="background:linear-gradient(145deg,#2d1242,#013040 55%,#000a0c)" data-bg="b4" data-rail="dark" title="Purple › Petrol"></div>
+                <div class="bg-swatch" style="background:linear-gradient(145deg,#4a2008,#3a0008 55%,#0a0002)" data-bg="b5" data-rail="dark" title="Amber › Red"></div>
+                <div class="bg-swatch" style="background:linear-gradient(145deg,#0d3018,#022450 55%,#00060f)" data-bg="b6" data-rail="dark" title="Green › Blue"></div>
+                <div class="bg-swatch" style="background:#e8e4dc" data-bg="light" data-rail="light" title="Light"></div>
+              </div>
+            </div>
+          </section>
+          <section class="settings-section" data-section="account"><div class="settings-placeholder">Account settings — to be defined</div></section>
+          <section class="settings-section" data-section="devices"><div class="settings-placeholder">Devices — to be defined</div></section>
+          <section class="settings-section" data-section="backup"><div class="settings-placeholder">Backup — to be defined</div></section>
+          <section class="settings-section" data-section="conversations"><div class="settings-placeholder">Conversations — to be defined</div></section>
+          <section class="settings-section" data-section="calls"><div class="settings-placeholder">Calls — to be defined</div></section>
+          <section class="settings-section" data-section="privacy"><div class="settings-placeholder">Privacy &amp; Security — to be defined</div></section>
+          <section class="settings-section" data-section="notifications"><div class="settings-placeholder">Notifications — to be defined</div></section>
+          <section class="settings-section" data-section="support"><div class="settings-placeholder">Support — to be defined</div></section>
+          <section class="settings-section" data-section="about"><div class="settings-placeholder">About — to be defined</div></section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── Globals ──────────────────────────────────────────────────────────────────
@@ -2417,6 +2676,11 @@ function renderMessages() {
         const isLast = i === group.bubbles.length - 1;
         const isSingle = group.bubbles.length === 1;
         const showStatus = isLast || isSingle;
+        const showAvatar = (i === 0 || isSingle); // avatar at top of stack
+
+        const row = document.createElement('div');
+        row.className = 'own-msg-row';
+
         const bubble = document.createElement('div');
         bubble.className = 'own-msg-bubble';
         buildBubbleInner(bubble, msg, 'self');
@@ -2428,9 +2692,22 @@ function renderMessages() {
             '<span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span>';
           bubble.appendChild(status);
         }
-        groupEl.appendChild(bubble);
+        row.appendChild(bubble);
+
+        const gut = document.createElement('div');
+        gut.className = 'own-msg-avatar-gutter';
+        if (showAvatar) {
+          const av = document.createElement('div');
+          av.className = 'av av-26';
+          av.style.background = 'var(--wire-identity-blue)';
+          av.textContent = 'KD';
+          gut.appendChild(av);
+        }
+        row.appendChild(gut);
+
+        groupEl.appendChild(row);
       });
-      appendReactions(groupEl, group, 'own-msg-reactions');
+      appendReactions(groupEl, group, 'own-msg-reactions indent');
       area.appendChild(groupEl);
 
     } else {
@@ -2442,23 +2719,21 @@ function renderMessages() {
         const isLast = i === group.bubbles.length - 1;
         const isSingle = group.bubbles.length === 1;
         const showStatus = isLast || isSingle;
-        const showName = (i === 0) && isGroupMode;            // top of stack
-        const showAvatar = (isLast || isSingle) && isGroupMode; // bottom of stack
+        const showName = (i === 0) && isGroupMode;       // sender name: group/channel only
+        const showAvatar = (i === 0 || isSingle);        // avatar at top of stack, all conv types
 
         const row = document.createElement('div');
         row.className = 'other-msg-row';
 
-        if (isGroupMode) {
-          const gut = document.createElement('div');
-          gut.className = 'other-msg-avatar-gutter';
-          if (showAvatar) {
-            const av = document.createElement('div');
-            av.className = 'av av-26 av-' + (meta0.color || 'petrol');
-            av.textContent = meta0.initials || '';
-            gut.appendChild(av);
-          }
-          row.appendChild(gut);
+        const gut = document.createElement('div');
+        gut.className = 'other-msg-avatar-gutter';
+        if (showAvatar) {
+          const av = document.createElement('div');
+          av.className = 'av av-26 av-' + (meta0.color || 'petrol');
+          av.textContent = meta0.initials || '';
+          gut.appendChild(av);
         }
+        row.appendChild(gut);
 
         const bubble = document.createElement('div');
         bubble.className = 'other-msg-bubble';
@@ -2491,7 +2766,7 @@ function renderMessages() {
         row.appendChild(bubble);
         groupEl.appendChild(row);
       });
-      appendReactions(groupEl, group, 'other-msg-reactions' + (isGroupMode ? ' indent' : ''));
+      appendReactions(groupEl, group, 'other-msg-reactions indent');
       area.appendChild(groupEl);
     }
   });
@@ -2517,6 +2792,252 @@ function sendMessage() {
   input.value = '';
   sendBtn.classList.remove('active');
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  GLOBAL SEARCH — one modal, multiple entry points, scope-aware
+// ════════════════════════════════════════════════════════════════════
+(function(){
+  const overlay   = document.getElementById('search-overlay');
+  const input     = document.getElementById('search-input');
+  const tabsEl    = document.getElementById('search-tabs');
+  const resultsEl = document.getElementById('search-results');
+  const clearBtn  = document.getElementById('search-clear');
+  const closeBtn  = document.getElementById('search-close');
+  const chipEl    = document.getElementById('search-scope-chip');
+  const chipName  = document.getElementById('search-scope-name');
+  const chipClear = document.getElementById('search-scope-clear');
+  if (!overlay || !input) return;
+
+  // Keep the floating field centered (fixed width set in CSS)
+  function centerField(){
+    const f = document.getElementById('global-search-float');
+    if (f) f.style.left = '50%';
+  }
+  centerField();
+  window.addEventListener('resize', centerField);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(centerField);
+
+  const TABS = [
+    { id:'all', label:'All' }, { id:'favorites', label:'Favorites' },
+    { id:'channels', label:'Channels' }, { id:'groups', label:'Groups' },
+    { id:'people', label:'People' }, { id:'files', label:'Files' }, { id:'messages', label:'Messages' },
+  ];
+  const SECTION_TYPE = { 'Channels':'channel', 'Groups':'group', '1:1 Conversations':'people' };
+  const FAVORITES = new Set(['prodeng','dl']);
+  const IDENTITY = { blue:'--wire-identity-blue', purple:'--wire-identity-purple', amber:'--wire-identity-amber', red:'--wire-identity-red', green:'--wire-identity-green', petrol:'--wire-identity-blue' };
+
+  const FILES = [
+    { name:'Q3_Revenue_Model_v4.xlsx', ftype:'Spreadsheet', conv:'prodeng',  by:'Tom Berger',  icon:'ph-microsoft-excel-logo', color:'green' },
+    { name:'Offsite_Location.png',     ftype:'Image',       conv:'prodeng',  by:'Mara Voss',   icon:'ph-image',                color:'purple' },
+    { name:'Demo_Recording.mp4',       ftype:'Video',       conv:'prodeng',  by:'Tom Berger',  icon:'ph-file-video',           color:'petrol' },
+    { name:'Brand_Guidelines.pdf',     ftype:'PDF',         conv:'marketing',by:'Lena Roth',   icon:'ph-file-pdf',             color:'red' },
+    { name:'Design_Tokens.json',       ftype:'Code',        conv:'design',   by:'You',         icon:'ph-brackets-curly',       color:'blue' },
+    { name:'Sprint_Notes.docx',        ftype:'Document',    conv:'prodeng',  by:'Priya Anand', icon:'ph-file-doc',             color:'blue' },
+  ];
+
+  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escRe(s){ return (s||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+  function hi(text, q){ const safe = escapeHtml(text); if(!q) return safe; return safe.replace(new RegExp('('+escRe(q)+')','ig'), '<mark>$1</mark>'); }
+
+  function buildEntities(){
+    const list = [];
+    document.querySelectorAll('#product-sidebar .conv-item[data-conv]').forEach(item => {
+      const sec = item.closest('.conv-section');
+      const secLabel = sec && sec.querySelector('.section-label') ? sec.querySelector('.section-label').textContent.trim() : '';
+      const nameEl = item.querySelector('.conv-name');
+      const av = item.querySelector(':scope > div');
+      list.push({ key:item.dataset.conv, name: nameEl ? nameEl.textContent.trim() : '', type: SECTION_TYPE[secLabel] || 'group', avatarHTML: av ? av.outerHTML : '', fav: FAVORITES.has(item.dataset.conv) });
+    });
+    return list;
+  }
+  function buildMessages(entities){
+    const byKey = {}; entities.forEach(e => byKey[e.key] = e);
+    const out = [];
+    if (typeof CONVERSATIONS === 'object' && CONVERSATIONS){
+      Object.keys(CONVERSATIONS).forEach(key => {
+        const ent = byKey[key]; if(!ent) return;
+        (CONVERSATIONS[key] || []).forEach(m => {
+          if(!m.text) return;
+          out.push({ conv:key, convName:ent.name, avatarHTML:ent.avatarHTML, sender: m.sender==='self' ? 'You' : (m.sender || ent.name), text:m.text });
+        });
+      });
+    }
+    return out;
+  }
+
+  let activeTab = 'all';
+  let scopeKey  = null;
+
+  function matchEntities(q){ let p = buildEntities(); if(scopeKey) p = p.filter(e=>e.key===scopeKey); if(q) p = p.filter(e=>e.name.toLowerCase().includes(q)); return p; }
+  function matchFiles(q){ let p = FILES.slice(); if(scopeKey) p = p.filter(f=>f.conv===scopeKey); if(q) p = p.filter(f=>f.name.toLowerCase().includes(q)); return p; }
+  function matchMessages(q){ let p = buildMessages(buildEntities()); if(scopeKey) p = p.filter(m=>m.conv===scopeKey); if(q) p = p.filter(m=>m.text.toLowerCase().includes(q)||(m.sender||'').toLowerCase().includes(q)); else if(!scopeKey) p = p.slice(0,8); return p; }
+
+  function counts(q){
+    const e = matchEntities(q);
+    const c = { channels:e.filter(x=>x.type==='channel').length, groups:e.filter(x=>x.type==='group').length, people:e.filter(x=>x.type==='people').length, favorites:e.filter(x=>x.fav).length, files:matchFiles(q).length, messages:matchMessages(q).length };
+    c.all = c.channels + c.groups + c.people + c.files + c.messages; return c;
+  }
+
+  function renderTabs(q){
+    const c = counts(q); tabsEl.innerHTML='';
+    TABS.forEach(t => {
+      const n = c[t.id];
+      const btn = document.createElement('button');
+      btn.className = 'search-tab' + (t.id===activeTab?' active':'');
+      btn.innerHTML = escapeHtml(t.label) + (n>0 ? ' <span class="tab-count">'+n+'</span>' : '');
+      btn.addEventListener('click', () => { activeTab = t.id; render(); });
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  const slot = html => '<div class="sr-avatar">'+html+'</div>';
+  function fileIcon(f){ const col = IDENTITY[f.color] ? 'color:var('+IDENTITY[f.color]+');' : ''; return '<div class="sr-file-ic" style="'+col+'"><i class="ph-bold '+f.icon+'"></i></div>'; }
+  function label(t){ const d=document.createElement('div'); d.className='search-section-label'; d.textContent=t; return d; }
+
+  function entityRow(e, q){
+    const tl = e.type==='channel'?'Channel':e.type==='group'?'Group':'1:1 conversation';
+    const r = document.createElement('div'); r.className='search-result';
+    r.innerHTML = slot(e.avatarHTML)+'<div class="sr-body"><div class="sr-name">'+hi(e.name,q)+'</div><div class="sr-meta">'+tl+'</div></div>';
+    r.addEventListener('click', () => openConversation(e.key)); return r;
+  }
+  function fileRow(f, q){
+    const ent = buildEntities().find(e=>e.key===f.conv);
+    const r = document.createElement('div'); r.className='search-result';
+    r.innerHTML = fileIcon(f)+'<div class="sr-body"><div class="sr-name">'+hi(f.name,q)+'</div><div class="sr-meta">'+escapeHtml(f.ftype)+' · '+escapeHtml(f.by)+(ent?' · '+escapeHtml(ent.name):'')+'</div></div>';
+    r.addEventListener('click', goToDrive); return r;
+  }
+  function messageRow(m, q){
+    const r = document.createElement('div'); r.className='search-result';
+    r.innerHTML = slot(m.avatarHTML)+'<div class="sr-body"><div class="sr-name">'+escapeHtml(m.sender)+' <span style="font-weight:400;color:var(--wire-content-base-secondary)">in '+escapeHtml(m.convName)+'</span></div><div class="sr-meta">'+hi(m.text,q)+'</div></div>';
+    r.addEventListener('click', () => openConversation(m.conv)); return r;
+  }
+
+  function render(){
+    const q = input.value.trim().toLowerCase();
+    renderTabs(q); resultsEl.innerHTML=''; let any=false;
+    const ents = matchEntities(q);
+    const grouped = activeTab==='all';
+    if (activeTab==='favorites'){
+      const f = ents.filter(e=>e.fav); if(f.length){ any=true; f.forEach(e=>resultsEl.appendChild(entityRow(e,q))); }
+    } else {
+      if (activeTab==='all'||activeTab==='channels'){ const x=ents.filter(e=>e.type==='channel'); if(x.length){any=true; if(grouped)resultsEl.appendChild(label('Channels')); x.forEach(e=>resultsEl.appendChild(entityRow(e,q)));} }
+      if (activeTab==='all'||activeTab==='groups'){ const x=ents.filter(e=>e.type==='group'); if(x.length){any=true; if(grouped)resultsEl.appendChild(label('Groups')); x.forEach(e=>resultsEl.appendChild(entityRow(e,q)));} }
+      if (activeTab==='all'||activeTab==='people'){ const x=ents.filter(e=>e.type==='people'); if(x.length){any=true; if(grouped)resultsEl.appendChild(label('People')); x.forEach(e=>resultsEl.appendChild(entityRow(e,q)));} }
+      if (activeTab==='all'||activeTab==='files'){ const x=matchFiles(q); if(x.length){any=true; if(grouped)resultsEl.appendChild(label('Files')); x.forEach(f=>resultsEl.appendChild(fileRow(f,q)));} }
+      if (activeTab==='all'||activeTab==='messages'){ const x=matchMessages(q); if(x.length){any=true; if(grouped)resultsEl.appendChild(label('Messages')); x.forEach(m=>resultsEl.appendChild(messageRow(m,q)));} }
+    }
+    if (!any){ const d=document.createElement('div'); d.className='search-empty'; d.textContent = q ? ('No results for "'+input.value.trim()+'"') : 'Type to search'; resultsEl.appendChild(d); }
+    clearBtn.style.display = input.value ? '' : 'none';
+  }
+
+  function setScope(key){
+    scopeKey = key || null;
+    if (scopeKey){ const ent = buildEntities().find(e=>e.key===scopeKey); chipName.textContent = ent ? ent.name : 'This conversation'; chipEl.classList.add('show'); input.placeholder='Search in this conversation'; }
+    else { chipEl.classList.remove('show'); input.placeholder='Search Wire'; }
+  }
+  function openSearch(opts){
+    opts = opts || {}; activeTab = opts.tab || 'all'; setScope(opts.scope || null);
+    if (opts.query != null) input.value = opts.query;
+    overlay.classList.add('open'); render();
+    setTimeout(() => { input.focus(); input.select(); }, 0);
+  }
+  function closeSearch(){ overlay.classList.remove('open'); }
+  function openConversation(key){ closeSearch(); if(typeof setNavProduct==='function') setNavProduct('conv'); const it = document.querySelector('.conv-item[data-conv="'+key+'"]'); if(it) it.click(); }
+  function goToDrive(){ closeSearch(); if(typeof setNavProduct==='function') setNavProduct('drive'); }
+
+  // Field controls
+  input.addEventListener('input', render);
+  clearBtn.addEventListener('click', () => { input.value=''; render(); input.focus(); });
+  closeBtn.addEventListener('click', closeSearch);
+  chipClear.addEventListener('click', () => { setScope(null); render(); input.focus(); });
+  overlay.addEventListener('click', e => { if(e.target===overlay) closeSearch(); });
+
+  // (1) Global entry points: nav-rail item + floating field
+  const navSearch = document.getElementById('nav-search');
+  if (navSearch) navSearch.addEventListener('click', () => openSearch({ tab:'all' }));
+  const floatField = document.getElementById('global-search-float');
+  if (floatField){
+    floatField.addEventListener('click', () => openSearch({ tab:'all' }));
+    floatField.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openSearch({ tab:'all' }); } });
+  }
+  // (3) Conversation-view entry point → Messages, scoped to current conversation
+  const convSearchBtn = document.getElementById('conv-search-btn');
+  if (convSearchBtn) convSearchBtn.addEventListener('click', () => openSearch({ tab:'messages', scope: (typeof CURRENT_CONV!=='undefined'?CURRENT_CONV:null) }));
+  // (2) Conversation-list field → live filter; Enter escalates to the modal
+  const listInput = document.getElementById('psidebar-search-input');
+  if (listInput){
+    listInput.addEventListener('input', () => {
+      const q = listInput.value.trim().toLowerCase();
+      document.querySelectorAll('#product-sidebar .conv-section').forEach(sec => {
+        let vis = 0;
+        sec.querySelectorAll('.conv-item').forEach(it => {
+          const nm = it.querySelector('.conv-name') ? it.querySelector('.conv-name').textContent.toLowerCase() : '';
+          const show = !q || nm.includes(q); it.style.display = show ? '' : 'none'; if(show) vis++;
+        });
+        sec.style.display = vis ? '' : 'none';
+      });
+    });
+    listInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); openSearch({ tab:'all', query: listInput.value.trim() }); } });
+  }
+
+  // Shortcuts: ⌘/Ctrl+K global · ⌘/Ctrl+F in-conversation · Esc close
+  document.addEventListener('keydown', e => {
+    const k = (e.key||'').toLowerCase();
+    if ((e.metaKey||e.ctrlKey) && k==='k'){ e.preventDefault(); openSearch({ tab:'all' }); }
+    else if ((e.metaKey||e.ctrlKey) && k==='f'){ e.preventDefault(); const c=(typeof CURRENT_CONV!=='undefined'?CURRENT_CONV:null); openSearch(c?{ tab:'messages', scope:c }:{ tab:'all' }); }
+    else if (k==='escape' && overlay.classList.contains('open')){ closeSearch(); }
+  });
+})();
+// ════════════════════════════════════════════════════════════════════
+//  SETTINGS MODAL
+// ════════════════════════════════════════════════════════════════════
+(function(){
+  const overlay = document.getElementById('settings-overlay');
+  if (!overlay) return;
+  function selectSection(id){
+    document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.toggle('active', n.dataset.section===id));
+    document.querySelectorAll('.settings-section').forEach(s => s.classList.toggle('active', s.dataset.section===id));
+    const c = document.querySelector('.settings-content'); if (c) c.scrollTop = 0;
+  }
+  function openSettings(section){ if (section) selectSection(section); overlay.classList.add('open'); }
+  function closeSettings(){ overlay.classList.remove('open'); }
+
+  document.querySelectorAll('.settings-nav-item').forEach(n => n.addEventListener('click', () => selectSection(n.dataset.section)));
+  const closeBtn = document.getElementById('settings-close'); if (closeBtn) closeBtn.addEventListener('click', closeSettings);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeSettings(); });
+  document.querySelectorAll('[data-opens-settings]').forEach(el => el.addEventListener('click', () => openSettings('appearance')));
+
+  // Accent color → live data-accent on the document
+  document.querySelectorAll('#accent-row .accent-swatch').forEach(sw => sw.addEventListener('click', () => {
+    document.querySelectorAll('#accent-row .accent-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    const a = sw.dataset.accent;
+    if (a === 'blue') document.documentElement.removeAttribute('data-accent');
+    else document.documentElement.setAttribute('data-accent', a);
+  }));
+
+  // Status → updates the rail avatar presence dot
+  const STATUS_COLOR = { available:'#1d7833', busy:'#cc8800', away:'#c20013', none:null };
+  document.querySelectorAll('#status-options .status-opt').forEach(o => o.addEventListener('click', () => {
+    document.querySelectorAll('#status-options .status-opt').forEach(x => x.classList.remove('active'));
+    o.classList.add('active');
+    const dot = document.querySelector('#rail .user-av .presence');
+    const c = STATUS_COLOR[o.dataset.status];
+    if (dot){ if (c){ dot.style.display = ''; dot.style.background = c; } else { dot.style.display = 'none'; } }
+  }));
+
+  // Theme (light/dark) — moved here from the page corner
+  function setTheme(mode){
+    if (mode === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    document.querySelectorAll('#theme-options .theme-opt').forEach(btn => btn.classList.toggle('active', btn.dataset.themeMode === mode));
+    const activeBg = document.querySelector('#bg-picker .bg-swatch.active');
+    if (typeof applyPageBg === 'function') applyPageBg(activeBg ? activeBg.dataset.bg : 'b1');
+  }
+  document.querySelectorAll('#theme-options .theme-opt').forEach(btn => btn.addEventListener('click', () => setTheme(btn.dataset.themeMode)));
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeSettings(); });
+})();
 </script>
 </body>
 </html>
