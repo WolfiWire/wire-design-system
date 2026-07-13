@@ -25,6 +25,15 @@
   --wire-identity-purple: #8944ab;  /* Light/Accent color/500 Purple */
   --wire-identity-red:    #c20013;  /* Light/Accent color/500 Red    */
 
+  /* Background mood — companion hues per accent (resolve through identity tokens, so they stay theme-correct) */
+  --bg-hue: var(--wire-identity-blue);
+  --bg-h2:  var(--wire-identity-petrol);
+  --bg-h3:  var(--wire-identity-purple);
+  --bg-h4:  var(--wire-identity-green);
+  /* Fade-to base for the wallpaper: a soft, faintly accent-tinted off-white in light
+     (never pure white); overridden to the deep base in dark mode below. */
+  --bg-base: color-mix(in srgb, var(--bg-hue) 7%, var(--wire-bg-base-tertiary));
+
   /* ── CHANNEL AVATAR FILLS ── */
   --wire-channel-blue-bg:     #e7f0fa; --wire-channel-blue-border:   #cde1f4;
   --wire-channel-green-bg:    #e8f1ea; --wire-channel-green-border:  #d2e4d6;
@@ -307,6 +316,7 @@
   --wire-identity-petrol: #5de6ff;
   --wire-identity-purple: #da8fff;
   --wire-identity-red:    #ff7770;
+  --bg-base: var(--wire-bg-base-primary);
 
   /* Channel icon tints — dark mode (Color Primitives · Dark/{hue}/700) */
   --wire-channel-blue-bg:   #326499; --wire-channel-blue-border:   #326499;
@@ -332,6 +342,7 @@
   --wire-accent-050: #e5f1f3; --wire-accent-100: #cce2e7;
   --wire-accent-300: #67a9b8; --wire-accent-500: #01718e;
   --wire-accent-600: #015a6e; --wire-accent-700: #014352;
+  --bg-hue: var(--wire-identity-petrol); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-purple);
 }
 [data-accent="purple"] {
   --wire-bg-accent-primary:           #8944ab;
@@ -347,6 +358,7 @@
   --wire-accent-050: #f4edf7; --wire-accent-100: #e7daee;
   --wire-accent-300: #b88fcd; --wire-accent-500: #8944ab;
   --wire-accent-600: #6e3689; --wire-accent-700: #522967;
+  --bg-hue: var(--wire-identity-purple); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-red); --bg-h4: var(--wire-identity-petrol);
 }
 [data-accent="amber"] {
   --wire-bg-accent-primary:           #a25915;
@@ -362,6 +374,7 @@
   --wire-accent-050: #f6eee8; --wire-accent-100: #ecded0;
   --wire-accent-300: #c79b73; --wire-accent-500: #a25915;
   --wire-accent-600: #824711; --wire-accent-700: #61350d;
+  --bg-hue: var(--wire-identity-amber); --bg-h2: var(--wire-identity-red); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-petrol);
 }
 [data-accent="green"] {
   --wire-bg-accent-primary:           #1d7833;
@@ -377,6 +390,7 @@
   --wire-accent-050: #e8f1ea; --wire-accent-100: #d2e4d6;
   --wire-accent-300: #77ae85; --wire-accent-500: #1d7833;
   --wire-accent-600: #176029; --wire-accent-700: #11481f;
+  --bg-hue: var(--wire-identity-green); --bg-h2: var(--wire-identity-petrol); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-blue);
 }
 [data-accent="red"] {
   --wire-bg-accent-primary:           #c20013;
@@ -392,6 +406,54 @@
   --wire-accent-050: #f9e6e8; --wire-accent-100: #f3ccd0;
   --wire-accent-300: #da6671; --wire-accent-500: #c20013;
   --wire-accent-600: #9b000f; --wire-accent-700: #74000b;
+  --bg-hue: var(--wire-identity-red); --bg-h2: var(--wire-identity-purple); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-petrol);
+}
+
+/* ── DARK-MODE ACCENT OVERRIDES ──────────────────────────────────────
+   Non-blue accents had no dark ramp, so under data-theme="dark" they fell
+   back to their LIGHT values (and to blue's dark values for undefined stops).
+   These combined selectors (specificity beats both the light accent block
+   and the base dark block) restore the correct Dark/{hue} ramp. Values are
+   the authoritative Color Primitives · Dark/{hue}/{step} from the DS file. */
+[data-theme="dark"][data-accent="petrol"] {
+  --wire-bg-accent-primary:#5de6ff; --wire-bg-accent-primary-focus:#9ef0ff;
+  --wire-bg-accent-secondary:#255c66; --wire-bg-accent-secondary-focus:#388a99;
+  --wire-content-accent-primary:#5de6ff; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#9ef0ff;
+  --wire-border-accent-primary:#5de6ff; --wire-border-accent-secondary:#255c66; --wire-border-accent-focus:#bef5ff;
+  --wire-accent-050:#effdff; --wire-accent-100:#dffaff; --wire-accent-200:#bef5ff; --wire-accent-300:#9ef0ff; --wire-accent-400:#7debff;
+  --wire-accent-500:#5de6ff; --wire-accent-600:#4ab8cc; --wire-accent-700:#388a99; --wire-accent-800:#255c66; --wire-accent-900:#1c454d;
+}
+[data-theme="dark"][data-accent="purple"] {
+  --wire-bg-accent-primary:#da8fff; --wire-bg-accent-primary-focus:#e9bcff;
+  --wire-bg-accent-secondary:#573966; --wire-bg-accent-secondary-focus:#835699;
+  --wire-content-accent-primary:#da8fff; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#e9bcff;
+  --wire-border-accent-primary:#da8fff; --wire-border-accent-secondary:#573966; --wire-border-accent-focus:#f0d2ff;
+  --wire-accent-050:#fcf4ff; --wire-accent-100:#f8e9ff; --wire-accent-200:#f0d2ff; --wire-accent-300:#e9bcff; --wire-accent-400:#e1a5ff;
+  --wire-accent-500:#da8fff; --wire-accent-600:#ae72cc; --wire-accent-700:#835699; --wire-accent-800:#573966; --wire-accent-900:#412b4d;
+}
+[data-theme="dark"][data-accent="amber"] {
+  --wire-bg-accent-primary:#ffd426; --wire-bg-accent-primary-focus:#ffe57d;
+  --wire-bg-accent-secondary:#66550f; --wire-bg-accent-secondary-focus:#997f17;
+  --wire-content-accent-primary:#ffd426; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#ffe57d;
+  --wire-border-accent-primary:#ffd426; --wire-border-accent-secondary:#66550f; --wire-border-accent-focus:#ffeea8;
+  --wire-accent-050:#fffbea; --wire-accent-100:#fff6d4; --wire-accent-200:#ffeea8; --wire-accent-300:#ffe57d; --wire-accent-400:#ffdd51;
+  --wire-accent-500:#ffd426; --wire-accent-600:#ccaa1e; --wire-accent-700:#997f17; --wire-accent-800:#66550f; --wire-accent-900:#4d400b;
+}
+[data-theme="dark"][data-accent="green"] {
+  --wire-bg-accent-primary:#30db5b; --wire-bg-accent-primary-focus:#83e99d;
+  --wire-bg-accent-secondary:#135824; --wire-bg-accent-secondary-focus:#1d8337;
+  --wire-content-accent-primary:#30db5b; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#83e99d;
+  --wire-border-accent-primary:#30db5b; --wire-border-accent-secondary:#135824; --wire-border-accent-focus:#acf1bd;
+  --wire-accent-050:#ebfcef; --wire-accent-100:#d6f8de; --wire-accent-200:#acf1bd; --wire-accent-300:#83e99d; --wire-accent-400:#59e27c;
+  --wire-accent-500:#30db5b; --wire-accent-600:#26af49; --wire-accent-700:#1d8337; --wire-accent-800:#135824; --wire-accent-900:#0e421b;
+}
+[data-theme="dark"][data-accent="red"] {
+  --wire-bg-accent-primary:#ff7770; --wire-bg-accent-primary-focus:#ffada9;
+  --wire-bg-accent-secondary:#66302d; --wire-bg-accent-secondary-focus:#994743;
+  --wire-content-accent-primary:#ff7770; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#ffada9;
+  --wire-border-accent-primary:#ff7770; --wire-border-accent-secondary:#66302d; --wire-border-accent-focus:#ffc9c6;
+  --wire-accent-050:#fff2f1; --wire-accent-100:#ffe4e2; --wire-accent-200:#ffc9c6; --wire-accent-300:#ffada9; --wire-accent-400:#ff928d;
+  --wire-accent-500:#ff7770; --wire-accent-600:#cc5f5a; --wire-accent-700:#994743; --wire-accent-800:#66302d; --wire-accent-900:#4d2422;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -418,12 +480,11 @@ input, textarea { font-family:var(--font-sans); }
 /* ─── PRODUCT SIDEBAR ── */
 #product-sidebar {
   width:20%; min-width:240px; flex-shrink:0;
-  background:rgba(255,255,255,0.92);
+  background:var(--wire-bg-base-primary);
   border-right:0.5px solid var(--wire-border-base-primary);
   display:flex; flex-direction:column; overflow:hidden;
 }
-[data-theme="dark"] #product-sidebar { background:rgba(0,0,0,0.45); }
-/* Sidebar elements carry no fill of their own — only the sidebar's translucent surface, so the page shows through */
+/* Product sidebar is a solid surface — the wallpaper no longer bleeds through it */
 .psidebar-search .search-wrap { background:transparent; }
 #product-sidebar.hidden { display:none; }
 
@@ -1138,10 +1199,10 @@ input, textarea { font-family:var(--font-sans); }
 #page.dark-rail .user-av  { box-shadow:0 0 0 1.5px rgba(255,255,255,0.25); }
 #page.dark-rail .presence { box-shadow:0 0 0 1.5px rgba(0,0,0,0.5); }
 
-#page.dark-rail .n-btn   { color:rgba(255,255,255,0.45); }
-#page.dark-rail .n-label { color:rgba(255,255,255,0.45); }
-#page.dark-rail .n-item:hover .n-btn   { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
-#page.dark-rail .n-item:hover .n-label { color:rgba(255,255,255,0.8); }
+#page.dark-rail .n-btn   { color:#fff; }
+#page.dark-rail .n-label { color:#fff; }
+#page.dark-rail .n-item:hover .n-btn   { background:rgba(255,255,255,0.1); color:#fff; }
+#page.dark-rail .n-item:hover .n-label { color:#fff; }
 #page.dark-rail .n-item.active .n-btn   { background:rgba(255,255,255,0.1); color:#fff; }
 #page.dark-rail .n-item.active .n-label { color:#fff; }
 
@@ -1150,12 +1211,111 @@ input, textarea { font-family:var(--font-sans); }
 #page.light-rail .user-av  { box-shadow:0 0 0 1.5px rgba(0,0,0,0.15); }
 #page.light-rail .presence { box-shadow:0 0 0 1.5px rgba(255,255,255,0.9); }
 
-#page.light-rail .n-btn   { color:rgba(0,0,0,0.35); }
-#page.light-rail .n-label { color:rgba(0,0,0,0.35); }
-#page.light-rail .n-item:hover .n-btn   { background:rgba(0,0,0,0.07); color:rgba(0,0,0,0.7); }
-#page.light-rail .n-item:hover .n-label { color:rgba(0,0,0,0.7); }
+#page.light-rail .n-btn   { color:#000; }
+#page.light-rail .n-label { color:#000; }
+#page.light-rail .n-item:hover .n-btn   { background:rgba(0,0,0,0.07); color:#000; }
+#page.light-rail .n-item:hover .n-label { color:#000; }
 #page.light-rail .n-item.active .n-btn   { background:rgba(0,0,0,0.07); color:#000; }
 #page.light-rail .n-item.active .n-label { color:#000; }
+
+/* ── Background moods ─────────────────────────────────────────────────
+   The app window covers the centre of the screen, so the wallpaper is only
+   seen in the outer frame: the top band (where the global search floats) and
+   the left column (where the nav rail sits). These #page rules therefore
+   concentrate colour along the top and left edges — richest at the top-left
+   corner — and fade into the covered centre. Hue comes from the current accent
+   (--bg-hue/-h2/-h3/-h4, theme-correct); lightness mixes toward --bg-base
+   (soft accent-tinted off-white in light, deep base in dark).
+   The .bg-swatch rules below are DECOUPLED — at 28px they show a full colour
+   chip of the mood rather than the spatial edge layout. */
+#page.bg-mood-playful, .bg-preview.bg-mood-playful {
+  background:
+    radial-gradient(ellipse 58% 52% at 0% 0%,  color-mix(in srgb, var(--bg-hue) 66%, transparent), transparent 66%),
+    radial-gradient(ellipse 50% 46% at 92% 0%, color-mix(in srgb, var(--bg-h2) 30%, transparent), transparent 74%),
+    radial-gradient(ellipse 46% 44% at 42% 0%, color-mix(in srgb, var(--bg-h3) 20%, transparent), transparent 76%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 50%, transparent), transparent 26%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 48%, transparent), transparent 22%),
+    var(--bg-base);
+}
+#page.bg-mood-vibrant, .bg-preview.bg-mood-vibrant {
+  background:
+    radial-gradient(ellipse 52% 44% at 90% 0%, color-mix(in srgb, var(--bg-h3) 42%, transparent), transparent 72%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 24%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-h2) 50%, transparent), transparent 22%),
+    var(--bg-base);
+}
+#page.bg-mood-balanced, .bg-preview.bg-mood-balanced {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 24%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 44%, transparent), transparent 22%),
+    var(--bg-base);
+}
+#page.bg-mood-calm, .bg-preview.bg-mood-calm {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 22%, transparent), transparent 26%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 17%, transparent), transparent 24%),
+    var(--bg-base);
+}
+#page.bg-mood-professional, .bg-preview.bg-mood-professional {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 12%, transparent), transparent 24%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 9%, transparent), transparent 22%),
+    var(--bg-base);
+}
+
+/* Live appearance preview (Settings → Appearance): a miniature of the screen —
+   wallpaper in the outer frame, a floating "app window", and an accent bubble —
+   so accent + background changes are visible without closing the modal. */
+.bg-preview { position:relative; width:100%; max-width:340px; aspect-ratio:16 / 9; border-radius:10px; overflow:hidden; border:0.5px solid var(--wire-border-base-primary); }
+.bg-preview-rail { position:absolute; top:24px; left:4px; display:flex; flex-direction:column; gap:6px; align-items:center; z-index:1; }
+.bg-preview-rail span { width:7px; height:7px; border-radius:2px; background:color-mix(in srgb, var(--wire-content-base-primary) 42%, transparent); }
+.bg-preview-window { position:absolute; inset:14px 5px 6px 16px; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:8px; overflow:hidden; display:flex; }
+.bgp-sidebar { width:34%; flex-shrink:0; border-right:0.5px solid var(--wire-border-base-primary); padding:9px 8px; display:flex; flex-direction:column; gap:7px; }
+.bgp-srow { height:6px; border-radius:3px; background:var(--wire-bg-base-tertiary); }
+.bgp-srow.short { width:62%; }
+.bgp-chat { flex:1; min-width:0; display:flex; flex-direction:column; padding:9px; gap:6px; }
+.bgp-messages { flex:1; display:flex; flex-direction:column; gap:6px; }
+.bgp-bubble-in  { align-self:flex-start; width:66%; height:12px; border-radius:6px; background:var(--wire-bg-base-tertiary); }
+.bgp-bubble-in.short { width:44%; }
+.bgp-bubble-out { align-self:flex-end; margin-top:2px; width:54%; height:12px; border-radius:6px; background:var(--wire-bg-accent-primary); }
+.bgp-input { flex-shrink:0; height:14px; border-radius:7px; background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary); }
+/* Picker thumbnails — full colour chips (spatial layout doesn't read at 28px) */
+.bg-swatch[data-mood="playful"] {
+  background:
+    radial-gradient(circle at 80% 22%, color-mix(in srgb, var(--bg-h2) 48%, transparent), transparent 55%),
+    radial-gradient(circle at 28% 84%, color-mix(in srgb, var(--bg-h3) 38%, transparent), transparent 55%),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 80%, var(--bg-base)), color-mix(in srgb, var(--bg-hue) 42%, var(--bg-base)));
+}
+.bg-swatch[data-mood="vibrant"] {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--bg-hue) 72%, var(--bg-base)),
+    color-mix(in srgb, var(--bg-h2) 58%, var(--bg-base)) 55%,
+    color-mix(in srgb, var(--bg-h3) 42%, var(--bg-base)));
+}
+.bg-swatch[data-mood="balanced"]     { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 48%, var(--bg-base)), var(--bg-base)); }
+.bg-swatch[data-mood="calm"]         { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 28%, var(--bg-base)), var(--bg-base)); }
+.bg-swatch[data-mood="professional"] { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 15%, var(--bg-base)), var(--bg-base)); }
+
+/* Plain user-colour variants — a solid block of the accent at three tones.
+   Built from the accent hue mixed toward black/white so the dark/mid/light
+   ordering holds in BOTH light and dark mode. Rail/search contrast for these
+   is set per-variant in JS (railFor), since a solid can be dark or light
+   regardless of the active theme. */
+#page.bg-mood-plain-dark,  .bg-preview.bg-mood-plain-dark,  .bg-swatch[data-mood="plain-dark"]  { background: color-mix(in srgb, var(--bg-hue) 52%, #000); }
+#page.bg-mood-plain-mid,   .bg-preview.bg-mood-plain-mid,   .bg-swatch[data-mood="plain-mid"]   { background: var(--bg-hue); }
+#page.bg-mood-plain-light, .bg-preview.bg-mood-plain-light, .bg-swatch[data-mood="plain-light"] { background: color-mix(in srgb, var(--bg-hue) 32%, #fff); }
+/* In dark mode all three plain variants are dark accent tones, running from a
+   bit lighter than the old darkest down to almost black (still reversed order:
+   the "dark" slot is the lightest of the three, the "light" slot near-black). */
+[data-theme="dark"] #page.bg-mood-plain-dark,
+[data-theme="dark"] .bg-preview.bg-mood-plain-dark,
+[data-theme="dark"] .bg-swatch[data-mood="plain-dark"]  { background: color-mix(in srgb, var(--bg-hue) 58%, #000); }
+[data-theme="dark"] #page.bg-mood-plain-mid,
+[data-theme="dark"] .bg-preview.bg-mood-plain-mid,
+[data-theme="dark"] .bg-swatch[data-mood="plain-mid"]   { background: color-mix(in srgb, var(--bg-hue) 34%, #000); }
+[data-theme="dark"] #page.bg-mood-plain-light,
+[data-theme="dark"] .bg-preview.bg-mood-plain-light,
+[data-theme="dark"] .bg-swatch[data-mood="plain-light"] { background: color-mix(in srgb, var(--bg-hue) 10%, #000); }
 
 #app-window { flex:1; display:flex; overflow:hidden; margin:36px var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:transparent; min-width:0; position:relative; z-index:1; }
 
@@ -1448,7 +1608,7 @@ body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.
 #search-overlay {
   position:fixed; inset:0; z-index:200; display:none;
   align-items:flex-start; justify-content:center; padding-top:88px;
-  background:rgba(0,0,0,0.4); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+  background:rgba(0,0,0,0.4);
 }
 #search-overlay.open { display:flex; }
 .search-modal {
@@ -1515,7 +1675,7 @@ body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.
 /* ════════════════════════════════════════════════════════════════════
    SETTINGS MODAL
    ════════════════════════════════════════════════════════════════════ */
-#settings-overlay { position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+#settings-overlay { position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); }
 #settings-overlay.open { display:flex; }
 .settings-modal { width:min(840px,94vw); height:min(560px,86vh); display:flex; flex-direction:column; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:var(--radius-base); box-shadow:0 28px 70px -18px rgba(0,0,0,0.55); overflow:hidden; animation:search-pop .14s ease-out; }
 .settings-head { display:flex; align-items:center; justify-content:space-between; padding:var(--spacing-4) var(--spacing-5); border-bottom:0.5px solid var(--wire-border-base-primary); flex-shrink:0; }
@@ -1576,7 +1736,7 @@ body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.
 
 
 <!-- ── PAGE ── -->
-<div id="page" class="dark-rail">
+<div id="page" class="bg-mood-balanced light-rail">
 
   <!-- ── NAV RAIL ── -->
   <nav id="rail" aria-label="Primary navigation">
@@ -1868,28 +2028,7 @@ body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.
 </div>
 </div><!-- /#page -->
 
-<!-- ── BG PICKER moved into Settings → Appearance footer ── -->
-  <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#015a6e 50%,#000d10)" data-bg="b" data-rail="dark" title="B — Blue › Petrol"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 5% 100%,#6b3485,transparent 60%),radial-gradient(ellipse at 95% 0%,#7a3d0f,transparent 60%),#0a080c" data-bg="c" data-rail="dark" title="C — Purple · Amber"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 0%,#0d3060,transparent 55%),radial-gradient(ellipse at 100% 0%,#3d1a60,transparent 55%),radial-gradient(ellipse at 100% 100%,#01354a,transparent 55%),radial-gradient(ellipse at 0% 100%,#0d3020,transparent 55%),#060810" data-bg="d" data-rail="dark" title="D — 4-colour mesh"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 110%,#7a3d0a,#200e04 50%,#000 80%)" data-bg="e" data-rail="dark" title="E — Amber warm"></div>
-  <div class="bg-swatch" style="background:linear-gradient(135deg,#30db5b55,#ffe57d44),#000" data-bg="wave" data-rail="dark" title="Waves — blurred"></div>
-  <div class="bg-swatch" style="background:#e8e4dc" data-bg="light" data-rail="light" title="Light neutral"></div>
-</div>
-  <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#015a6e 50%,#000d10)" data-bgclass="bg-opt-b" data-rail="dark" title="B — Blue › Petrol"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 5% 100%,#522967,transparent 55%),radial-gradient(ellipse at 95% 0%,#61350d,transparent 55%),#0a080c" data-bgclass="bg-opt-c" data-rail="dark" title="C — Purple · Amber"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 0%,#022950,transparent 55%),radial-gradient(ellipse at 100% 100%,#014352,transparent 55%),radial-gradient(ellipse at 100% 0%,#522967,transparent 55%),#060810" data-bgclass="bg-opt-d" data-rail="dark" title="D — 4-colour mesh"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 110%,#a25915,#200e04 50%,#000 80%)" data-bgclass="bg-opt-e" data-rail="dark" title="E — Amber warm"></div>
-  <div class="bg-swatch" style="background:linear-gradient(135deg,#30db5b44,#ffe57d44),#000" data-bgclass="bg-wave-blur" data-wave="blur" data-rail="dark" title="Waves — blurred colour wash"></div>
-  <div class="bg-swatch" style="background:#e8e4dc" data-bg="#e8e4dc" data-rail="light" title="Light neutral"></div>
-</div>
-  <div class="bg-swatch" style="background:linear-gradient(135deg,#ffffff33,#00000066),#111" data-wave="wave-06" data-bg="#000" data-rail="dark" title="Waves 06"></div>
-  <div class="bg-swatch" style="background:linear-gradient(135deg,rgba(6,103,200,0.6),#08101a)" data-bgclass="bg-opt-a" data-rail="dark" title="A — Blue glow"></div>
-  <div class="bg-swatch active" style="background:linear-gradient(135deg,rgba(6,103,200,0.5),rgba(1,113,142,0.4),#070d12)" data-bgclass="bg-opt-b" data-rail="dark" title="B — Blue › Petrol diagonal"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 15% 85%,rgba(137,68,171,0.5),transparent 60%),radial-gradient(ellipse at 85% 15%,rgba(162,89,21,0.4),transparent 60%),#0a080e" data-bgclass="bg-opt-c" data-rail="dark" title="C — Purple · Amber atmospheric"></div>
-  <div class="bg-swatch" style="background:radial-gradient(ellipse at 0% 0%,rgba(6,103,200,0.5),transparent 55%),radial-gradient(ellipse at 100% 100%,rgba(1,113,142,0.4),transparent 55%),radial-gradient(ellipse at 100% 0%,rgba(137,68,171,0.35),transparent 55%),#080c0f" data-bgclass="bg-opt-d" data-rail="dark" title="D — 4-point mesh"></div>
-  <div class="bg-swatch" style="background:#e8e4dc" data-bg="#e8e4dc" data-rail="light" title="Light neutral"></div>
-</div>
+<!-- (stale bg-picker markup removed — the live picker lives in Settings → Appearance) -->
 
 
 <!-- dark/light toggle moved into Settings → Appearance -->
@@ -1993,13 +2132,36 @@ body:has(#page.light-rail) .global-search-float:hover { background:rgba(0,0,0,0.
             <div class="settings-field">
               <label class="field-label">Background</label>
               <div class="bg-row" id="bg-picker" aria-label="Page background picker">
-                <div class="bg-swatch active" style="background:linear-gradient(145deg,#043e78,#004455 50%,#000d10)" data-bg="b1" data-rail="dark" title="Blue › Petrol"></div>
-                <div class="bg-swatch" style="background:linear-gradient(145deg,#01455a,#0d3a20 55%,#020a05)" data-bg="b2" data-rail="dark" title="Petrol › Green"></div>
-                <div class="bg-swatch" style="background:linear-gradient(145deg,#2e1540,#032050 55%,#000510)" data-bg="b3" data-rail="dark" title="Purple › Blue"></div>
-                <div class="bg-swatch" style="background:linear-gradient(145deg,#2d1242,#013040 55%,#000a0c)" data-bg="b4" data-rail="dark" title="Purple › Petrol"></div>
-                <div class="bg-swatch" style="background:linear-gradient(145deg,#4a2008,#3a0008 55%,#0a0002)" data-bg="b5" data-rail="dark" title="Amber › Red"></div>
-                <div class="bg-swatch" style="background:linear-gradient(145deg,#0d3018,#022450 55%,#00060f)" data-bg="b6" data-rail="dark" title="Green › Blue"></div>
-                <div class="bg-swatch" style="background:#e8e4dc" data-bg="light" data-rail="light" title="Light"></div>
+                <div class="bg-swatch" data-mood="playful" title="Playful — colourful, three-hue"></div>
+                <div class="bg-swatch" data-mood="vibrant" title="Vibrant — accent + companion"></div>
+                <div class="bg-swatch active" data-mood="balanced" title="Balanced — the default"></div>
+                <div class="bg-swatch" data-mood="calm" title="Calm — soft wash"></div>
+                <div class="bg-swatch" data-mood="professional" title="Professional — relaxed, near-neutral"></div>
+                <div class="bg-swatch" data-mood="plain-dark" title="Solid colour — dark"></div>
+                <div class="bg-swatch" data-mood="plain-mid" title="Solid colour — medium"></div>
+                <div class="bg-swatch" data-mood="plain-light" title="Solid colour — light"></div>
+              </div>
+            </div>
+            <div class="settings-field">
+              <label class="field-label">Preview</label>
+              <div class="bg-preview bg-mood-balanced" id="bg-preview" aria-hidden="true">
+                <div class="bg-preview-rail"><span></span><span></span><span></span></div>
+                <div class="bg-preview-window">
+                  <div class="bgp-sidebar">
+                    <div class="bgp-srow"></div>
+                    <div class="bgp-srow short"></div>
+                    <div class="bgp-srow"></div>
+                    <div class="bgp-srow short"></div>
+                  </div>
+                  <div class="bgp-chat">
+                    <div class="bgp-messages">
+                      <div class="bgp-bubble-in"></div>
+                      <div class="bgp-bubble-in short"></div>
+                      <div class="bgp-bubble-out"></div>
+                    </div>
+                    <div class="bgp-input"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -2028,57 +2190,49 @@ const topbarDrive = document.getElementById('topbar-drive');
 const viewConv    = document.getElementById('view-conv');
 const viewDrive   = document.getElementById('view-drive');
 
-// ── Background definitions ───────────────────────────────────────────────────
-const BG = {
-  light: {
-    b1: 'linear-gradient(145deg, #043e78 0%, #004455 50%, #000d10 100%)',
-    b2: 'linear-gradient(145deg, #01455a 0%, #0d3a20 55%, #020a05 100%)',
-    b3: 'linear-gradient(145deg, #2e1540 0%, #032050 55%, #000510 100%)',
-    b4: 'linear-gradient(145deg, #2d1242 0%, #013040 55%, #000a0c 100%)',
-    b5: 'linear-gradient(145deg, #4a2008 0%, #3a0008 55%, #0a0002 100%)',
-    b6: 'linear-gradient(145deg, #0d3018 0%, #022450 55%, #00060f 100%)',
-    light: '#e8e4dc',
-  },
-  dark: {
-    b1: 'linear-gradient(145deg, #021f3c 0%, #002229 50%, #000608 100%)',
-    b2: 'linear-gradient(145deg, #012230 0%, #071e11 55%, #010302 100%)',
-    b3: 'linear-gradient(145deg, #170a20 0%, #011028 55%, #000208 100%)',
-    b4: 'linear-gradient(145deg, #160921 0%, #001820 55%, #000406 100%)',
-    b5: 'linear-gradient(145deg, #250f04 0%, #1d0004 55%, #050001 100%)',
-    b6: 'linear-gradient(145deg, #061809 0%, #011228 55%, #000307 100%)',
-    light: '#d0ccc4',
-  },
-};
+// ── Background moods (accent-reactive + theme-adaptive; colors live in CSS) ──
+let currentMood = 'balanced';
+const MOODS = ['playful','vibrant','balanced','calm','professional','plain-dark','plain-mid','plain-light'];
 
-let currentBgKey = 'b1';
+// Which rail/search contrast a given background wants. Gradient moods track the
+// theme (light theme → light wallpaper → light-rail). The plain solid variants
+// have a fixed lightness of their own: dark → dark-rail, light → light-rail, and
+// the mid solid flips with theme because the accent hue itself is dark in light
+// mode and bright in dark mode.
+function railFor(mood, isDark) {
+  if (mood === 'plain-dark')  return 'dark-rail';
+  if (mood === 'plain-mid')   return 'dark-rail';
+  if (mood === 'plain-light') return isDark ? 'dark-rail' : 'light-rail';
+  return isDark ? 'dark-rail' : 'light-rail';
+}
 
-function applyPageBg(key) {
-  currentBgKey = key;
+function setRail() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const mode = isDark ? 'dark' : 'light';
-  if (waveSvg) waveSvg.style.display = 'none';
-  if (key === 'wave') {
-    page.style.background = '#000';
-    if (waveSvg) waveSvg.style.display = 'block';
-  } else {
-    page.style.background = BG[mode][key] || '#000';
-  }
+  page.classList.remove('dark-rail', 'light-rail');
+  page.classList.add(railFor(currentMood, isDark));
+}
+
+function applyMood(mood) {
+  currentMood = mood;
+  MOODS.forEach(m => page.classList.remove('bg-mood-' + m));
+  page.classList.add('bg-mood-' + mood);
+  const preview = document.getElementById('bg-preview');
+  if (preview) { MOODS.forEach(m => preview.classList.remove('bg-mood-' + m)); preview.classList.add('bg-mood-' + mood); }
+  setRail();
 }
 
 // ── Background picker ────────────────────────────────────────────────────────
-document.querySelectorAll('.bg-swatch').forEach(swatch => {
+document.querySelectorAll('#bg-picker .bg-swatch').forEach(swatch => {
   swatch.addEventListener('click', () => {
-    document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('#bg-picker .bg-swatch').forEach(s => s.classList.remove('active'));
     swatch.classList.add('active');
-    const rail = swatch.dataset.rail || 'dark';
-    page.classList.remove('dark-rail', 'light-rail');
-    page.classList.add(rail + '-rail');
-    applyPageBg(swatch.dataset.bg);
+    applyMood(swatch.dataset.mood);
   });
 });
 
-// Set default
-applyPageBg('b1');
+// Set defaults
+applyMood(currentMood);
+setRail();
 
 // ── Dark mode toggle ─────────────────────────────────────────────────────────
 function toggleTheme() {
@@ -2086,12 +2240,12 @@ function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   if (isDark) {
     document.documentElement.removeAttribute('data-theme');
-    icon.className = 'ph-bold ph-moon';
+    if (icon) icon.className = 'ph-bold ph-moon';
   } else {
     document.documentElement.setAttribute('data-theme', 'dark');
-    icon.className = 'ph-bold ph-sun';
+    if (icon) icon.className = 'ph-bold ph-sun';
   }
-  applyPageBg(currentBgKey);
+  setRail();
 }
 
 // ── Nav icon definitions ─────────────────────────────────────────────────────
@@ -3031,8 +3185,7 @@ function sendMessage() {
     if (mode === 'dark') document.documentElement.setAttribute('data-theme','dark');
     else document.documentElement.removeAttribute('data-theme');
     document.querySelectorAll('#theme-options .theme-opt').forEach(btn => btn.classList.toggle('active', btn.dataset.themeMode === mode));
-    const activeBg = document.querySelector('#bg-picker .bg-swatch.active');
-    if (typeof applyPageBg === 'function') applyPageBg(activeBg ? activeBg.dataset.bg : 'b1');
+    if (typeof setRail === 'function') setRail();
   }
   document.querySelectorAll('#theme-options .theme-opt').forEach(btn => btn.addEventListener('click', () => setTheme(btn.dataset.themeMode)));
 
