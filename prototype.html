@@ -1016,6 +1016,23 @@ input, textarea { font-family:var(--font-sans); }
 
 .msg-content-area { width:100%; }
 
+/* Day/time divider — shadcn-style centered marker pill with lines to the container edges */
+.day-sep {
+  display:flex; align-items:center; gap:var(--spacing-3);
+  margin:var(--spacing-4) 0 var(--spacing-3);
+}
+.day-sep-line { flex:1 1 auto; height:1px; background:var(--wire-border-base-primary); }
+.day-sep-pill {
+  flex:0 0 auto;
+  padding:4px 12px;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-full);
+  box-shadow:0 1px 3px -1px rgba(0,0,0,0.12);
+  color:var(--wire-content-base-secondary);
+  font-size:var(--font-size-xs); font-weight:var(--font-weight-medium); line-height:16px;
+}
+
 /* Composer bar — always visible at bottom, outside scroll */
 .conv-composer-bar {
   flex-shrink:0;
@@ -2682,97 +2699,133 @@ sendBtn.addEventListener('click', () => { if (input.value.trim()) sendMessage();
 const CONVERSATIONS = {
   // ── Channel · Product & Engineering — long, multi-person, files + media ──
   prodeng: [
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28', type:'text', text:'Morning all — sprint review is at 2pm. Quick heads up before then.', reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28', type:'text', text:'Can everyone make sure their tickets are updated?', reactions:[] },
-    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:29', type:'text', text:'Done on my side. Moved the two API tickets to review.', reactions:[] },
-    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:30', type:'file-with-text', text:'Here is the updated revenue model:', filename:'Q3_Revenue_Model_v4.xlsx', filesize:'284 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
-    { sender:'self', time:'10:31', type:'text', text:"Thanks Tom. I'll fold these into the deck.", reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:32', type:'image-with-text', text:'Also — found a great spot for the team offsite 🌴', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[{emoji:'😍', count:5, own:false},{emoji:'👍', count:3, own:true}] },
-    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33', type:'text', text:'That looks amazing.', reactions:[] },
-    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33', type:'text', text:'Count me in.', reactions:[] },
-    { sender:'self', time:'10:34', type:'text', text:'Booking it. Details to follow.', reactions:[] },
-    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:36', type:'video-solo', thumb:'images/VariantLandscape.png', duration:'2:14', filesize:'8.4 MB', reactions:[] },
-    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:37', type:'audio', duration:'0:48', played:'0:21', reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:38', type:'text', text:'One more thing before the review: we still need a decision on the onboarding flow. The current design adds an extra interstitial step that is hurting conversion in the funnel test. I would suggest we drop it and go straight to the workspace. Thoughts?', reactions:[] },
-    { sender:'self', time:'10:39', type:'text', text:"Agreed, let's drop it.", reactions:[] },
-    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:39', type:'text', text:'+1', reactions:[{emoji:'✅', count:4, own:true}] },
+    { divider:'day', day:9 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'9:41 AM', type:'text', text:"Kicking off the Q3 planning thread here so everything stays in one place.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:43 AM', type:'text', text:"Good call. I'll drop the research summary once the last interviews wrap.", reactions:[] },
+    { sender:'self', time:'9:45 AM', type:'text', text:"Perfect — let's keep all the decisions in this channel.", reactions:[] },
+    { divider:'time', time:'2:14 PM' },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'2:14 PM', type:'file-with-text', text:'First pass at the revenue model — rough numbers for now:', filename:'Q3_Revenue_Model_v1.xlsx', filesize:'241 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:18 PM', type:'text', text:'Thanks Tom, will review tonight and send notes.', reactions:[] },
+    { divider:'day', day:3 },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'8:58 AM', type:'text', text:'Design system tokens are merged — colours, spacing and radius all landed.', reactions:[{emoji:'🎉', count:3, own:true}] },
+    { sender:'self', time:'9:00 AM', type:'text', text:'Nice — that unblocks the settings screens.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'text', text:'Research summary is in: 12 interviews, three clear themes.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'file-solo', filename:'Q3_Research_Summary.pdf', filesize:'820 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { divider:'time', time:'1:22 PM' },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'1:22 PM', type:'text', text:'Reviewed the model — the Q3 forecast reads conservative. Can we revisit the growth assumptions before the board deck?', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'1:25 PM', type:'text', text:"Fair. I'll bump the growth rate and resend v2.", reactions:[] },
+    { sender:'self', time:'1:26 PM', type:'text', text:'👍', reactions:[] },
+    { divider:'day', day:1 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:12 AM', type:'text', text:'Reminder: design review moved to 3pm today.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'10:15 AM', type:'media-grid', text:'Latest empty-state explorations:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'The middle one — it has personality without being noisy.', reactions:[{emoji:'👍', count:2, own:false}] },
+    { divider:'time', time:'4:30 PM' },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'4:30 PM', type:'text', text:'Review done — notes in the doc. Two small changes and we are good to build.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'4:33 PM', type:'file-with-text', text:'Revenue model v2 with the updated assumptions:', filename:'Q3_Revenue_Model_v2.xlsx', filesize:'256 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'4:35 PM', type:'text', text:'Thanks all — much better.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Morning all — sprint review is at 2pm. Quick heads up before then.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Can everyone make sure their tickets are updated?', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:29 AM', type:'text', text:'Done on my side. Moved the two API tickets to review.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:30 AM', type:'file-with-text', text:'Here is the updated revenue model:', filename:'Q3_Revenue_Model_v4.xlsx', filesize:'284 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'10:31 AM', type:'text', text:"Thanks Tom. I'll fold these into the deck.", reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:32 AM', type:'image-with-text', text:'Also — found a great spot for the team offsite 🌴', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[{emoji:'😍', count:5, own:false},{emoji:'👍', count:3, own:true}] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'That looks amazing.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'Count me in.', reactions:[] },
+    { sender:'self', time:'10:34 AM', type:'text', text:'Booking it. Details to follow.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:36 AM', type:'video-solo', thumb:'images/VariantLandscape.png', duration:'2:14', filesize:'8.4 MB', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:37 AM', type:'audio', duration:'0:48', played:'0:21', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:38 AM', type:'text', text:'One more thing before the review: we still need a decision on the onboarding flow. The current design adds an extra interstitial step that is hurting conversion in the funnel test. I would suggest we drop it and go straight to the workspace. Thoughts?', reactions:[] },
+    { sender:'self', time:'10:39 AM', type:'text', text:"Agreed, let's drop it.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:39 AM', type:'text', text:'+1', reactions:[{emoji:'✅', count:4, own:true}] },
   ],
 
   // ── Channel · Marketing Team — medium, images ──
   marketing: [
-    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:15', type:'text', text:'Campaign assets are ready for review.', reactions:[] },
-    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:15', type:'image-solo', image:'images/VariantPortrait.png', aspectRatio:'portrait', reactions:[] },
-    { sender:'Noah Klein', color:'amber', initials:'NK', time:'09:16', type:'text', text:'Looking sharp. Can we get a square crop for Instagram?', reactions:[] },
-    { sender:'self', time:'09:17', type:'text', text:'On it — square version coming up.', reactions:[] },
-    { sender:'self', time:'09:18', type:'image-with-text', text:'Here is the square crop:', image:'images/VariantSquare.png', aspectRatio:'square', reactions:[] },
-    { sender:'Lena Fischer', color:'red', initials:'LF', time:'09:20', type:'text', text:'Perfect, ship it.', reactions:[{emoji:'🎉', count:2, own:false}] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'text', text:'Campaign assets are ready for review.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'image-solo', image:'images/VariantPortrait.png', aspectRatio:'portrait', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'9:16 AM', type:'text', text:'Looking sharp. Can we get a square crop for Instagram?', reactions:[] },
+    { sender:'self', time:'9:17 AM', type:'text', text:'On it — square version coming up.', reactions:[] },
+    { sender:'self', time:'9:18 AM', type:'image-with-text', text:'Here is the square crop:', image:'images/VariantSquare.png', aspectRatio:'square', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:20 AM', type:'text', text:'Perfect, ship it.', reactions:[{emoji:'🎉', count:2, own:false}] },
   ],
 
   // ── Channel · Design System — medium-long, media grid + file ──
   design: [
-    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02', type:'text', text:'Pushed the new chat bubble specs to Figma.', reactions:[] },
-    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02', type:'text', text:'Own, 1:1, and group variants are all in there now.', reactions:[] },
-    { sender:'self', time:'11:03', type:'text', text:'Saw them — the grouping states look great.', reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:05', type:'media-grid', text:'Reference shots for the new empty states:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
-    { sender:'self', time:'11:06', type:'text', text:"Love these. I'll wire them into the prototype.", reactions:[] },
-    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:08', type:'file-solo', filename:'Wire_DS_Tokens_v2.pdf', filesize:'1.1 MB', filetype:'PDF', thumb:null, reactions:[] },
-    { sender:'self', time:'11:09', type:'text', text:'Thanks!', reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:10', type:'text', text:'Once the bubbles are in, we should do a quick QA pass across light and dark mode. I noticed a couple of contrast issues on the received bubbles in dark.', reactions:[] },
-    { sender:'self', time:'11:11', type:'text', text:'Good catch — adding it to the list.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Pushed the new chat bubble specs to Figma.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Own, 1:1, and group variants are all in there now.', reactions:[] },
+    { sender:'self', time:'11:03 AM', type:'text', text:'Saw them — the grouping states look great.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:05 AM', type:'media-grid', text:'Reference shots for the new empty states:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'11:06 AM', type:'text', text:"Love these. I'll wire them into the prototype.", reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:08 AM', type:'file-solo', filename:'Wire_DS_Tokens_v2.pdf', filesize:'1.1 MB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'11:09 AM', type:'text', text:'Thanks!', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:10 AM', type:'text', text:'Once the bubbles are in, we should do a quick QA pass across light and dark mode. I noticed a couple of contrast issues on the received bubbles in dark.', reactions:[] },
+    { sender:'self', time:'11:11 AM', type:'text', text:'Good catch — adding it to the list.', reactions:[] },
   ],
 
   // ── Channel · General — short ──
   general: [
-    { sender:'Noah Klein', color:'amber', initials:'NK', time:'08:45', type:'text', text:'Coffee machine on the 3rd floor is fixed ☕', reactions:[{emoji:'🙌', count:6, own:true}] },
-    { sender:'self', time:'08:46', type:'text', text:'Hero.', reactions:[] },
-    { sender:'Noah Klein', color:'amber', initials:'NK', time:'08:46', type:'text', text:'Anytime 😄', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:45 AM', type:'text', text:'Coffee machine on the 3rd floor is fixed ☕', reactions:[{emoji:'🙌', count:6, own:true}] },
+    { sender:'self', time:'8:46 AM', type:'text', text:'Hero.', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:46 AM', type:'text', text:'Anytime 😄', reactions:[] },
   ],
 
   // ── Group · Q3 Planning — medium, file ──
   q3: [
-    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'14:20', type:'file-with-text', text:'Sharing the Q3 planning doc — please add your items by Friday.', filename:'Q3_Planning_2026.docx', filesize:'92 KB', filetype:'DOC', thumb:null, reactions:[] },
-    { sender:'Mara Voss', color:'purple', initials:'MV', time:'14:22', type:'text', text:'Added the design milestones.', reactions:[] },
-    { sender:'self', time:'14:25', type:'text', text:"Engineering capacity is in. We're tight but doable.", reactions:[] },
-    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'14:26', type:'text', text:'Thanks both 🙏', reactions:[{emoji:'👍', count:2, own:false}] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:20 PM', type:'file-with-text', text:'Sharing the Q3 planning doc — please add your items by Friday.', filename:'Q3_Planning_2026.docx', filesize:'92 KB', filetype:'DOC', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:22 PM', type:'text', text:'Added the design milestones.', reactions:[] },
+    { sender:'self', time:'2:25 PM', type:'text', text:"Engineering capacity is in. We're tight but doable.", reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:26 PM', type:'text', text:'Thanks both 🙏', reactions:[{emoji:'👍', count:2, own:false}] },
   ],
 
   // ── Group · Marketing Team — short ──
   'marketing-grp': [
-    { sender:'Lena Fischer', color:'red', initials:'LF', time:'16:40', type:'text', text:'Quick one — are we still on for the launch call tomorrow?', reactions:[] },
-    { sender:'self', time:'16:41', type:'text', text:'Yes, 10am.', reactions:[] },
-    { sender:'Lena Fischer', color:'red', initials:'LF', time:'16:41', type:'text', text:'Great, see you then.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:40 PM', type:'text', text:'Quick one — are we still on for the launch call tomorrow?', reactions:[] },
+    { sender:'self', time:'4:41 PM', type:'text', text:'Yes, 10am.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:41 PM', type:'text', text:'Great, see you then.', reactions:[] },
   ],
 
   // ── 1:1 · Jaqueline Olaho — medium, file ──
   jo: [
-    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:05', type:'text', text:'Hey! Did you get a chance to look at the brief?', reactions:[] },
-    { sender:'self', time:'13:06', type:'text', text:'Yes — mostly good. One section needs tightening.', reactions:[] },
-    { sender:'self', time:'13:06', type:'text', text:"I'll send notes this afternoon.", reactions:[] },
-    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:07', type:'text', text:'Perfect, thank you 🙌', reactions:[] },
-    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'13:10', type:'file-with-text', text:'Here is the latest version btw:', filename:'Creative_Brief_v3.pdf', filesize:'540 KB', filetype:'PDF', thumb:null, reactions:[] },
-    { sender:'self', time:'13:12', type:'text', text:'Got it.', reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:05 PM', type:'text', text:'Hey! Did you get a chance to look at the brief?', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:'Yes — mostly good. One section needs tightening.', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:"I'll send notes this afternoon.", reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:07 PM', type:'text', text:'Perfect, thank you 🙌', reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:10 PM', type:'file-with-text', text:'Here is the latest version btw:', filename:'Creative_Brief_v3.pdf', filesize:'540 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'1:12 PM', type:'text', text:'Got it.', reactions:[] },
   ],
 
   // ── 1:1 · Dor Lewis — short ──
   dl: [
-    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'17:30', type:'text', text:'Are you joining the standup?', reactions:[] },
-    { sender:'self', time:'17:30', type:'text', text:'2 min late, starting now.', reactions:[] },
+    { divider:'day', day:2 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:05 AM', type:'text', text:'Hey — did you get a chance to look at the migration plan?', reactions:[] },
+    { sender:'self', time:'11:20 AM', type:'text', text:'Reading it now. The phased rollout makes sense.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:22 AM', type:'text', text:'Great. I was worried about the downtime window.', reactions:[] },
+    { divider:'time', time:'3:47 PM' },
+    { sender:'self', time:'3:47 PM', type:'text', text:'We can keep it under 10 minutes if we pre-warm the caches.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'3:49 PM', type:'text', text:"Perfect. I'll schedule it for Saturday night.", reactions:[{emoji:'👍', count:1, own:true}] },
+    { divider:'day', day:1 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'9:12 AM', type:'text', text:'Migration went through cleanly. Zero errors overnight.', reactions:[{emoji:'🎉', count:1, own:true}] },
+    { sender:'self', time:'9:15 AM', type:'text', text:'Amazing work. Thanks for driving it.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'5:30 PM', type:'text', text:'Are you joining the standup?', reactions:[] },
+    { sender:'self', time:'5:30 PM', type:'text', text:'2 min late, starting now.', reactions:[] },
   ],
 
   // ── 1:1 · Deniz Agha — medium, image ──
   da: [
-    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:15', type:'image-with-text', text:'Check out the venue for the workshop:', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[] },
-    { sender:'self', time:'10:16', type:'text', text:"Whoa, that's gorgeous.", reactions:[] },
-    { sender:'self', time:'10:16', type:'text', text:'How many does it fit?', reactions:[] },
-    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:17', type:'text', text:'Up to 30. Plenty of room.', reactions:[] },
-    { sender:'self', time:'10:18', type:'text', text:'Book it 🎉', reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:15 AM', type:'image-with-text', text:'Check out the venue for the workshop:', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:"Whoa, that's gorgeous.", reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'How many does it fit?', reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:17 AM', type:'text', text:'Up to 30. Plenty of room.', reactions:[] },
+    { sender:'self', time:'10:18 AM', type:'text', text:'Book it 🎉', reactions:[] },
   ],
 
   // ── 1:1 · Marcel Pierrot — short ──
   mp: [
-    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:00', type:'text', text:'Lunch?', reactions:[] },
-    { sender:'self', time:'12:01', type:'text', text:'Give me 15.', reactions:[] },
-    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:01', type:'text', text:'👍', reactions:[] },
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:00 PM', type:'text', text:'Lunch?', reactions:[] },
+    { sender:'self', time:'12:01 PM', type:'text', text:'Give me 15.', reactions:[] },
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:01 PM', type:'text', text:'👍', reactions:[] },
   ],
 };
 
@@ -3116,23 +3169,33 @@ function appendReactions(groupEl, group, className) {
   groupEl.appendChild(el);
 }
 
+function dayLabel(off) {
+  if (off === 0) return 'Today';
+  if (off === 1) return 'Yesterday';
+  if (off <= 7) return off + ' days ago';
+  const d = new Date(); d.setDate(d.getDate() - off);
+  const M = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return M[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear();
+}
+function makeDivider(label) {
+  const sep = document.createElement('div');
+  sep.className = 'day-sep';
+  sep.innerHTML = '<span class="day-sep-line"></span><span class="day-sep-pill"></span><span class="day-sep-line"></span>';
+  sep.querySelector('.day-sep-pill').textContent = label;
+  return sep;
+}
 function renderMessages() {
   const list = document.getElementById('msg-list');
   list.innerHTML = '';
 
-  // Day separator
-  const sep = document.createElement('div');
-  sep.className = 'day-sep';
-  sep.textContent = 'Today';
-
   // Responsive content area wrapper
   const area = document.createElement('div');
   area.className = 'msg-content-area';
-  area.appendChild(sep);
   list.appendChild(area);
 
-  const groups = groupMessages(CONVERSATIONS[CURRENT_CONV] || []);
-  groups.forEach(group => {
+  const items = CONVERSATIONS[CURRENT_CONV] || [];
+
+  function renderGroup(group) {
     const variant = group.sender === 'self' ? 'self' : 'other';
 
     if (variant === 'self') {
@@ -3154,7 +3217,7 @@ function renderMessages() {
           const status = document.createElement('div');
           status.className = 'own-msg-status';
           status.innerHTML =
-            '<span class="own-msg-time">' + msg.time + ' AM</span>' +
+            '<span class="own-msg-time">' + msg.time + '</span>' +
             '<span class="own-msg-checkmark"><i class="ph-bold ph-checks"></i></span>';
           bubble.appendChild(status);
         }
@@ -3225,7 +3288,7 @@ function renderMessages() {
         if (showStatus) {
           const status = document.createElement('div');
           status.className = 'other-msg-status';
-          status.innerHTML = '<span class="other-msg-time">' + msg.time + ' AM</span>';
+          status.innerHTML = '<span class="other-msg-time">' + msg.time + '</span>';
           bubble.appendChild(status);
         }
 
@@ -3235,7 +3298,21 @@ function renderMessages() {
       appendReactions(groupEl, group, 'other-msg-reactions indent');
       area.appendChild(groupEl);
     }
+  }
+
+  // Interleave day / time dividers with runs of messages
+  let buffer = [];
+  const flush = () => { if (buffer.length) { groupMessages(buffer).forEach(renderGroup); buffer = []; } };
+  if (!(items.length && items[0].divider)) area.appendChild(makeDivider(dayLabel(0)));
+  items.forEach(item => {
+    if (item.divider) {
+      flush();
+      area.appendChild(makeDivider(item.divider === 'day' ? dayLabel(item.day) : item.time));
+    } else {
+      buffer.push(item);
+    }
   });
+  flush();
 
   list.scrollTop = list.scrollHeight;
   // Scroll the outer view-conv container (scrollbar is on view-conv)
