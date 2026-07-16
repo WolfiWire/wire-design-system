@@ -1265,9 +1265,9 @@ input, textarea { font-family:var(--font-sans); }
 }
 .user-av {
   width:24px; height:24px; border-radius:var(--radius-full);
-  background:var(--wire-identity-blue);
+  background:var(--wire-bg-accent-primary);
   display:flex; align-items:center; justify-content:center;
-  font-size:9px; font-weight:600; color:#fff;
+  font-size:9px; font-weight:600; color:var(--wire-content-accent-on-primary);
   position:relative;
 }
 .presence {
@@ -1946,7 +1946,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .text-input { width:100%; box-sizing:border-box; padding:9px 12px; font-family:var(--font-sans); font-size:var(--font-size-sm); color:var(--wire-content-base-primary); background:var(--wire-bg-base-secondary); border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-lg); outline:none; }
 .text-input:focus { border-color:var(--wire-bg-accent-primary); }
 .avatar-row { display:flex; align-items:center; gap:var(--spacing-4); margin-bottom:var(--spacing-5); }
-.avatar-lg { width:64px; height:64px; border-radius:100px; background:var(--wire-identity-blue); display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:600; flex-shrink:0; }
+.avatar-lg { width:64px; height:64px; border-radius:100px; background:var(--wire-bg-accent-primary); display:flex; align-items:center; justify-content:center; color:var(--wire-content-accent-on-primary); font-size:22px; font-weight:600; flex-shrink:0; }
 .avatar-change { font-size:var(--font-size-sm); color:var(--wire-bg-accent-primary); cursor:pointer; font-weight:var(--font-weight-medium); background:none; border:none; padding:0; }
 .status-options { display:flex; flex-direction:column; gap:6px; max-width:420px; }
 .status-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-lg); cursor:pointer; font-size:var(--font-size-sm); color:var(--wire-content-base-primary); }
@@ -2000,6 +2000,14 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-footer .ob-spacer { flex:1; }
 .ob-back, .ob-skip { background:none; border:none; cursor:pointer; font-family:var(--font-sans); font-size:14px; font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary); padding:0; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
 .ob-skip { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+/* Welcome step: logo/title/text + buttons form one vertically-centred group; buttons centred, no bottom-docked footer */
+.ob-welcome-step .ob-card { justify-content:center; }
+.ob-welcome-step .ob-progress { display:none; }
+.ob-welcome-step .ob-body { flex:0 0 auto; }
+.ob-welcome-step .ob-footer { justify-content:center; padding-top:20px; }
+.ob-welcome-step .ob-footer .ob-spacer { display:none; }
+.ob-welcome-step .ob-footer .ob-back { display:none; }
+.ob-welcome-step .ob-skip { position:static; transform:none; }
 .ob-back:hover, .ob-skip:hover { color:var(--wire-content-base-primary); }
 .ob-theme-select { display:flex; justify-content:center; margin-top:6px; }
 .ob-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:16px; }
@@ -2023,7 +2031,8 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-pw-out { display:flex; flex-direction:column; gap:2px; align-items:flex-end; }
 .ob-pw-in span { background:var(--wire-bg-base-tertiary); border-radius:10px; }
 .ob-pw-out span { background:var(--wire-bg-accent-primary); border-radius:10px; }
-.user-av.has-photo, .acct-av.has-photo { color:transparent; background-size:cover; background-position:center; }
+.user-av.has-photo, .acct-av.has-photo, .avatar-lg.has-photo, .own-self-av.has-photo { color:transparent; background-size:cover; background-position:center; }
+.own-self-av { background:var(--wire-bg-accent-primary); }
 @media (max-width: 780px) { #onboarding-overlay.open { padding:40px 16px; } .ob-body { padding:20px 0 20px; } .ob-footer { padding:20px 20px 24px; } }
 </style>
 </head>
@@ -2506,8 +2515,8 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
     </div>
     <div class="ob-footer" id="ob-footer">
       <button class="ob-back" id="ob-back">Back</button>
-      <button class="ob-skip" id="ob-skip">Skip onboarding</button>
       <span class="ob-spacer"></span>
+      <button class="ob-skip" id="ob-skip">Skip onboarding</button>
       <button class="wds-btn wds-btn-secondary wds-btn-sm" id="ob-tour" style="display:none">Take a quick tour</button>
       <button class="wds-btn wds-btn-secondary wds-btn-sm" id="ob-notnow" style="display:none">Not now</button>
       <button class="wds-btn wds-btn-primary wds-btn-sm" id="ob-next">Continue</button>
@@ -3427,9 +3436,13 @@ function renderMessages() {
         gut.className = 'own-msg-avatar-gutter';
         if (showAvatar) {
           const av = document.createElement('div');
-          av.className = 'av av-26';
-          av.style.background = 'var(--wire-identity-blue)';
+          av.className = 'av av-26 own-self-av';
           av.textContent = 'KD';
+          const selfAv = document.getElementById('account-av');
+          if (selfAv && selfAv.classList.contains('has-photo') && selfAv.style.backgroundImage) {
+            av.style.backgroundImage = selfAv.style.backgroundImage;
+            av.classList.add('has-photo');
+          }
           gut.appendChild(av);
         }
         row.appendChild(gut);
@@ -3860,7 +3873,8 @@ function sendMessage() {
     progress.style.visibility = mid ? 'visible' : 'hidden';
     dots.forEach(d => { const n = +d.dataset.dot; d.classList.toggle('active', n === i); d.classList.toggle('done', n < i); });
     backBtn.style.visibility = mid ? 'visible' : 'hidden';
-    skipBtn.style.display = mid ? '' : 'none';
+    skipBtn.style.display = (i < LAST) ? '' : 'none';
+    ov.classList.toggle('ob-welcome-step', i === 0);
     if (i === 0) nextBtn.textContent = 'Get started';
     else if (i <= 2) nextBtn.textContent = 'Continue';
     else if (i === 3) nextBtn.textContent = 'Turn on backup';
@@ -3897,7 +3911,7 @@ function sendMessage() {
   const fileInput = document.getElementById('ob-photo-input');
   const removeBtn = document.getElementById('ob-remove-btn');
   function applyOwnPhoto(url){
-    document.querySelectorAll('#account-av, .acct-av').forEach(el => {
+    document.querySelectorAll('#account-av, .acct-av, #settings-avatar, .own-self-av').forEach(el => {
       if (url){ el.style.backgroundImage = 'url(' + url + ')'; el.classList.add('has-photo'); }
       else { el.style.backgroundImage = ''; el.classList.remove('has-photo'); }
     });
