@@ -227,6 +227,15 @@
   --wire-accent-700: #043e78;
   --wire-accent-800: #022950;
   --wire-accent-900: #021f3c;
+
+  /* Plain Colors — imported from Wire Design System (Theme collection) · light */
+  --wire-plain-purple-primary:#8944ab; --wire-plain-purple-primary-focus:#6e3689; --wire-plain-purple-secondary:#f4edf7; --wire-plain-purple-secondary-focus:#e7daee;
+  --wire-plain-blue-primary:#0667c8;   --wire-plain-blue-primary-focus:#0552a0;   --wire-plain-blue-secondary:#e7f0fa;   --wire-plain-blue-secondary-focus:#cde1f4;
+  --wire-plain-amber-primary:#a25915;  --wire-plain-amber-primary-focus:#824711;  --wire-plain-amber-secondary:#f6eee8;  --wire-plain-amber-secondary-focus:#ecded0;
+  --wire-plain-green-primary:#1d7833;  --wire-plain-green-primary-focus:#176029;  --wire-plain-green-secondary:#e8f1ea;  --wire-plain-green-secondary-focus:#d2e4d6;
+  --wire-plain-red-primary:#c20013;    --wire-plain-red-primary-focus:#9b000f;    --wire-plain-red-secondary:#f9e6e8;    --wire-plain-red-secondary-focus:#f3ccd0;
+  --wire-plain-petrol-primary:#01718e; --wire-plain-petrol-primary-focus:#015a6e; --wire-plain-petrol-secondary:#e5f1f3; --wire-plain-petrol-secondary-focus:#cce2e7;
+  --wire-plain-gray-primary:#54585f;   --wire-plain-gray-primary-focus:#34373d;   --wire-plain-gray-secondary:#e5e8ea;   --wire-plain-gray-secondary-focus:#dce0e3;
 }
 
 /* ── DARK MODE ───────────────────────────────────────────────────── */
@@ -308,6 +317,15 @@
   --wire-accent-700: #326499;
   --wire-accent-800: #224266;
   --wire-accent-900: #19324d;
+
+  /* Plain Colors — imported from Wire Design System (Theme collection) · dark */
+  --wire-plain-purple-primary:#da8fff; --wire-plain-purple-primary-focus:#ae72cc; --wire-plain-purple-secondary:#573966; --wire-plain-purple-secondary-focus:#412b4d;
+  --wire-plain-blue-primary:#54a6ff;   --wire-plain-blue-primary-focus:#4385cc;   --wire-plain-blue-secondary:#224266;   --wire-plain-blue-secondary-focus:#19324d;
+  --wire-plain-amber-primary:#ffd426;  --wire-plain-amber-primary-focus:#ccaa1e;  --wire-plain-amber-secondary:#66550f;  --wire-plain-amber-secondary-focus:#4d400b;
+  --wire-plain-green-primary:#30db5b;  --wire-plain-green-primary-focus:#26af49;  --wire-plain-green-secondary:#135824;  --wire-plain-green-secondary-focus:#0e421b;
+  --wire-plain-red-primary:#ff7770;    --wire-plain-red-primary-focus:#cc5f5a;    --wire-plain-red-secondary:#66302d;    --wire-plain-red-secondary-focus:#4d2422;
+  --wire-plain-petrol-primary:#5de6ff; --wire-plain-petrol-primary-focus:#4ab8cc; --wire-plain-petrol-secondary:#255c66; --wire-plain-petrol-secondary-focus:#1c454d;
+  --wire-plain-gray-primary:#cbced1;   --wire-plain-gray-primary-focus:#9fa1a7;   --wire-plain-gray-secondary:#54585f;   --wire-plain-gray-secondary-focus:#34373d;
 
   /* Identity / accent hues — dark mode (Color Primitives · Dark/{hue}/500) */
   --wire-identity-blue:   #54a6ff;
@@ -1033,6 +1051,7 @@ input, textarea { font-family:var(--font-sans); }
 /* ─── CONVERSATION VIEW LAYOUT ── */
 #view-conv {
   flex:1; overflow-y:auto; min-height:0;
+  background:var(--wire-bg-base-secondary);
 }
 #view-conv::-webkit-scrollbar { width:3px; }
 #view-conv::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
@@ -1072,7 +1091,7 @@ input, textarea { font-family:var(--font-sans); }
 .conv-composer-bar {
   flex-shrink:0;
   width:100%;
-  background:var(--wire-bg-base-primary);
+  background:var(--wire-bg-base-secondary);
 }
 .conv-composer-bar.hidden { display:none; }
 .conv-composer-bar .composer {
@@ -1080,9 +1099,9 @@ input, textarea { font-family:var(--font-sans); }
   margin:0 auto;
 }
 
-.composer { flex-shrink:0; background:var(--wire-bg-base-primary);  padding:var(--spacing-2) var(--spacing-4) var(--spacing-3); }
+.composer { flex-shrink:0; background:var(--wire-bg-base-secondary);  padding:var(--spacing-2) var(--spacing-4) var(--spacing-3); }
 .composer-wrap {
-  background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary);
+  background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary);
   border-radius:var(--radius-base); padding:var(--spacing-2) var(--spacing-3);
   display:flex; align-items:center; gap:var(--spacing-2);
 }
@@ -1390,14 +1409,14 @@ input, textarea { font-family:var(--font-sans); }
     radial-gradient(circle at 26% 80%, color-mix(in srgb, var(--bg-h3) 22%, transparent), transparent 60%),
     linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 44%, var(--bg-base)), color-mix(in srgb, var(--bg-hue) 40%, var(--bg-base)));
 }
-.bg-swatch[data-mood="vibrant"] {
+.sc-chip[data-mood="vibrant"] {
   background: linear-gradient(135deg,
     color-mix(in srgb, var(--bg-hue) 54%, var(--bg-base)),
     color-mix(in srgb, var(--bg-h2) 50%, var(--bg-base)) 55%,
     color-mix(in srgb, var(--bg-h3) 42%, var(--bg-base)));
 }
-.bg-swatch[data-mood="balanced"]     { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 54%, var(--bg-base)), var(--bg-base)); }
-.bg-swatch[data-mood="calm"]         { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 22%, var(--bg-base)), var(--bg-base)); }
+.sc-chip[data-mood="balanced"]     { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 54%, var(--bg-base)), var(--bg-base)); }
+.sc-chip[data-mood="calm"]         { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 22%, var(--bg-base)), var(--bg-base)); }
 .bg-swatch[data-mood="professional"] { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 12%, var(--bg-base)), var(--bg-base)); }
 
 /* Plain user-colour variants — a solid block of the accent at three tones.
@@ -1405,39 +1424,28 @@ input, textarea { font-family:var(--font-sans); }
    ordering holds in BOTH light and dark mode. Rail/search contrast for these
    is set per-variant in JS (railFor), since a solid can be dark or light
    regardless of the active theme. */
-#page.bg-mood-plain-dark,  #onboarding-overlay.bg-mood-plain-dark,  .bg-preview.bg-mood-plain-dark,  .bg-swatch[data-mood="plain-dark"]  { background: color-mix(in srgb, var(--bg-hue) 52%, #000); }
-#page.bg-mood-plain-mid,   #onboarding-overlay.bg-mood-plain-mid,   .bg-preview.bg-mood-plain-mid,   .bg-swatch[data-mood="plain-mid"]   { background: var(--bg-hue); }
-#page.bg-mood-plain-light, #onboarding-overlay.bg-mood-plain-light, .bg-preview.bg-mood-plain-light, .bg-swatch[data-mood="plain-light"] { background: color-mix(in srgb, var(--bg-hue) 32%, #fff); }
-/* In dark mode all three plain variants are dark accent tones, running from a
-   bit lighter than the old darkest down to almost black (still reversed order:
-   the "dark" slot is the lightest of the three, the "light" slot near-black). */
-[data-theme="dark"] #page.bg-mood-plain-dark,
-[data-theme="dark"] #onboarding-overlay.bg-mood-plain-dark,
-[data-theme="dark"] .bg-preview.bg-mood-plain-dark,
-[data-theme="dark"] .bg-swatch[data-mood="plain-dark"]  { background: color-mix(in srgb, var(--bg-hue) 48%, #000); }
-[data-theme="dark"] #page.bg-mood-plain-mid,
-[data-theme="dark"] #onboarding-overlay.bg-mood-plain-mid,
-[data-theme="dark"] .bg-preview.bg-mood-plain-mid,
-[data-theme="dark"] .bg-swatch[data-mood="plain-mid"]   { background: color-mix(in srgb, var(--bg-hue) 32%, #000); }
-[data-theme="dark"] #page.bg-mood-plain-light,
-[data-theme="dark"] #onboarding-overlay.bg-mood-plain-light,
-[data-theme="dark"] .bg-preview.bg-mood-plain-light,
-[data-theme="dark"] .bg-swatch[data-mood="plain-light"] { background: color-mix(in srgb, var(--bg-hue) 20%, #000); }
+/* Single solid background = accent-600 in light, accent-800-equivalent in dark (follows the accent). Chip uses .sc-chip. */
+#page.bg-mood-solid, #onboarding-overlay.bg-mood-solid, .bg-preview.bg-mood-solid, .sc-chip[data-mood="solid"] { background: var(--wire-accent-600); }
+[data-theme="dark"] #page.bg-mood-solid, [data-theme="dark"] #onboarding-overlay.bg-mood-solid, [data-theme="dark"] .bg-preview.bg-mood-solid, [data-theme="dark"] .sc-chip[data-mood="solid"] { background: color-mix(in srgb, var(--wire-bg-accent-primary) 40%, #000); }
+/* Inverted accent has no colour ramp -> Solid = relaxed gray (Plain Colors/Gray/Secondary, theme-aware). */
+[data-accent="ink"] #page.bg-mood-solid, [data-accent="ink"] #onboarding-overlay.bg-mood-solid, [data-accent="ink"] .bg-preview.bg-mood-solid, [data-accent="ink"] .sc-chip[data-mood="solid"] { background: var(--wire-plain-gray-secondary); }
 
 /* Pure neutral surfaces — no accent. These use the base tokens directly, so they
    adapt to theme automatically (primary: white↔near-black; secondary: light-gray↔dark-gray). */
-#page.bg-mood-base-primary,   #onboarding-overlay.bg-mood-base-primary,   .bg-preview.bg-mood-base-primary,   .bg-swatch[data-mood="base-primary"]   { background: var(--wire-bg-base-primary); }
+#page.bg-mood-base-primary,   #onboarding-overlay.bg-mood-base-primary,   .bg-preview.bg-mood-base-primary,   .sc-chip[data-mood="base-primary"]   { background: var(--wire-bg-base-primary); }
 [data-theme="dark"] #page.bg-mood-base-primary,
 [data-theme="dark"] #onboarding-overlay.bg-mood-base-primary,
 [data-theme="dark"] .bg-preview.bg-mood-base-primary,
-[data-theme="dark"] .bg-swatch[data-mood="base-primary"] { background: var(--bg-base); }
+[data-theme="dark"] .sc-chip[data-mood="base-primary"] { background: var(--bg-base); }
+#page.bg-mood-mono, #onboarding-overlay.bg-mood-mono, .bg-preview.bg-mood-mono, .sc-chip[data-mood="mono"] { background:#ffffff; }
+[data-theme="dark"] #page.bg-mood-mono, [data-theme="dark"] #onboarding-overlay.bg-mood-mono, [data-theme="dark"] .bg-preview.bg-mood-mono, [data-theme="dark"] .sc-chip[data-mood="mono"] { background:#000000; }
 #page.bg-mood-base-secondary, #onboarding-overlay.bg-mood-base-secondary, .bg-preview.bg-mood-base-secondary, .bg-swatch[data-mood="base-secondary"] { background: var(--wire-bg-base-secondary); }
 
 #app-window { flex:1; display:flex; overflow:hidden; margin:36px var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:transparent; min-width:0; position:relative; z-index:1; }
 
 /* ─── BG PICKER ── */
 #bg-picker {
-  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  display:block;
 }
 #picker-label {
   font-size:10px; color:rgba(255,255,255,0.5); margin-right:2px;
@@ -1983,7 +1991,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 #onboarding-overlay { position:fixed; inset:0; z-index:400; display:none; background:var(--wire-bg-base-primary); }
 #onboarding-overlay.open { display:flex; align-items:stretch; box-sizing:border-box; }
 .ob-welcome-logo { height:56px; width:auto; color:var(--wire-content-base-primary); display:block; }
-.ob-sidebar { position:relative; z-index:1; flex:0 0 460px; margin:8px 0 8px 8px; background:#000; color:#fff; display:flex; flex-direction:column; padding:56px 48px 48px; box-sizing:border-box; overflow:hidden; border-radius:var(--radius-base) 0 0 var(--radius-base); }
+.ob-sidebar { position:relative; z-index:1; flex:0 0 460px; margin:8px 0 8px 8px; background:#000; color:#fff; display:flex; flex-direction:column; padding:56px 48px 48px; box-sizing:border-box; overflow:hidden; border:0.5px solid var(--wire-border-base-primary); border-right:none; border-radius:var(--radius-base) 0 0 var(--radius-base); }
 .ob-brand-logo { height:32px; width:83px; color:#fff; display:block; flex:0 0 auto; align-self:flex-start; position:relative; z-index:2; }
 .ob-teaser { position:relative; z-index:2; margin-top:52px; display:flex; flex-direction:column; gap:12px; align-items:flex-start; max-width:344px; }
 .ob-teaser-title { font-size:24px; font-weight:var(--font-weight-bold); line-height:30px; letter-spacing:-0.2px; color:#fff; margin:0; }
@@ -1991,13 +1999,13 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-teaser-link { font-size:16px; line-height:24px; font-weight:600; color:#fff; text-decoration:underline; text-underline-offset:2px; align-self:flex-start; }
 .ob-waves { position:absolute; left:0; bottom:0; width:560px; height:auto; z-index:0; pointer-events:none; }
 .ob-content { position:relative; z-index:1; flex:1 1 auto; min-width:0; margin:8px 8px 8px 0; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:0 var(--radius-base) var(--radius-base) 0; display:flex; align-items:stretch; justify-content:center; box-sizing:border-box; overflow:hidden; }
-.ob-card { position:relative; z-index:1; width:min(740px, 100%); height:100%; max-height:100%; background:transparent; display:flex; flex-direction:column; overflow:hidden; }
+.ob-card { position:relative; z-index:1; width:100%; height:100%; max-height:100%; background:transparent; display:flex; flex-direction:column; overflow:hidden; }
 .ob-progress { display:flex; gap:6px; justify-content:center; padding:38px 0 0; }
 .ob-dot { width:6px; height:6px; border-radius:var(--radius-full); background:var(--wire-border-base-primary); transition:all .25s; }
 .ob-dot.active { width:22px; background:var(--wire-bg-accent-primary); }
 .ob-dot.done { background:var(--wire-bg-accent-primary); }
-.ob-body { flex:1 1 auto; min-height:0; overflow-y:auto; display:flex; flex-direction:column; width:100%; max-width:440px; margin:0 auto; padding:20px 0 24px; box-sizing:border-box; }
-.ob-step { display:none; width:100%; }
+.ob-body { flex:1 1 auto; min-height:0; overflow-y:auto; display:flex; flex-direction:column; align-items:center; width:100%; padding:20px 0 24px; box-sizing:border-box; }
+.ob-step { display:none; width:100%; max-width:440px; }
 .ob-step.active { display:block; animation:ob-fade .3s ease; margin-block:auto; }
 @keyframes ob-fade { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
 .ob-hero { display:flex; align-items:center; justify-content:center; min-height:150px; margin-bottom:16px; }
@@ -2026,11 +2034,24 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-avatar { width:104px; height:104px; border-radius:var(--radius-full); background:var(--wire-bg-accent-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:var(--font-weight-semibold); background-size:cover; background-position:center; }
 .ob-avatar.has-photo { color:transparent; }
 .ob-avatar-actions { display:flex; gap:8px; }
-#ob-accent-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-#ob-bg-picker { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-#ob-bg-picker .bg-swatch { width:28px; height:28px; border:2px solid var(--wire-bg-base-primary); box-shadow:0 0 0 1px var(--wire-border-base-primary); }
-#ob-bg-picker .bg-swatch.active { border-color:var(--wire-bg-base-primary); box-shadow:0 0 0 2px var(--wire-content-base-primary); }
-#ob-bg-picker .bg-swatch:hover { box-shadow:0 0 0 2px var(--wire-content-base-secondary); }
+#ob-bg-picker { display:block; }
+
+/* ── Card-style swatch pickers (accent + background), used in onboarding + Settings ── */
+.swatch-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; }
+.swatch-group-label { font-size:12px; font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary); margin:14px 0 7px; text-align:left; }
+#ob-bg-picker .swatch-group-label:first-child, #bg-picker .swatch-group-label:first-child { margin-top:0; }
+.swatch-card { display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--wire-border-base-primary); border-radius:var(--radius-base); cursor:pointer; background:var(--wire-bg-base-primary); transition:border-color .12s ease, background .12s ease; box-sizing:border-box; }
+.swatch-card:hover { border-color:var(--wire-content-base-secondary); }
+.swatch-card.active { border-color:var(--wire-bg-accent-primary); box-shadow:inset 0 0 0 1px var(--wire-bg-accent-primary); background:color-mix(in srgb, var(--wire-bg-accent-primary) 7%, var(--wire-bg-base-primary)); }
+.swatch-card .sc-chip { width:30px; height:30px; border-radius:100px; flex-shrink:0; box-shadow:inset 0 0 0 0.5px var(--wire-border-base-primary); }
+.swatch-card .sc-name { font-size:14px; font-weight:var(--font-weight-medium); color:var(--wire-content-base-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Stack the Settings accent + background rows (block, full width) so the card grid lays out cleanly */
+.settings-section .settings-row:has(#accent-row), .settings-section .settings-row:has(#bg-picker) { display:block; }
+.settings-row:has(#accent-row) .settings-row-label, .settings-row:has(#bg-picker) .settings-row-label { margin-bottom:var(--spacing-3); }
+.settings-row:has(#accent-row) .settings-row-control, .settings-row:has(#bg-picker) .settings-row-control { display:block; max-width:none; width:100%; }
+.settings-row:has(#bg-picker) .settings-row-control.bg-control { display:block; }
+.settings-row:has(#bg-picker) #bg-preview { margin-top:var(--spacing-3); }
 #ob-bg-preview { position:relative; width:348px; height:212px; max-width:100%; box-sizing:border-box; border:1px solid var(--wire-border-base-primary); aspect-ratio:auto; border-radius:10px; overflow:hidden; margin:8px auto 6px; }
 .ob-pw { position:absolute; left:22px; top:4px; width:322px; height:204px; background:var(--wire-bg-base-primary); border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--wire-border-base-primary); }
 .ob-pw .ob-pp { position:absolute; height:13px; background:var(--wire-bg-base-tertiary); border-radius:100px; }
@@ -2053,7 +2074,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 
 
 <!-- ── PAGE ── -->
-<div id="page" class="bg-mood-base-secondary light-rail">
+<div id="page" class="bg-mood-mono light-rail">
 
   <!-- ── NAV RAIL ── -->
   <nav id="rail" aria-label="Primary navigation">
@@ -2426,7 +2447,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 </div>
 
 <!-- ── SETTINGS MODAL ── -->
-<div id="onboarding-overlay" class="bg-mood-base-secondary" role="dialog" aria-modal="true" aria-label="Welcome to Wire">
+<div id="onboarding-overlay" class="bg-mood-mono" role="dialog" aria-modal="true" aria-label="Welcome to Wire">
   <aside class="ob-sidebar">
     <svg class="ob-brand-logo" viewBox="44 39 135 52" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wire"><path fill-rule="evenodd" clip-rule="evenodd" d="M83.909 83.6259C91.2572 83.6259 97.1691 77.674 97.1691 70.3575H97.1692V44.6009H100.305V70.3573C100.305 79.3948 92.9696 86.7479 83.8925 86.7479C80.044 86.7479 76.5575 85.4163 73.7514 83.2048C70.9452 85.4163 67.376 86.7479 63.5277 86.7479C54.4507 86.7479 47 79.3948 47 70.3573V44.6009H50.1355V70.3575C50.1355 77.6738 56.1464 83.6259 63.4946 83.6259C66.4545 83.6259 69.2156 82.6484 71.4297 81.0168C68.9542 78.1478 67.3811 74.4276 67.3811 70.3575L67.3866 49.2441C67.3866 45.8011 70.1998 43 73.6577 43C77.1156 43 79.9288 45.8013 79.9288 49.2441L79.9233 70.3575C79.9233 74.4274 78.4494 78.1478 75.9739 81.0168C78.188 82.6484 80.9492 83.6259 83.909 83.6259ZM70.5166 70.3573C70.5166 73.6054 71.6989 76.5809 73.6522 78.8898C75.6055 76.5809 76.7878 73.6054 76.7878 70.3575L76.7932 49.2439C76.7932 47.5221 75.3866 46.1219 73.6577 46.1219C71.9288 46.1219 70.5221 47.5221 70.5221 49.2439L70.5166 70.3573ZM109.716 44.5163H112.852V85.9209H109.716V44.5163ZM125.394 51.6514C128.646 46.9118 134.116 43.7945 140.303 43.7945V46.9223C132.083 46.9223 125.396 53.5802 125.396 61.7639H125.394V85.9209H122.258V44.5163H125.394V51.6514ZM176.578 51.2286C176.239 50.8372 175.883 50.455 175.51 50.0833C167.105 41.7069 153.429 41.7069 145.024 50.0833C136.619 58.4597 136.619 72.0891 145.024 80.4655C153.428 88.8407 167.101 88.8419 175.506 80.469L173.289 78.2593C166.48 85.0417 155.626 85.3922 148.397 79.3132L161.372 66.3828L176.578 51.2286ZM147.241 52.293C140.432 59.0788 140.079 69.8983 146.18 77.1037L172.137 51.2356C164.907 45.1554 154.05 45.5071 147.241 52.293Z" fill="currentColor"/></svg>
     <div class="ob-teaser">
@@ -2487,7 +2508,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
       <div class="ob-step" data-step="2">
         <h2 class="ob-title">Make it yours</h2>
         <p class="ob-text">Choose a theme, an accent colour and a background.</p>
-        <div class="bg-preview bg-mood-base-secondary" id="ob-bg-preview" aria-hidden="true">
+        <div class="bg-preview bg-mood-mono" id="ob-bg-preview" aria-hidden="true">
           <div class="ob-pw">
             <span class="ob-pp" style="left:10px;top:8px;width:72px"></span>
             <span class="ob-pp" style="left:98px;top:8px;width:72px"></span>
@@ -2510,27 +2531,22 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           </div>
         </div>
         <div class="ob-field-label">Accent colour</div>
-        <div id="ob-accent-row">
-          <div class="accent-swatch" data-accent="blue" style="background:#0667c8" title="Blue"></div>
-          <div class="accent-swatch" data-accent="green" style="background:#1d7833" title="Green"></div>
-          <div class="accent-swatch" data-accent="red" style="background:#c20013" title="Red"></div>
-          <div class="accent-swatch" data-accent="amber" style="background:#cc8800" title="Amber"></div>
-          <div class="accent-swatch" data-accent="purple" style="background:#8944ab" title="Purple"></div>
-          <div class="accent-swatch" data-accent="petrol" style="background:#01718e" title="Petrol"></div>
-          <div class="accent-swatch" data-accent="ink" style="background:var(--wire-bg-inverted-primary)" title="Ink — black in light, white in dark"></div>
+        <div id="ob-accent-row" class="swatch-grid">
+          <div class="swatch-card active" data-accent="blue"><span class="sc-chip" style="background:#0667c8"></span><span class="sc-name">Blue</span></div>
+          <div class="swatch-card" data-accent="green"><span class="sc-chip" style="background:#1d7833"></span><span class="sc-name">Green</span></div>
+          <div class="swatch-card" data-accent="amber"><span class="sc-chip" style="background:#cc8800"></span><span class="sc-name">Amber</span></div>
+          <div class="swatch-card" data-accent="purple"><span class="sc-chip" style="background:#8944ab"></span><span class="sc-name">Purple</span></div>
+          <div class="swatch-card" data-accent="ink"><span class="sc-chip" style="background:var(--wire-bg-inverted-primary)"></span><span class="sc-name">Inverted</span></div>
         </div>
         <div class="ob-field-label">Background</div>
         <div id="ob-bg-picker">
-          <div class="bg-swatch" data-mood="playful" title="Playful — colourful, three-hue"></div>
-          <div class="bg-swatch" data-mood="vibrant" title="Vibrant — accent + companion"></div>
-          <div class="bg-swatch" data-mood="balanced" title="Balanced — the default"></div>
-          <div class="bg-swatch" data-mood="calm" title="Calm — soft wash"></div>
-          <div class="bg-swatch" data-mood="professional" title="Professional — relaxed, near-neutral"></div>
-          <div class="bg-swatch" data-mood="plain-dark" title="Solid colour — dark (black / grey)"></div>
-          <div class="bg-swatch" data-mood="plain-mid" title="Solid colour — medium grey"></div>
-          <div class="bg-swatch" data-mood="plain-light" title="Solid colour — light (light grey / white)"></div>
-          <div class="bg-swatch" data-mood="base-primary" title="Surface — base primary (white in light mode)"></div>
-          <div class="bg-swatch" data-mood="base-secondary" title="Surface — base secondary (light grey)"></div>
+          <div class="swatch-grid">
+            <div class="swatch-card" data-mood="vibrant"><span class="sc-chip" data-mood="vibrant"></span><span class="sc-name">Vibrant</span></div>
+            <div class="swatch-card" data-mood="balanced"><span class="sc-chip" data-mood="balanced"></span><span class="sc-name">Balanced</span></div>
+            <div class="swatch-card" data-mood="calm"><span class="sc-chip" data-mood="calm"></span><span class="sc-name">Calm</span></div>
+            <div class="swatch-card solid-card" data-mood="solid"><span class="sc-chip" data-mood="solid"></span><span class="sc-name">Solid colour</span></div>
+            <div class="swatch-card active" data-mood="mono"><span class="sc-chip" data-mood="mono"></span><span class="sc-name">Pure</span></div>
+          </div>
         </div>
       </div>
 
@@ -2617,49 +2633,25 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
             <div class="settings-row">
               <div class="settings-row-label"><span class="field-label">Accent color</span></div>
               <div class="settings-row-control">
-                <div class="accent-row" id="accent-row">
-                  <div class="accent-swatch active" data-accent="blue" style="background:#0667c8" title="Blue"></div>
-                  <div class="accent-swatch" data-accent="green" style="background:#1d7833" title="Green"></div>
-                  <div class="accent-swatch" data-accent="red" style="background:#c20013" title="Red"></div>
-                  <div class="accent-swatch" data-accent="amber" style="background:#cc8800" title="Amber"></div>
-                  <div class="accent-swatch" data-accent="purple" style="background:#8944ab" title="Purple"></div>
-                  <div class="accent-swatch" data-accent="petrol" style="background:#01718e" title="Petrol"></div>
-                  <div class="accent-swatch" data-accent="ink" style="background:var(--wire-bg-inverted-primary)" title="Ink — black in light, white in dark"></div>
+                <div class="swatch-grid" id="accent-row">
+                  <div class="swatch-card active" data-accent="blue"><span class="sc-chip" style="background:#0667c8"></span><span class="sc-name">Blue</span></div>
+                  <div class="swatch-card" data-accent="green"><span class="sc-chip" style="background:#1d7833"></span><span class="sc-name">Green</span></div>
+                  <div class="swatch-card" data-accent="amber"><span class="sc-chip" style="background:#cc8800"></span><span class="sc-name">Amber</span></div>
+                  <div class="swatch-card" data-accent="purple"><span class="sc-chip" style="background:#8944ab"></span><span class="sc-name">Purple</span></div>
+                  <div class="swatch-card" data-accent="ink"><span class="sc-chip" style="background:var(--wire-bg-inverted-primary)"></span><span class="sc-name">Inverted</span></div>
                 </div>
               </div>
             </div>
             <div class="settings-row row-top">
               <div class="settings-row-label"><span class="field-label">Background</span></div>
               <div class="settings-row-control bg-control">
-                <div class="bg-row" id="bg-picker" aria-label="Page background picker">
-                  <div class="bg-swatch" data-mood="playful" title="Playful — colourful, three-hue"></div>
-                  <div class="bg-swatch" data-mood="vibrant" title="Vibrant — accent + companion"></div>
-                  <div class="bg-swatch" data-mood="balanced" title="Balanced — the default"></div>
-                  <div class="bg-swatch" data-mood="calm" title="Calm — soft wash"></div>
-                  <div class="bg-swatch" data-mood="professional" title="Professional — relaxed, near-neutral"></div>
-                  <div class="bg-swatch" data-mood="plain-dark" title="Solid colour — dark"></div>
-                  <div class="bg-swatch" data-mood="plain-mid" title="Solid colour — medium"></div>
-                  <div class="bg-swatch" data-mood="plain-light" title="Solid colour — light"></div>
-                  <div class="bg-swatch active" data-mood="base-primary" title="Surface — base primary"></div>
-                  <div class="bg-swatch" data-mood="base-secondary" title="Surface — base secondary"></div>
-                </div>
-                <div class="bg-preview bg-mood-base-primary" id="bg-preview" aria-hidden="true">
-                  <div class="bg-preview-rail"><span></span><span></span><span></span></div>
-                  <div class="bg-preview-window">
-                    <div class="bgp-sidebar">
-                      <div class="bgp-srow"></div>
-                      <div class="bgp-srow short"></div>
-                      <div class="bgp-srow"></div>
-                      <div class="bgp-srow short"></div>
-                    </div>
-                    <div class="bgp-chat">
-                      <div class="bgp-messages">
-                        <div class="bgp-bubble-in"></div>
-                        <div class="bgp-bubble-in short"></div>
-                        <div class="bgp-bubble-out"></div>
-                      </div>
-                      <div class="bgp-input"></div>
-                    </div>
+                <div id="bg-picker" aria-label="Page background picker">
+                  <div class="swatch-grid">
+                    <div class="swatch-card" data-mood="vibrant"><span class="sc-chip" data-mood="vibrant"></span><span class="sc-name">Vibrant</span></div>
+                    <div class="swatch-card" data-mood="balanced"><span class="sc-chip" data-mood="balanced"></span><span class="sc-name">Balanced</span></div>
+                    <div class="swatch-card" data-mood="calm"><span class="sc-chip" data-mood="calm"></span><span class="sc-name">Calm</span></div>
+                    <div class="swatch-card solid-card" data-mood="solid"><span class="sc-chip" data-mood="solid"></span><span class="sc-name">Solid colour</span></div>
+                    <div class="swatch-card active" data-mood="mono"><span class="sc-chip" data-mood="mono"></span><span class="sc-name">Pure</span></div>
                   </div>
                 </div>
               </div>
@@ -2700,8 +2692,9 @@ const viewConv    = document.getElementById('view-conv');
 const viewDrive   = document.getElementById('view-drive');
 
 // ── Background moods (accent-reactive + theme-adaptive; colors live in CSS) ──
-let currentMood = 'base-secondary';
-const MOODS = ['playful','vibrant','balanced','calm','professional','plain-dark','plain-mid','plain-light','base-primary','base-secondary'];
+let currentMood = 'mono';
+let currentAccent = 'blue';
+const MOODS = ['vibrant','balanced','calm','solid','mono'];
 
 // Which rail/search contrast a given background wants. Gradient moods track the
 // theme (light theme → light wallpaper → light-rail). The plain solid variants
@@ -2731,12 +2724,21 @@ function applyMood(mood) {
   setRail();
 }
 
+// Accent selection (shared by Settings + onboarding). The Inverted ("ink") accent
+// has no colour ramp, so its Solid background is a relaxed gray (Plain Colors/Gray/Secondary).
+function setAccent(a) {
+  currentAccent = a;
+  if (a === 'blue') document.documentElement.removeAttribute('data-accent');
+  else document.documentElement.setAttribute('data-accent', a);
+  document.querySelectorAll('#accent-row .swatch-card, #ob-accent-row .swatch-card').forEach(s => s.classList.toggle('active', s.dataset.accent === a));
+}
+
 // ── Background picker ────────────────────────────────────────────────────────
-document.querySelectorAll('#bg-picker .bg-swatch').forEach(swatch => {
+document.querySelectorAll('#bg-picker .swatch-card').forEach(swatch => {
   swatch.addEventListener('click', () => {
-    document.querySelectorAll('#bg-picker .bg-swatch').forEach(s => s.classList.remove('active'));
-    swatch.classList.add('active');
-    applyMood(swatch.dataset.mood);
+    const m = swatch.dataset.mood;
+    document.querySelectorAll('#bg-picker .swatch-card, #ob-bg-picker .swatch-card').forEach(s => s.classList.toggle('active', s.dataset.mood === m));
+    applyMood(m);
   });
 });
 
@@ -3804,13 +3806,7 @@ function sendMessage() {
   document.querySelectorAll('[data-opens-settings]').forEach(el => el.addEventListener('click', () => openSettings('appearance')));
 
   // Accent color → live data-accent on the document
-  document.querySelectorAll('#accent-row .accent-swatch').forEach(sw => sw.addEventListener('click', () => {
-    document.querySelectorAll('#accent-row .accent-swatch').forEach(s => s.classList.remove('active'));
-    sw.classList.add('active');
-    const a = sw.dataset.accent;
-    if (a === 'blue') document.documentElement.removeAttribute('data-accent');
-    else document.documentElement.setAttribute('data-accent', a);
-  }));
+  document.querySelectorAll('#accent-row .swatch-card').forEach(sw => sw.addEventListener('click', () => setAccent(sw.dataset.accent)));
 
   // Status → dropdown; updates the rail avatar presence dot + the trigger
   const STATUS_COLOR = { available:'#1d7833', busy:'#cc8800', away:'#c20013', none:null };
@@ -3967,28 +3963,22 @@ function sendMessage() {
   removeBtn.addEventListener('click', () => { avEl.style.backgroundImage = ''; avEl.classList.remove('has-photo'); applyOwnPhoto(null); removeBtn.style.display = 'none'; fileInput.value = ''; });
 
   // Accent (mirrors the Settings accent row)
-  ov.querySelectorAll('#ob-accent-row .accent-swatch').forEach(sw => sw.addEventListener('click', () => {
-    const a = sw.dataset.accent;
-    if (a === 'blue') document.documentElement.removeAttribute('data-accent'); else document.documentElement.setAttribute('data-accent', a);
-    ov.querySelectorAll('#ob-accent-row .accent-swatch').forEach(s => s.classList.toggle('active', s === sw));
-    document.querySelectorAll('#accent-row .accent-swatch').forEach(s => s.classList.toggle('active', s.dataset.accent === a));
-  }));
+  ov.querySelectorAll('#ob-accent-row .swatch-card').forEach(sw => sw.addEventListener('click', () => setAccent(sw.dataset.accent)));
 
   // Background (drives the global applyMood + mirrors the Settings picker)
-  ov.querySelectorAll('#ob-bg-picker .bg-swatch').forEach(sw => sw.addEventListener('click', () => {
+  ov.querySelectorAll('#ob-bg-picker .swatch-card').forEach(sw => sw.addEventListener('click', () => {
     const m = sw.dataset.mood;
     if (typeof applyMood === 'function') applyMood(m);
-    ov.querySelectorAll('#ob-bg-picker .bg-swatch').forEach(s => s.classList.toggle('active', s === sw));
-    document.querySelectorAll('#bg-picker .bg-swatch').forEach(s => s.classList.toggle('active', s.dataset.mood === m));
+    document.querySelectorAll('#ob-bg-picker .swatch-card, #bg-picker .swatch-card').forEach(s => s.classList.toggle('active', s.dataset.mood === m));
   }));
 
   // Init: default theme = system preference; reflect current accent/background
   const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   obSetTheme(sysDark ? 'dark' : 'light');
   const curAccent = document.documentElement.getAttribute('data-accent') || 'blue';
-  ov.querySelectorAll('#ob-accent-row .accent-swatch').forEach(s => s.classList.toggle('active', s.dataset.accent === curAccent));
-  const curMood = (typeof currentMood !== 'undefined') ? currentMood : 'base-secondary';
-  ov.querySelectorAll('#ob-bg-picker .bg-swatch').forEach(s => s.classList.toggle('active', s.dataset.mood === curMood));
+  ov.querySelectorAll('#ob-accent-row .swatch-card').forEach(s => s.classList.toggle('active', s.dataset.accent === curAccent));
+  const curMood = (typeof currentMood !== 'undefined') ? currentMood : 'mono';
+  ov.querySelectorAll('#ob-bg-picker .swatch-card').forEach(s => s.classList.toggle('active', s.dataset.mood === curMood));
 
   // Show on every load
   go(0);
