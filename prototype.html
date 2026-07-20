@@ -231,12 +231,12 @@
 
 /* ── DARK MODE ───────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --wire-bg-base-primary:           #17181a;
-  --wire-bg-base-primary-focus:     #34373d;
-  --wire-bg-base-secondary:         #26272c;
-  --wire-bg-base-secondary-focus:   #54585f;
-  --wire-bg-base-tertiary:          #34373d;
-  --wire-bg-base-tertiary-focus:    #54585f;
+  --wire-bg-base-primary:           #0e0f11;
+  --wire-bg-base-primary-focus:     #26272c;
+  --wire-bg-base-secondary:         #17181a;
+  --wire-bg-base-secondary-focus:   #34373d;
+  --wire-bg-base-tertiary:          #26272c;
+  --wire-bg-base-tertiary-focus:    #34373d;
   --wire-bg-accent-primary:         #54a6ff;
   --wire-bg-accent-primary-focus:   #98caff;
   --wire-bg-accent-secondary:       #224266;
@@ -316,7 +316,7 @@
   --wire-identity-petrol: #5de6ff;
   --wire-identity-purple: #da8fff;
   --wire-identity-red:    #ff7770;
-  --bg-base: var(--wire-bg-base-primary);
+  --bg-base: #000000; /* dark canvas — sits below base-primary surfaces so cards/windows read as lighter panels */
 
   /* Channel icon tints — dark mode (Color Primitives · Dark/{hue}/700) */
   --wire-channel-blue-bg:   #326499; --wire-channel-blue-border:   #326499;
@@ -1340,14 +1340,14 @@ input, textarea { font-family:var(--font-sans); }
 #page.bg-mood-vibrant, #onboarding-overlay.bg-mood-vibrant, .bg-preview.bg-mood-vibrant {
   background:
     radial-gradient(ellipse 52% 44% at 90% 0%, color-mix(in srgb, var(--bg-h3) 42%, transparent), transparent 72%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 24%),
-    linear-gradient(to right,  color-mix(in srgb, var(--bg-h2) 50%, transparent), transparent 22%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 75%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-h2) 50%, transparent), transparent 75%),
     var(--bg-base);
 }
 #page.bg-mood-balanced, #onboarding-overlay.bg-mood-balanced, .bg-preview.bg-mood-balanced {
   background:
-    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 24%),
-    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 44%, transparent), transparent 22%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 75%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 44%, transparent), transparent 75%),
     var(--bg-base);
 }
 #page.bg-mood-calm, #onboarding-overlay.bg-mood-calm, .bg-preview.bg-mood-calm {
@@ -1427,6 +1427,10 @@ input, textarea { font-family:var(--font-sans); }
 /* Pure neutral surfaces — no accent. These use the base tokens directly, so they
    adapt to theme automatically (primary: white↔near-black; secondary: light-gray↔dark-gray). */
 #page.bg-mood-base-primary,   #onboarding-overlay.bg-mood-base-primary,   .bg-preview.bg-mood-base-primary,   .bg-swatch[data-mood="base-primary"]   { background: var(--wire-bg-base-primary); }
+[data-theme="dark"] #page.bg-mood-base-primary,
+[data-theme="dark"] #onboarding-overlay.bg-mood-base-primary,
+[data-theme="dark"] .bg-preview.bg-mood-base-primary,
+[data-theme="dark"] .bg-swatch[data-mood="base-primary"] { background: var(--bg-base); }
 #page.bg-mood-base-secondary, #onboarding-overlay.bg-mood-base-secondary, .bg-preview.bg-mood-base-secondary, .bg-swatch[data-mood="base-secondary"] { background: var(--wire-bg-base-secondary); }
 
 #app-window { flex:1; display:flex; overflow:hidden; margin:36px var(--spacing-1) var(--spacing-1) 0; border-radius:var(--radius-base); border:0.5px solid var(--wire-border-base-primary); background:transparent; min-width:0; position:relative; z-index:1; }
@@ -1977,9 +1981,17 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 
 /* ── Onboarding (full-screen, brand split) ───────────────────────────────── */
 #onboarding-overlay { position:fixed; inset:0; z-index:400; display:none; background:var(--wire-bg-base-primary); }
-#onboarding-overlay.open { display:flex; align-items:center; justify-content:center; padding:40px 24px; box-sizing:border-box; }
+#onboarding-overlay.open { display:flex; align-items:stretch; box-sizing:border-box; }
 .ob-welcome-logo { height:56px; width:auto; color:var(--wire-content-base-primary); display:block; }
-.ob-card { position:relative; z-index:1; width:min(740px, 100%); height:calc(100vh - 80px); background:var(--wire-bg-base-primary); border-radius:var(--radius-base); display:flex; flex-direction:column; overflow:hidden; }
+.ob-sidebar { position:relative; z-index:1; flex:0 0 460px; margin:8px 0 8px 8px; background:#000; color:#fff; display:flex; flex-direction:column; padding:56px 48px 48px; box-sizing:border-box; overflow:hidden; border-radius:var(--radius-base) 0 0 var(--radius-base); }
+.ob-brand-logo { height:32px; width:83px; color:#fff; display:block; flex:0 0 auto; align-self:flex-start; position:relative; z-index:2; }
+.ob-teaser { position:relative; z-index:2; margin-top:52px; display:flex; flex-direction:column; gap:12px; align-items:flex-start; max-width:344px; }
+.ob-teaser-title { font-size:24px; font-weight:var(--font-weight-bold); line-height:30px; letter-spacing:-0.2px; color:#fff; margin:0; }
+.ob-teaser-text { font-size:16px; line-height:24px; color:rgba(255,255,255,0.82); margin:0; }
+.ob-teaser-link { font-size:16px; line-height:24px; font-weight:600; color:#fff; text-decoration:underline; text-underline-offset:2px; align-self:flex-start; }
+.ob-waves { position:absolute; left:0; bottom:0; width:560px; height:auto; z-index:0; pointer-events:none; }
+.ob-content { position:relative; z-index:1; flex:1 1 auto; min-width:0; margin:8px 8px 8px 0; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:0 var(--radius-base) var(--radius-base) 0; display:flex; align-items:stretch; justify-content:center; box-sizing:border-box; overflow:hidden; }
+.ob-card { position:relative; z-index:1; width:min(740px, 100%); height:100%; max-height:100%; background:transparent; display:flex; flex-direction:column; overflow:hidden; }
 .ob-progress { display:flex; gap:6px; justify-content:center; padding:38px 0 0; }
 .ob-dot { width:6px; height:6px; border-radius:var(--radius-full); background:var(--wire-border-base-primary); transition:all .25s; }
 .ob-dot.active { width:22px; background:var(--wire-bg-accent-primary); }
@@ -1999,15 +2011,15 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-footer { flex:0 0 auto; position:relative; display:flex; align-items:center; gap:16px; width:100%; margin:0; padding:24px 32px 32px; box-sizing:border-box; background:transparent; }
 .ob-footer .ob-spacer { flex:1; }
 .ob-back, .ob-skip { background:none; border:none; cursor:pointer; font-family:var(--font-sans); font-size:14px; font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary); padding:0; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
-.ob-skip { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.ob-skip { position:absolute; left:50%; top:calc(50% - 4px); transform:translate(-50%,-50%); }
 /* Welcome step: logo/title/text + buttons form one vertically-centred group; buttons centred, no bottom-docked footer */
-.ob-welcome-step .ob-card { justify-content:center; }
-.ob-welcome-step .ob-progress { display:none; }
-.ob-welcome-step .ob-body { flex:0 0 auto; }
-.ob-welcome-step .ob-footer { justify-content:center; padding-top:20px; }
-.ob-welcome-step .ob-footer .ob-spacer { display:none; }
-.ob-welcome-step .ob-footer .ob-back { display:none; }
-.ob-welcome-step .ob-skip { position:static; transform:none; }
+.ob-welcome-step .ob-card, .ob-finish-step .ob-card { justify-content:center; }
+.ob-welcome-step .ob-progress, .ob-finish-step .ob-progress { display:none; }
+.ob-welcome-step .ob-body, .ob-finish-step .ob-body { flex:0 0 auto; }
+.ob-welcome-step .ob-footer, .ob-finish-step .ob-footer { justify-content:center; padding-top:20px; }
+.ob-welcome-step .ob-footer .ob-spacer, .ob-finish-step .ob-footer .ob-spacer { display:none; }
+.ob-welcome-step .ob-footer .ob-back, .ob-finish-step .ob-footer .ob-back { display:none; }
+.ob-welcome-step .ob-skip, .ob-finish-step .ob-skip { position:static; transform:none; }
 .ob-back:hover, .ob-skip:hover { color:var(--wire-content-base-primary); }
 .ob-theme-select { display:flex; justify-content:center; margin-top:6px; }
 .ob-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:16px; }
@@ -2019,8 +2031,8 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 #ob-bg-picker .bg-swatch { width:28px; height:28px; border:2px solid var(--wire-bg-base-primary); box-shadow:0 0 0 1px var(--wire-border-base-primary); }
 #ob-bg-picker .bg-swatch.active { border-color:var(--wire-bg-base-primary); box-shadow:0 0 0 2px var(--wire-content-base-primary); }
 #ob-bg-picker .bg-swatch:hover { box-shadow:0 0 0 2px var(--wire-content-base-secondary); }
-#ob-bg-preview { position:relative; width:348px; height:212px; max-width:100%; box-sizing:border-box; border:1px solid var(--wire-border-base-primary); aspect-ratio:auto; border-radius:10px; box-shadow:0 16px 38px rgba(0,0,0,0.34), 0 3px 8px rgba(0,0,0,0.18); overflow:hidden; margin:8px auto 6px; }
-.ob-pw { position:absolute; left:22px; top:4px; width:322px; height:204px; background:var(--wire-bg-base-primary); border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--wire-border-base-primary), 0 8px 20px rgba(0,0,0,0.22); }
+#ob-bg-preview { position:relative; width:348px; height:212px; max-width:100%; box-sizing:border-box; border:1px solid var(--wire-border-base-primary); aspect-ratio:auto; border-radius:10px; overflow:hidden; margin:8px auto 6px; }
+.ob-pw { position:absolute; left:22px; top:4px; width:322px; height:204px; background:var(--wire-bg-base-primary); border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--wire-border-base-primary); }
 .ob-pw .ob-pp { position:absolute; height:13px; background:var(--wire-bg-base-tertiary); border-radius:100px; }
 .ob-pv-div-v { position:absolute; left:91px; top:0; width:1px; height:204px; background:var(--wire-border-base-primary); }
 .ob-pv-div-h { position:absolute; left:91px; top:26px; width:231px; height:1px; background:var(--wire-border-base-primary); }
@@ -2033,7 +2045,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .ob-pw-out span { background:var(--wire-bg-accent-primary); border-radius:10px; }
 .user-av.has-photo, .acct-av.has-photo, .avatar-lg.has-photo, .own-self-av.has-photo { color:transparent; background-size:cover; background-position:center; }
 .own-self-av { background:var(--wire-bg-accent-primary); }
-@media (max-width: 780px) { #onboarding-overlay.open { padding:40px 16px; } .ob-body { padding:20px 0 20px; } .ob-footer { padding:20px 20px 24px; } }
+@media (max-width: 860px) { .ob-sidebar { display:none; } .ob-content { padding:24px 16px; } .ob-body { padding:20px 0 20px; } .ob-footer { padding:20px 20px 24px; } }
 </style>
 </head>
 <body>
@@ -2041,7 +2053,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 
 
 <!-- ── PAGE ── -->
-<div id="page" class="bg-mood-base-primary light-rail">
+<div id="page" class="bg-mood-base-secondary light-rail">
 
   <!-- ── NAV RAIL ── -->
   <nav id="rail" aria-label="Primary navigation">
@@ -2414,7 +2426,39 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 </div>
 
 <!-- ── SETTINGS MODAL ── -->
-<div id="onboarding-overlay" class="bg-mood-base-primary" role="dialog" aria-modal="true" aria-label="Welcome to Wire">
+<div id="onboarding-overlay" class="bg-mood-base-secondary" role="dialog" aria-modal="true" aria-label="Welcome to Wire">
+  <aside class="ob-sidebar">
+    <svg class="ob-brand-logo" viewBox="44 39 135 52" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wire"><path fill-rule="evenodd" clip-rule="evenodd" d="M83.909 83.6259C91.2572 83.6259 97.1691 77.674 97.1691 70.3575H97.1692V44.6009H100.305V70.3573C100.305 79.3948 92.9696 86.7479 83.8925 86.7479C80.044 86.7479 76.5575 85.4163 73.7514 83.2048C70.9452 85.4163 67.376 86.7479 63.5277 86.7479C54.4507 86.7479 47 79.3948 47 70.3573V44.6009H50.1355V70.3575C50.1355 77.6738 56.1464 83.6259 63.4946 83.6259C66.4545 83.6259 69.2156 82.6484 71.4297 81.0168C68.9542 78.1478 67.3811 74.4276 67.3811 70.3575L67.3866 49.2441C67.3866 45.8011 70.1998 43 73.6577 43C77.1156 43 79.9288 45.8013 79.9288 49.2441L79.9233 70.3575C79.9233 74.4274 78.4494 78.1478 75.9739 81.0168C78.188 82.6484 80.9492 83.6259 83.909 83.6259ZM70.5166 70.3573C70.5166 73.6054 71.6989 76.5809 73.6522 78.8898C75.6055 76.5809 76.7878 73.6054 76.7878 70.3575L76.7932 49.2439C76.7932 47.5221 75.3866 46.1219 73.6577 46.1219C71.9288 46.1219 70.5221 47.5221 70.5221 49.2439L70.5166 70.3573ZM109.716 44.5163H112.852V85.9209H109.716V44.5163ZM125.394 51.6514C128.646 46.9118 134.116 43.7945 140.303 43.7945V46.9223C132.083 46.9223 125.396 53.5802 125.396 61.7639H125.394V85.9209H122.258V44.5163H125.394V51.6514ZM176.578 51.2286C176.239 50.8372 175.883 50.455 175.51 50.0833C167.105 41.7069 153.429 41.7069 145.024 50.0833C136.619 58.4597 136.619 72.0891 145.024 80.4655C153.428 88.8407 167.101 88.8419 175.506 80.469L173.289 78.2593C166.48 85.0417 155.626 85.3922 148.397 79.3132L161.372 66.3828L176.578 51.2286ZM147.241 52.293C140.432 59.0788 140.079 69.8983 146.18 77.1037L172.137 51.2356C164.907 45.1554 154.05 45.5071 147.241 52.293Z" fill="currentColor"/></svg>
+    <div class="ob-teaser">
+      <h3 class="ob-teaser-title">Collaborate without Compromise</h3>
+      <p class="ob-teaser-text">Connect, message, and share files with ease, protected by the industry's most secure end-to-end encryption.</p>
+      <a class="ob-teaser-link" href="https://wire.com" target="_blank" rel="noopener">Learn more</a>
+    </div>
+    <svg class="ob-waves" aria-hidden="true" viewBox="0 0 560 379" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_5063_1048)">
+<mask id="mask0_5063_1048" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="560" height="379">
+<path d="M0 0H560V378.609H0V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_5063_1048)">
+<mask id="mask1_5063_1048" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="-744" y="-802" width="1673" height="1678">
+<path d="M796.811 875.997L928.721 -669.633L-611.548 -801.085L-743.457 744.545L796.811 875.997Z" fill="white"/>
+</mask>
+<g mask="url(#mask1_5063_1048)">
+<path d="M-472.844 -644.28C-471.467 -646.744 -468.304 -647.64 -465.779 -646.281C-463.254 -644.923 -462.323 -641.823 -463.7 -639.359L-468.271 -641.82L-472.844 -644.28ZM652.04 711.842C654.795 711.047 657.698 712.589 658.523 715.288C659.349 717.988 657.786 720.821 655.031 721.616L653.536 716.728L652.04 711.842ZM-468.271 -641.82L-463.7 -639.359C-500.962 -572.678 -524.037 -517.377 -533.223 -473.337C-542.425 -429.217 -537.503 -397.381 -520.238 -376.471C-502.973 -355.562 -472.174 -344.139 -426.108 -343.618C-380.13 -343.098 -319.955 -353.473 -245.406 -374.997L-243.911 -370.11L-242.415 -365.223C-317.386 -343.576 -378.701 -332.893 -426.18 -333.43C-473.572 -333.966 -508.198 -345.715 -528.326 -370.09C-548.455 -394.466 -552.894 -430.029 -543.427 -475.42C-533.942 -520.895 -510.316 -577.22 -472.844 -644.28L-468.271 -641.82ZM-243.911 -370.11L-245.406 -374.997C-170.434 -396.643 -109.119 -407.327 -61.6404 -406.79C-14.2486 -406.254 20.3776 -394.505 40.506 -370.129C60.6343 -345.754 65.0742 -310.191 55.6065 -264.8C46.1218 -219.325 22.4959 -163 -14.9766 -95.9399L-19.5491 -98.4003L-24.1204 -100.861C13.1403 -167.542 36.2171 -222.843 45.4023 -266.882C54.6046 -311.003 49.6827 -342.839 32.4177 -363.749C15.1514 -384.658 -15.6461 -396.079 -61.7122 -396.6C-107.691 -397.121 -167.865 -386.747 -242.415 -365.223L-243.911 -370.11ZM-19.5491 -98.4003L-14.9766 -95.9399C-52.2385 -29.2587 -75.3142 26.0431 -84.4994 70.0815C-93.7016 114.203 -88.781 146.038 -71.5147 166.948C-54.2497 187.857 -23.4509 199.28 22.614 199.801C68.5936 200.321 128.768 189.947 203.317 168.423L204.812 173.309L206.309 178.197C131.336 199.843 70.0216 210.526 22.5434 209.989C-24.8484 209.454 -59.4759 197.704 -79.6031 173.329C-99.7314 148.953 -104.171 113.39 -94.7036 67.9989C-85.2189 22.5243 -61.593 -33.8009 -24.1204 -100.861L-19.5491 -98.4003ZM204.812 173.309L203.317 168.423C278.289 146.776 339.603 136.092 387.083 136.629C434.473 137.165 469.101 148.914 489.229 173.29C509.357 197.666 513.797 233.228 504.33 278.62C494.845 324.094 471.218 380.42 433.745 447.479L429.174 445.019L424.603 442.558C461.864 375.877 484.94 320.576 494.125 276.538C503.328 232.416 498.406 200.58 481.14 179.671C463.875 158.761 433.077 147.34 387.011 146.819C341.032 146.299 280.857 156.672 206.309 178.197L204.812 173.309ZM429.174 445.019L433.745 447.479C396.485 514.161 373.409 569.463 364.224 613.501C355.02 657.623 359.942 689.459 377.208 710.368C394.473 731.276 425.272 742.699 471.337 743.22C517.316 743.74 577.491 733.366 652.04 711.842L653.536 716.728L655.031 721.616C580.059 743.263 518.745 753.946 471.266 753.41C423.875 752.873 389.247 741.125 369.119 716.749C348.991 692.373 344.551 656.81 354.018 611.418C363.503 565.943 387.13 509.618 424.603 442.558L429.174 445.019Z" fill="#54A6FF"/>
+<path d="M-437.31 -331.99C-437.131 -334.235 -435.126 -335.919 -432.833 -335.752C-430.539 -335.585 -428.824 -333.63 -429.003 -331.385L-433.157 -331.688L-437.31 -331.99ZM636.044 552.614C638.28 552.077 640.532 553.414 641.073 555.599C641.614 557.785 640.239 559.993 638.003 560.529L637.023 556.572L636.044 552.614ZM-433.157 -331.688L-429.003 -331.385C-435.182 -253.946 -420.375 -201.943 -386.262 -173.629C-352.147 -145.314 -297.258 -139.468 -220.1 -157.993L-219.121 -154.035L-218.141 -150.078C-296.095 -131.362 -354.434 -136.504 -391.666 -167.406C-428.897 -198.308 -443.553 -253.753 -437.31 -331.99L-433.157 -331.688ZM-219.121 -154.035L-220.1 -157.993C-142.147 -176.711 -83.8068 -171.568 -46.5766 -140.666C-9.34508 -109.764 5.31112 -54.3189 -0.931666 23.9184L-5.08539 23.616L-9.23792 23.3135C-3.05966 -54.1256 -17.8668 -106.128 -51.9805 -134.443C-86.0943 -162.758 -140.984 -168.604 -218.141 -150.078L-219.121 -154.035ZM-5.08539 23.616L-0.931666 23.9184C-7.10993 101.358 7.696 153.359 41.811 181.675C75.9247 209.99 130.814 215.836 207.971 197.31L208.951 201.267L209.93 205.225C131.977 223.943 73.6372 218.8 36.407 187.898C-0.824511 156.996 -15.4807 101.551 -9.23792 23.3135L-5.08539 23.616ZM208.951 201.267L207.971 197.31C285.926 178.594 344.265 183.736 381.496 214.638C418.727 245.54 433.382 300.985 427.141 379.222L422.987 378.919L418.833 378.617C425.012 301.178 410.206 249.175 376.092 220.861C341.977 192.546 287.089 186.7 209.93 205.225L208.951 201.267ZM422.987 378.919L427.141 379.222C420.963 456.662 435.769 508.664 469.883 536.978C503.997 565.293 558.886 571.139 636.044 552.614L637.023 556.572L638.003 560.529C560.049 579.246 501.71 574.103 464.478 543.201C427.247 512.299 412.592 456.854 418.833 378.617L422.987 378.919Z" fill="#FFE57D"/>
+<path d="M89.6642 180.64C52.7443 316.776 99.9925 355.992 231.406 298.287C362.82 240.581 410.067 279.797 373.148 415.934C336.228 552.07 383.475 591.286 514.889 533.58C646.303 475.875 693.551 515.091 656.631 651.228C619.711 787.364 666.959 826.58 798.372 768.874M-477.734 -290.237C-514.654 -154.1 -467.407 -114.884 -335.992 -172.589C-204.578 -230.295 -157.331 -191.079 -194.251 -54.9427C-231.17 81.1936 -183.923 120.409 -52.5089 62.7041C78.9048 4.99898 126.153 44.2147 89.2332 180.351C52.3134 316.488 99.5603 355.702 230.974 297.998" stroke="#30DB5B" stroke-width="9.57672" stroke-linecap="round"/>
+<path d="M724.9 755.604C725.23 756.53 724.73 757.544 723.784 757.87C722.837 758.195 721.802 757.709 721.472 756.785L723.186 756.195L724.9 755.604ZM-349.561 -149.768C-350.544 -149.955 -351.183 -150.887 -350.99 -151.85C-350.795 -152.813 -349.841 -153.441 -348.857 -153.255L-349.209 -151.512L-349.561 -149.768ZM723.186 756.195L721.472 756.785C685.759 656.697 614.784 596.623 508.355 576.397L508.707 574.654L509.059 572.911C616.751 593.376 688.763 654.328 724.9 755.604L723.186 756.195ZM508.707 574.654L508.355 576.397C400.663 555.931 328.652 494.978 292.513 393.702L294.227 393.113L295.943 392.522C331.655 492.61 402.63 552.685 509.059 572.911L508.707 574.654ZM294.227 393.113L292.513 393.702C256.801 293.614 185.826 233.54 79.3969 213.314L79.7487 211.572L80.1005 209.828C187.793 230.294 259.805 291.246 295.943 392.522L294.227 393.113ZM79.7487 211.572L79.3969 213.314C-28.2948 192.848 -100.307 131.896 -136.444 30.6198L-134.73 30.0298L-133.016 29.44C-97.3026 129.528 -26.3275 189.603 80.1005 209.828L79.7487 211.572ZM-134.73 30.0298L-136.444 30.6198C-172.158 -69.4678 -243.131 -129.543 -349.561 -149.768L-349.209 -151.512L-348.857 -153.255C-241.164 -132.789 -169.153 -71.8362 -133.016 29.44L-134.73 30.0298Z" fill="#DA8FFF"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_5063_1048">
+<rect width="560" height="378.609" fill="white" transform="matrix(-1 0 0 1 560 0)"/>
+</clipPath>
+</defs>
+</svg>
+  </aside>
+  <div class="ob-content">
   <div class="ob-card">
 
     <div class="ob-progress" id="ob-progress">
@@ -2423,9 +2467,6 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
     <div class="ob-body" id="ob-body">
 
       <div class="ob-step" data-step="0">
-        <div class="ob-hero">
-          <svg class="ob-welcome-logo" viewBox="44 39 135 52" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wire"><path fill-rule="evenodd" clip-rule="evenodd" d="M83.909 83.6259C91.2572 83.6259 97.1691 77.674 97.1691 70.3575H97.1692V44.6009H100.305V70.3573C100.305 79.3948 92.9696 86.7479 83.8925 86.7479C80.044 86.7479 76.5575 85.4163 73.7514 83.2048C70.9452 85.4163 67.376 86.7479 63.5277 86.7479C54.4507 86.7479 47 79.3948 47 70.3573V44.6009H50.1355V70.3575C50.1355 77.6738 56.1464 83.6259 63.4946 83.6259C66.4545 83.6259 69.2156 82.6484 71.4297 81.0168C68.9542 78.1478 67.3811 74.4276 67.3811 70.3575L67.3866 49.2441C67.3866 45.8011 70.1998 43 73.6577 43C77.1156 43 79.9288 45.8013 79.9288 49.2441L79.9233 70.3575C79.9233 74.4274 78.4494 78.1478 75.9739 81.0168C78.188 82.6484 80.9492 83.6259 83.909 83.6259ZM70.5166 70.3573C70.5166 73.6054 71.6989 76.5809 73.6522 78.8898C75.6055 76.5809 76.7878 73.6054 76.7878 70.3575L76.7932 49.2439C76.7932 47.5221 75.3866 46.1219 73.6577 46.1219C71.9288 46.1219 70.5221 47.5221 70.5221 49.2439L70.5166 70.3573ZM109.716 44.5163H112.852V85.9209H109.716V44.5163ZM125.394 51.6514C128.646 46.9118 134.116 43.7945 140.303 43.7945V46.9223C132.083 46.9223 125.396 53.5802 125.396 61.7639H125.394V85.9209H122.258V44.5163H125.394V51.6514ZM176.578 51.2286C176.239 50.8372 175.883 50.455 175.51 50.0833C167.105 41.7069 153.429 41.7069 145.024 50.0833C136.619 58.4597 136.619 72.0891 145.024 80.4655C153.428 88.8407 167.101 88.8419 175.506 80.469L173.289 78.2593C166.48 85.0417 155.626 85.3922 148.397 79.3132L161.372 66.3828L176.578 51.2286ZM147.241 52.293C140.432 59.0788 140.079 69.8983 146.18 77.1037L172.137 51.2356C164.907 45.1554 154.05 45.5071 147.241 52.293Z" fill="currentColor"/></svg>
-        </div>
         <h2 class="ob-title">Welcome to Wire, Kasimir</h2>
         <p class="ob-text">Let's take a minute to make Wire feel like yours. Everything here can be changed later.</p>
       </div>
@@ -2441,13 +2482,12 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           </div>
           <input type="file" id="ob-photo-input" accept="image/*" style="display:none"/>
         </div>
-        <div class="ob-note">This can be changed in Settings anytime.</div>
       </div>
 
       <div class="ob-step" data-step="2">
         <h2 class="ob-title">Make it yours</h2>
         <p class="ob-text">Choose a theme, an accent colour and a background.</p>
-        <div class="bg-preview bg-mood-base-primary" id="ob-bg-preview" aria-hidden="true">
+        <div class="bg-preview bg-mood-base-secondary" id="ob-bg-preview" aria-hidden="true">
           <div class="ob-pw">
             <span class="ob-pp" style="left:10px;top:8px;width:72px"></span>
             <span class="ob-pp" style="left:98px;top:8px;width:72px"></span>
@@ -2492,7 +2532,6 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           <div class="bg-swatch" data-mood="base-primary" title="Surface — base primary (white in light mode)"></div>
           <div class="bg-swatch" data-mood="base-secondary" title="Surface — base secondary (light grey)"></div>
         </div>
-        <div class="ob-note">This can be changed in Settings anytime.</div>
       </div>
 
       <div class="ob-step" data-step="3">
@@ -2521,6 +2560,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
       <button class="wds-btn wds-btn-secondary wds-btn-sm" id="ob-notnow" style="display:none">Not now</button>
       <button class="wds-btn wds-btn-primary wds-btn-sm" id="ob-next">Continue</button>
     </div>
+  </div>
   </div>
 </div>
 <div id="settings-overlay" role="dialog" aria-modal="true" aria-label="Settings">
@@ -2660,7 +2700,7 @@ const viewConv    = document.getElementById('view-conv');
 const viewDrive   = document.getElementById('view-drive');
 
 // ── Background moods (accent-reactive + theme-adaptive; colors live in CSS) ──
-let currentMood = 'base-primary';
+let currentMood = 'base-secondary';
 const MOODS = ['playful','vibrant','balanced','calm','professional','plain-dark','plain-mid','plain-light','base-primary','base-secondary'];
 
 // Which rail/search contrast a given background wants. Gradient moods track the
@@ -3875,6 +3915,7 @@ function sendMessage() {
     backBtn.style.visibility = mid ? 'visible' : 'hidden';
     skipBtn.style.display = (i < LAST) ? '' : 'none';
     ov.classList.toggle('ob-welcome-step', i === 0);
+    ov.classList.toggle('ob-finish-step', i === LAST);
     if (i === 0) nextBtn.textContent = 'Get started';
     else if (i <= 2) nextBtn.textContent = 'Continue';
     else if (i === 3) nextBtn.textContent = 'Turn on backup';
@@ -3946,7 +3987,7 @@ function sendMessage() {
   obSetTheme(sysDark ? 'dark' : 'light');
   const curAccent = document.documentElement.getAttribute('data-accent') || 'blue';
   ov.querySelectorAll('#ob-accent-row .accent-swatch').forEach(s => s.classList.toggle('active', s.dataset.accent === curAccent));
-  const curMood = (typeof currentMood !== 'undefined') ? currentMood : 'base-primary';
+  const curMood = (typeof currentMood !== 'undefined') ? currentMood : 'base-secondary';
   ov.querySelectorAll('#ob-bg-picker .bg-swatch').forEach(s => s.classList.toggle('active', s.dataset.mood === curMood));
 
   // Show on every load
