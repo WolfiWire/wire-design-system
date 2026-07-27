@@ -2067,6 +2067,172 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .user-av.has-photo, .acct-av.has-photo, .avatar-lg.has-photo, .own-self-av.has-photo { color:transparent; background-size:cover; background-position:center; }
 .own-self-av { background:var(--wire-bg-accent-primary); }
 @media (max-width: 860px) { .ob-sidebar { display:none; } .ob-content { padding:24px 16px; } .ob-body { padding:20px 0 20px; } .ob-footer { padding:20px 20px 24px; } }
+/* ═══════════════════════════════════════════════════════════════════
+   NEW CONVERSATION POPOVER
+   Source: Design Vision — Dialog 299:16780 / 299:16382 / 299:16602
+   Free-floating overlay anchored below the conversation-list "+" button.
+   ═══════════════════════════════════════════════════════════════════ */
+
+#newconv-scrim { position:fixed; inset:0; z-index:140; background:transparent; }
+#newconv-scrim[hidden] { display:none; }
+
+#newconv-pop {
+  position:fixed; z-index:150;
+  width:360px; height:480px; box-sizing:border-box;
+  display:flex; flex-direction:column; overflow:hidden;
+  background:var(--wire-bg-base-primary);
+  border:0.5px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-lg);
+  box-shadow:0 10px 15px -3px rgba(0,0,0,0.18), 0 4px 6px -4px rgba(0,0,0,0.18);
+  animation:search-pop .14s ease-out;
+}
+#newconv-pop[hidden] { display:none; }
+
+/* ── Upper panel: search + tabs + scrolling contact list ── */
+.nc-top {
+  flex:1; min-height:0;
+  display:flex; flex-direction:column; gap:var(--spacing-1);
+  padding:var(--spacing-4) var(--spacing-4) var(--spacing-1);
+  background:var(--wire-bg-base-secondary);
+  overflow:hidden;
+}
+
+.nc-search {
+  flex-shrink:0; display:flex; align-items:center; gap:6px;
+  min-height:32px; box-sizing:border-box; padding:5px var(--spacing-2);
+  background:var(--wire-bg-base-primary);
+  border:0.5px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-lg);
+}
+.nc-search input {
+  flex:1; min-width:0; border:none; outline:none; background:transparent;
+  font-family:var(--font-sans); font-size:var(--font-size-sm); line-height:20px;
+  color:var(--wire-content-base-primary);
+}
+.nc-search input::placeholder { color:var(--wire-content-base-secondary); }
+.nc-search i { font-size:15px; color:var(--wire-content-base-secondary); flex-shrink:0; }
+
+/* Segmented tabs — Contacts / Public Wire */
+.nc-tabs {
+  flex-shrink:0; display:flex; align-items:center; gap:0;
+  padding:2px; border-radius:var(--radius-lg);
+  background:var(--wire-bg-base-tertiary);
+}
+.nc-tab {
+  flex:1; min-height:20px; padding:1px 6px; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:center;
+  border:none; background:transparent; border-radius:var(--radius-md);
+  font-family:var(--font-sans); font-size:var(--font-size-xs);
+  font-weight:var(--font-weight-medium); line-height:16px;
+  color:var(--wire-content-base-primary); cursor:pointer;
+}
+.nc-tab.active {
+  background:var(--wire-bg-base-primary);
+  box-shadow:0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.10);
+}
+/* "Public Wire" is specified but not yet built — present, not yet interactive */
+.nc-tab[aria-disabled="true"] { cursor:default; color:var(--wire-content-base-secondary); }
+
+.nc-list { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:var(--spacing-1); }
+.nc-list::-webkit-scrollbar { width:3px; }
+.nc-list::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
+
+.nc-empty {
+  padding:var(--spacing-4) var(--spacing-2);
+  font-family:var(--font-sans); font-size:var(--font-size-sm);
+  color:var(--wire-content-base-secondary); text-align:center;
+}
+.nc-empty[hidden] { display:none; }
+
+/* ── Contact row ── */
+.nc-row {
+  flex-shrink:0; display:flex; align-items:center; gap:var(--spacing-2);
+  height:32px; box-sizing:border-box;
+  padding:6px var(--spacing-1) 6px var(--spacing-2);
+  border-radius:var(--radius-lg);
+}
+.nc-row:hover { background:var(--wire-bg-accent-secondary); }
+.nc-row[hidden] { display:none; }
+
+.nc-avatar {
+  flex-shrink:0; width:18px; height:18px; border-radius:var(--radius-full);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-sans); font-size:8px; font-weight:var(--font-weight-semibold);
+  letter-spacing:0.3px; color:var(--wire-content-inverted-on-primary);
+  border:0.5px solid var(--wire-border-base-primary);
+}
+
+/* Only the name and the checkbox are interactive */
+.nc-name {
+  max-width:100%; padding:0; border:none; background:none; cursor:pointer;
+  font-family:var(--font-sans); font-size:var(--font-size-sm); line-height:18px;
+  font-weight:var(--font-weight-regular); color:var(--wire-content-base-primary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
+}
+.nc-name:hover { text-decoration:underline; }
+.nc-name:focus-visible { outline:none; text-decoration:underline; box-shadow:0 0 0 2px var(--wire-border-accent-focus); border-radius:var(--radius-sm); }
+
+.nc-chev {
+  flex-shrink:0; font-size:10px; color:var(--wire-content-base-secondary);
+  opacity:0; transition:opacity .1s ease-out;
+}
+.nc-row:hover .nc-chev { opacity:1; }
+
+.nc-spacer { flex:1; min-width:var(--spacing-2); }
+
+.nc-check {
+  flex-shrink:0; width:16px; height:16px; box-sizing:border-box; padding:0;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-sm);
+}
+.nc-check i { font-size:11px; color:var(--wire-content-accent-on-primary); opacity:0; }
+.nc-check[aria-checked="true"] {
+  background:var(--wire-bg-accent-primary);
+  border-color:var(--wire-bg-accent-primary);
+}
+.nc-check[aria-checked="true"] i { opacity:1; }
+.nc-check:focus-visible { outline:none; box-shadow:0 0 0 2px var(--wire-border-accent-focus); }
+
+/* ── Lower action rows: New Channel / New Group ── */
+.nc-divider { flex-shrink:0; height:1px; background:var(--wire-border-base-primary); }
+
+.nc-action {
+  flex-shrink:0; display:flex; align-items:center; gap:var(--spacing-2);
+  height:76px; box-sizing:border-box; padding:var(--spacing-4);
+  background:var(--wire-bg-base-primary); cursor:pointer;
+}
+.nc-action:hover { background:var(--wire-bg-base-tertiary); }
+.nc-action-icon {
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  width:28px; color:var(--wire-content-base-primary);
+}
+.nc-action-icon svg { width:20px; height:auto; display:block; }
+.nc-action-icon i { font-size:24px; }
+.nc-action-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:var(--spacing-1); }
+.nc-action-title {
+  font-family:var(--font-sans); font-size:var(--font-size-base); line-height:20px;
+  font-weight:var(--font-weight-semibold); color:var(--wire-content-base-primary);
+}
+.nc-action-sub {
+  font-family:var(--font-sans); font-size:var(--font-size-base); line-height:20px;
+  font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.nc-action-chev { flex-shrink:0; font-size:10px; color:var(--wire-content-base-secondary); }
+
+/* Selected-participant avatar stack (max 3 avatars, then +N) */
+.nc-stack { flex-shrink:0; display:flex; align-items:center; gap:3px; }
+.nc-stack[hidden] { display:none; }
+.nc-stack-avatars { display:flex; align-items:center; }
+.nc-stack-avatars .nc-avatar { border-width:0.5px; }
+.nc-stack-avatars .nc-avatar:not(:last-child) { margin-right:-4px; }
+.nc-stack-more {
+  font-family:var(--font-sans); font-size:var(--font-size-xs); line-height:16px;
+  font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary);
+}
+
 </style>
 </head>
 <body>
@@ -2184,7 +2350,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           </span>
         </span>
         <div class="psidebar-actions">
-          <button class="wds-btn wds-btn-secondary wds-btn-sm" title="New conversation" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-lg);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
+          <button class="wds-btn wds-btn-secondary wds-btn-sm" id="new-conv-btn" title="New conversation" aria-haspopup="dialog" aria-expanded="false" aria-controls="newconv-pop" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-lg);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
         </div>
       </div>
       <div class="psidebar-scroll">
@@ -2681,6 +2847,51 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
   </div>
 </div>
 
+<!-- ── NEW CONVERSATION POPOVER (anchored below the conversation-list "+") ── -->
+<div id="newconv-scrim" hidden></div>
+<div id="newconv-pop" role="dialog" aria-label="New conversation" hidden>
+
+  <div class="nc-top">
+    <div class="nc-search">
+      <input id="nc-search-input" type="text" placeholder="Search for people" autocomplete="off" spellcheck="false"/>
+      <i class="ph-bold ph-magnifying-glass"></i>
+    </div>
+
+    <div class="nc-tabs" role="tablist" aria-label="Contact source">
+      <button class="nc-tab active" type="button" role="tab" aria-selected="true">Contacts</button>
+      <button class="nc-tab" type="button" role="tab" aria-selected="false" aria-disabled="true" title="Not yet implemented">Public Wire</button>
+    </div>
+
+    <div class="nc-list" id="nc-list" role="list"></div>
+    <div class="nc-empty" id="nc-empty" hidden>No people found</div>
+  </div>
+
+  <div class="nc-divider"></div>
+
+  <div class="nc-action" id="nc-new-channel" role="button" tabindex="0">
+    <span class="nc-action-icon"><svg viewBox="0 0 17 16" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9668 1.08765C11.0564 0.551642 11.5635 0.189702 12.0996 0.279053C12.6357 0.368551 12.9976 0.875695 12.9082 1.41187L12.4434 4.20288H15.3125C15.8561 4.20288 16.2968 4.64366 16.2969 5.18726C16.2969 5.73091 15.8562 6.17163 15.3125 6.17163H12.1152L11.5996 9.26538H14.75C15.2936 9.26538 15.7343 9.70616 15.7344 10.2498C15.7344 10.7934 15.2937 11.2341 14.75 11.2341H11.2715L10.6582 14.9119C10.5687 15.448 10.0616 15.8098 9.52539 15.7205C8.98934 15.6309 8.62744 15.1238 8.7168 14.5876L9.27539 11.2341H6.20898L5.5957 14.9119C5.50625 15.448 4.99909 15.8098 4.46289 15.7205C3.92684 15.6309 3.56494 15.1238 3.6543 14.5876L4.21289 11.2341H1.25C0.706345 11.2341 0.265625 10.7934 0.265625 10.2498C0.265691 9.70616 0.706385 9.26538 1.25 9.26538H4.54102L5.05664 6.17163H1.8125C1.26884 6.17163 0.828125 5.73091 0.828125 5.18726C0.828191 4.64366 1.26889 4.20288 1.8125 4.20288H5.38477L5.9043 1.08765C5.99389 0.551642 6.501 0.189702 7.03711 0.279053C7.57322 0.368551 7.93506 0.875695 7.8457 1.41187L7.38086 4.20288H10.4473L10.9668 1.08765ZM7.05273 6.17163L6.53711 9.26538H9.60352L10.1191 6.17163H7.05273Z" fill="currentColor"/></svg></span>
+    <div class="nc-action-text">
+      <span class="nc-action-title">New Channel</span>
+      <span class="nc-action-sub">Conversations around a topic</span>
+    </div>
+    <div class="nc-stack" data-nc-stack hidden></div>
+    <i class="ph-bold ph-caret-right nc-action-chev"></i>
+  </div>
+
+  <div class="nc-divider"></div>
+
+  <div class="nc-action" id="nc-new-group" role="button" tabindex="0">
+    <span class="nc-action-icon"><i class="ph-fill ph-users-three" aria-hidden="true"></i></span>
+    <div class="nc-action-text">
+      <span class="nc-action-title">New Group</span>
+      <span class="nc-action-sub">Private messaging</span>
+    </div>
+    <div class="nc-stack" data-nc-stack hidden></div>
+    <i class="ph-bold ph-caret-right nc-action-chev"></i>
+  </div>
+
+</div>
+
 <script>
 // ── Globals ──────────────────────────────────────────────────────────────────
 const page     = document.getElementById('page');
@@ -2830,7 +3041,7 @@ if (tabConvBtn)  tabConvBtn.addEventListener('click', () => setConvTab('conversa
 if (tabDriveBtn) tabDriveBtn.addEventListener('click', () => setConvTab('drive'));
 
 // ── Conversation selection ───────────────────────────────────────────────────
-document.querySelectorAll('.conv-item').forEach(item => {
+function wireConvItem(item) {
   item.tabIndex = 0;
   item.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
@@ -2856,7 +3067,8 @@ document.querySelectorAll('.conv-item').forEach(item => {
     setConvTab('conversations'); // selecting a conversation lands on the Conversations tab
     renderMessages();
   });
-});
+}
+document.querySelectorAll('.conv-item').forEach(wireConvItem);
 
 // Initialise the header from the conversation selected on load
 const initialConv = document.querySelector('.conv-item.selected');
@@ -3983,6 +4195,204 @@ function sendMessage() {
   // Show on every load
   go(0);
   ov.classList.add('open');
+})();
+
+// ── New conversation popover ──────────────────────────────────────────────────
+// Design Vision: Dialog 299:16780 (default) / 299:16382 (hover) / 299:16602 (selected)
+(function () {
+  const btn   = document.getElementById('new-conv-btn');
+  const pop   = document.getElementById('newconv-pop');
+  const scrim = document.getElementById('newconv-scrim');
+  const list  = document.getElementById('nc-list');
+  const empty = document.getElementById('nc-empty');
+  const input = document.getElementById('nc-search-input');
+  if (!btn || !pop) return;
+
+  // Contact cast mirrors the prototype's own people: the first four already have a
+  // 1:1 conversation, the rest are channel members whose 1:1 is created on demand.
+  const CONTACTS = [
+    { key:'da', name:'Deniz Agha',      initials:'DA', color:'amber'  },
+    { key:'dl', name:'Dor Lewis',       initials:'DL', color:'blue'   },
+    { key:'jo', name:'Jaqueline Olaho', initials:'JO', color:'purple' },
+    { key:'mv', name:'Mara Voss',       initials:'MV', color:'purple' },
+    { key:'mp', name:'Marcel Pierrot',  initials:'MP', color:'red'    },
+    { key:'pa', name:'Priya Anand',     initials:'PA', color:'petrol' },
+    { key:'so', name:'Sam Okoye',       initials:'SO', color:'blue'   },
+    { key:'tb', name:'Tom Berger',      initials:'TB', color:'green'  },
+  ];
+
+  const selected = new Set();
+
+  function avatarEl(c, size) {
+    const el = document.createElement('span');
+    el.className = 'nc-avatar';
+    el.style.background = 'var(--wire-identity-' + c.color + ')';
+    el.textContent = c.initials;
+    if (size) { el.style.width = size + 'px'; el.style.height = size + 'px'; }
+    return el;
+  }
+
+  // ── Contact rows ──
+  CONTACTS.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'nc-row';
+    row.setAttribute('role', 'listitem');
+    row.dataset.key = c.key;
+
+    row.appendChild(avatarEl(c));
+
+    const name = document.createElement('button');
+    name.type = 'button';
+    name.className = 'nc-name';
+    name.textContent = c.name;
+    name.addEventListener('click', () => openOneToOne(c));
+    row.appendChild(name);
+
+    const chev = document.createElement('i');
+    chev.className = 'ph-bold ph-caret-right nc-chev';
+    row.appendChild(chev);
+
+    const spacer = document.createElement('div');
+    spacer.className = 'nc-spacer';
+    row.appendChild(spacer);
+
+    const check = document.createElement('button');
+    check.type = 'button';
+    check.className = 'nc-check';
+    check.setAttribute('role', 'checkbox');
+    check.setAttribute('aria-checked', 'false');
+    check.setAttribute('aria-label', 'Select ' + c.name);
+    check.innerHTML = '<i class="ph-bold ph-check"></i>';
+    check.addEventListener('click', () => {
+      const on = !selected.has(c.key);
+      if (on) selected.add(c.key); else selected.delete(c.key);
+      check.setAttribute('aria-checked', on ? 'true' : 'false');
+      renderStacks();
+    });
+    row.appendChild(check);
+
+    list.appendChild(row);
+  });
+
+  // ── Selected-participant avatar stacks on New Channel / New Group ──
+  // Up to three avatars, then "+N" for the remainder.
+  function renderStacks() {
+    const chosen = CONTACTS.filter(c => selected.has(c.key));
+    document.querySelectorAll('#newconv-pop [data-nc-stack]').forEach(stack => {
+      stack.innerHTML = '';
+      if (chosen.length === 0) { stack.hidden = true; return; }
+      stack.hidden = false;
+
+      const avatars = document.createElement('div');
+      avatars.className = 'nc-stack-avatars';
+      chosen.slice(0, 3).forEach(c => avatars.appendChild(avatarEl(c)));
+      stack.appendChild(avatars);
+
+      if (chosen.length > 3) {
+        const more = document.createElement('span');
+        more.className = 'nc-stack-more';
+        more.textContent = '+' + (chosen.length - 3);
+        stack.appendChild(more);
+      }
+    });
+  }
+
+  // ── Live filter ──
+  function applyFilter() {
+    const q = (input.value || '').trim().toLowerCase();
+    let visible = 0;
+    list.querySelectorAll('.nc-row').forEach(row => {
+      const c = CONTACTS.find(x => x.key === row.dataset.key);
+      const hit = !q || c.name.toLowerCase().includes(q);
+      row.hidden = !hit;
+      if (hit) visible++;
+    });
+    empty.hidden = visible > 0;
+  }
+  input.addEventListener('input', applyFilter);
+
+  // ── Clicking a name opens the 1:1, creating it if it does not exist yet ──
+  function openOneToOne(c) {
+    let item = document.querySelector('#product-sidebar .conv-item[data-conv="' + c.key + '"]');
+
+    if (!item) {
+      const section = [...document.querySelectorAll('#product-sidebar .conv-section')]
+        .find(s => {
+          const l = s.querySelector('.section-label');
+          return l && /1:1/.test(l.textContent);
+        });
+      if (section) {
+        if (!CONVERSATIONS[c.key]) CONVERSATIONS[c.key] = [];
+        item = document.createElement('div');
+        item.className = 'conv-item';
+        item.dataset.conv = c.key;
+        item.dataset.type = 'people';
+        item.dataset.activity = '100';
+        const av = document.createElement('div');
+        av.setAttribute('style',
+          'position:relative;width:20px;height:20px;border-radius:100px;' +
+          'background:var(--wire-identity-' + c.color + ');' +
+          'border:1px solid var(--wire-border-base-primary);display:flex;align-items:center;' +
+          'justify-content:center;font-size:8px;font-weight:600;' +
+          'color:var(--wire-content-inverted-on-primary);flex-shrink:0;letter-spacing:0.3px;');
+        av.textContent = c.initials;
+        const nm = document.createElement('span');
+        nm.className = 'conv-name';
+        nm.textContent = c.name;
+        item.appendChild(av);
+        item.appendChild(nm);
+        section.appendChild(item);
+        wireConvItem(item);
+      }
+    }
+
+    close();
+    if (item) item.click();
+  }
+
+  // ── Open / close ──
+  function position() {
+    const r = btn.getBoundingClientRect();
+    const w = pop.offsetWidth, h = pop.offsetHeight, pad = 8;
+    let left = r.left;                       // anchored to the button, free to overhang the sidebar
+    let top  = r.bottom + 6;
+    left = Math.max(pad, Math.min(left, window.innerWidth  - w - pad));
+    top  = Math.max(pad, Math.min(top,  window.innerHeight - h - pad));
+    pop.style.left = left + 'px';
+    pop.style.top  = top  + 'px';
+  }
+
+  function open() {
+    pop.hidden = false;
+    scrim.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    position();
+    input.focus();
+  }
+
+  function close() {
+    pop.hidden = true;
+    scrim.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    selected.clear();
+    list.querySelectorAll('.nc-check').forEach(ch => ch.setAttribute('aria-checked', 'false'));
+    input.value = '';
+    applyFilter();
+    renderStacks();
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (pop.hidden) open(); else close();
+  });
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !pop.hidden) close();
+  });
+  window.addEventListener('resize', () => { if (!pop.hidden) position(); });
+
+  applyFilter();
+  renderStacks();
 })();
 
 </script>
