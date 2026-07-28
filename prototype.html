@@ -579,6 +579,47 @@ input, textarea { font-family:var(--font-sans); }
 .wds-btn-group > .wds-group-btn i { font-size:16px; }
 .wds-btn-group > .wds-group-btn svg { width:16px; height:auto; display:block; flex-shrink:0; }
 
+/* Checkbox — shared. Works either as the control itself (aria-checked on the box)
+   or as an indicator inside a control that carries aria-checked. */
+.wds-checkbox {
+  flex-shrink:0; width:16px; height:16px; box-sizing:border-box; padding:0;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:var(--wire-bg-base-primary);
+  border:1px solid var(--wire-border-base-primary);
+  border-radius:var(--radius-sm);
+}
+.wds-checkbox i { font-size:11px; color:var(--wire-content-accent-on-primary); opacity:0; }
+.wds-checkbox[aria-checked="true"],
+[aria-checked="true"] > .wds-checkbox {
+  background:var(--wire-bg-accent-primary);
+  border-color:var(--wire-bg-accent-primary);
+}
+.wds-checkbox[aria-checked="true"] i,
+[aria-checked="true"] > .wds-checkbox i { opacity:1; }
+.wds-checkbox:focus-visible { outline:none; box-shadow:0 0 0 2px var(--wire-border-accent-focus); }
+
+/* Chip — shared. A removable token; used for active conversation filters. */
+.wds-chip {
+  display:inline-flex; align-items:center; gap:2px;
+  height:22px; box-sizing:border-box; padding:0 2px 0 var(--spacing-2);
+  background:var(--wire-bg-accent-secondary);
+  border:0.5px solid var(--wire-border-accent-secondary);
+  border-radius:var(--radius-full);
+  font-family:var(--font-sans); font-size:var(--font-size-xs);
+  font-weight:var(--font-weight-medium); line-height:16px;
+  color:var(--wire-content-accent-primary);
+  white-space:nowrap;
+}
+.wds-chip-remove {
+  flex-shrink:0; width:16px; height:16px; padding:0; border:none;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:transparent; border-radius:var(--radius-full);
+  color:var(--wire-content-accent-primary);
+}
+.wds-chip-remove i { font-size:10px; }
+.wds-chip-remove:hover { background:var(--wire-bg-accent-primary); color:var(--wire-content-accent-on-primary); }
+.wds-chip-remove:focus-visible { outline:none; box-shadow:0 0 0 2px var(--wire-border-accent-focus); }
+
 .psidebar-scroll { flex:1; overflow-y:auto; }
 .psidebar-scroll::-webkit-scrollbar { width:3px; }
 .psidebar-scroll::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
@@ -608,8 +649,24 @@ input, textarea { font-family:var(--font-sans); }
 }
 .cf-opt:hover { background:var(--wire-bg-base-tertiary); }
 .cf-opt.active { font-weight:var(--font-weight-medium); }
-.cf-opt .cf-check { color:var(--wire-bg-accent-primary); opacity:0; font-size:14px; flex-shrink:0; }
+.cf-opt .cf-check {
+  color:var(--wire-bg-accent-primary); opacity:0; font-size:14px; flex-shrink:0;
+  width:16px; height:16px; display:flex; align-items:center; justify-content:center;
+}
 .cf-opt.active .cf-check { opacity:1; }
+.cf-group { display:flex; flex-direction:column; gap:2px; }
+.cf-sep { height:1px; margin:4px 0; background:var(--wire-border-base-primary); }
+/* Options whose underlying feature is not built yet — present, not selectable */
+.cf-opt[aria-disabled="true"] { color:var(--wire-content-base-secondary); cursor:default; opacity:0.55; }
+.cf-opt[aria-disabled="true"]:hover { background:none; }
+/* Active conversation filters, shown above the list so a filtered view is never mistaken
+   for a complete one. Sits outside .psidebar-scroll so it stays put while the list scrolls. */
+.conv-filter-chips {
+  flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; gap:var(--spacing-1);
+  padding:var(--spacing-2) var(--spacing-4);
+  border-bottom:0.5px solid var(--wire-border-base-primary);
+}
+.conv-filter-chips[hidden] { display:none; }
 
 /* Flat conversation list (activity / alphabet / unread modes) */
 .conv-flat { padding:var(--spacing-2) var(--spacing-4); }
@@ -2104,6 +2161,11 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
   border:0.5px solid var(--wire-border-base-primary);
   border-radius:var(--radius-lg);
 }
+/* The input suppresses its native outline, so the wrapper carries the focus ring */
+.nc-search:focus-within {
+  border-color:var(--wire-bg-accent-primary);
+  box-shadow:0 0 0 2px var(--wire-border-accent-focus);
+}
 .nc-search input {
   flex:1; min-width:0; border:none; outline:none; background:transparent;
   font-family:var(--font-sans); font-size:var(--font-size-sm); line-height:20px;
@@ -2133,7 +2195,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 /* "Public Wire" is specified but not yet built — present, not yet interactive */
 .nc-tab[aria-disabled="true"] { cursor:default; color:var(--wire-content-base-secondary); }
 
-.nc-list { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:var(--spacing-1); }
+.nc-list { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; }
 .nc-list::-webkit-scrollbar { width:3px; }
 .nc-list::-webkit-scrollbar-thumb { background:var(--wire-border-base-primary); border-radius:var(--radius-sm); }
 
@@ -2144,56 +2206,30 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 }
 .nc-empty[hidden] { display:none; }
 
-/* ── Contact row ── */
-.nc-row {
-  flex-shrink:0; display:flex; align-items:center; gap:var(--spacing-2);
-  height:32px; box-sizing:border-box;
-  padding:6px var(--spacing-1) 6px var(--spacing-2);
-  border-radius:var(--radius-lg);
+/* ── Contact row ──
+   Reuses the .conv-item component from the 1:1 conversation list (avatar,
+   presence dot, .conv-name, hover + selected states). Only two deltas here:
+   the row itself is not a click target, and the name is followed by a
+   hover-revealed chevron plus a trailing checkbox. */
+.nc-contact { cursor:default; flex-shrink:0; }
+.nc-contact[hidden] { display:none; }
+.nc-contact .conv-name {
+  flex:0 1 auto; padding:0; border:none; background:none;
+  cursor:pointer; text-align:left;
 }
-.nc-row:hover { background:var(--wire-bg-accent-secondary); }
-.nc-row[hidden] { display:none; }
-
-.nc-avatar {
-  flex-shrink:0; width:18px; height:18px; border-radius:var(--radius-full);
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-sans); font-size:8px; font-weight:var(--font-weight-semibold);
-  letter-spacing:0.3px; color:var(--wire-content-inverted-on-primary);
-  border:0.5px solid var(--wire-border-base-primary);
+.nc-contact .conv-name:hover { text-decoration:underline; }
+.nc-contact .conv-name:focus-visible {
+  outline:none; text-decoration:underline;
+  box-shadow:0 0 0 2px var(--wire-border-accent-focus); border-radius:var(--radius-sm);
 }
-
-/* Only the name and the checkbox are interactive */
-.nc-name {
-  max-width:100%; padding:0; border:none; background:none; cursor:pointer;
-  font-family:var(--font-sans); font-size:var(--font-size-sm); line-height:18px;
-  font-weight:var(--font-weight-regular); color:var(--wire-content-base-primary);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;
-}
-.nc-name:hover { text-decoration:underline; }
-.nc-name:focus-visible { outline:none; text-decoration:underline; box-shadow:0 0 0 2px var(--wire-border-accent-focus); border-radius:var(--radius-sm); }
 
 .nc-chev {
   flex-shrink:0; font-size:10px; color:var(--wire-content-base-secondary);
   opacity:0; transition:opacity .1s ease-out;
 }
-.nc-row:hover .nc-chev { opacity:1; }
+.nc-contact:hover .nc-chev { opacity:1; }
 
 .nc-spacer { flex:1; min-width:var(--spacing-2); }
-
-.nc-check {
-  flex-shrink:0; width:16px; height:16px; box-sizing:border-box; padding:0;
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  background:var(--wire-bg-base-primary);
-  border:1px solid var(--wire-border-base-primary);
-  border-radius:var(--radius-sm);
-}
-.nc-check i { font-size:11px; color:var(--wire-content-accent-on-primary); opacity:0; }
-.nc-check[aria-checked="true"] {
-  background:var(--wire-bg-accent-primary);
-  border-color:var(--wire-bg-accent-primary);
-}
-.nc-check[aria-checked="true"] i { opacity:1; }
-.nc-check:focus-visible { outline:none; box-shadow:0 0 0 2px var(--wire-border-accent-focus); }
 
 /* ── Lower action rows: New Channel / New Group ── */
 .nc-divider { flex-shrink:0; height:1px; background:var(--wire-border-base-primary); }
@@ -2226,8 +2262,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
 .nc-stack { flex-shrink:0; display:flex; align-items:center; gap:3px; }
 .nc-stack[hidden] { display:none; }
 .nc-stack-avatars { display:flex; align-items:center; }
-.nc-stack-avatars .nc-avatar { border-width:0.5px; }
-.nc-stack-avatars .nc-avatar:not(:last-child) { margin-right:-4px; }
+.nc-stack-avatars > div:not(:last-child) { margin-right:-4px; }
 .nc-stack-more {
   font-family:var(--font-sans); font-size:var(--font-size-xs); line-height:16px;
   font-weight:var(--font-weight-medium); color:var(--wire-content-base-secondary);
@@ -2339,13 +2374,25 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
         <span class="psidebar-title" id="sidebar-title">
           Conversations
           <span class="conv-filter" id="conv-filter">
-            <button class="icon-btn" id="conv-filter-btn" title="Sort &amp; filter conversations" aria-haspopup="menu" aria-expanded="false" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear"></i></button>
-            <div class="conv-filter-menu" id="conv-filter-menu" role="menu" aria-label="Sort and filter conversations">
-              <div class="cf-menu-label">Show conversations</div>
-              <button class="cf-opt active" role="menuitemradio" aria-checked="true" data-mode="type"><span>By conversation type</span><i class="ph-bold ph-check cf-check"></i></button>
-              <button class="cf-opt" role="menuitemradio" aria-checked="false" data-mode="activity"><span>By activity</span><i class="ph-bold ph-check cf-check"></i></button>
-              <button class="cf-opt" role="menuitemradio" aria-checked="false" data-mode="alphabet"><span>Alphabetical (A–Z)</span><i class="ph-bold ph-check cf-check"></i></button>
-              <button class="cf-opt" role="menuitemradio" aria-checked="false" data-mode="unread"><span>Unread</span><i class="ph-bold ph-check cf-check"></i></button>
+            <button class="icon-btn" id="conv-filter-btn" title="Group, filter &amp; sort conversations" aria-haspopup="menu" aria-expanded="false" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear"></i></button>
+            <div class="conv-filter-menu" id="conv-filter-menu" role="menu" aria-label="Group, filter and sort conversations">
+              <div role="group" aria-label="Group by" class="cf-group">
+                <div class="cf-menu-label">Group by</div>
+                <button class="cf-opt active" role="menuitemradio" aria-checked="true" data-group="type"><span>Conversation type</span><i class="ph-bold ph-check cf-check"></i></button>
+                <button class="cf-opt" role="menuitemradio" aria-checked="false" aria-disabled="true" data-group="folders" title="Not yet implemented"><span>Folders</span><i class="ph-bold ph-check cf-check"></i></button>
+              </div>
+              <div class="cf-sep" role="separator"></div>
+              <div role="group" aria-label="Filter by" class="cf-group">
+                <div class="cf-menu-label">Filter by</div>
+                <button class="cf-opt" role="menuitemcheckbox" aria-checked="false" data-filter="unread"><span>Unread</span><span class="wds-checkbox" aria-hidden="true"><i class="ph-bold ph-check"></i></span></button>
+                <button class="cf-opt" role="menuitemcheckbox" aria-checked="false" aria-disabled="true" data-filter="favorites" title="Not yet implemented"><span>Favorites</span><span class="wds-checkbox" aria-hidden="true"><i class="ph-bold ph-check"></i></span></button>
+              </div>
+              <div class="cf-sep" role="separator"></div>
+              <div role="group" aria-label="Sort by" class="cf-group">
+                <div class="cf-menu-label">Sort by</div>
+                <button class="cf-opt active" role="menuitemradio" aria-checked="true" data-sort="activity"><span>Activity</span><i class="ph-bold ph-check cf-check"></i></button>
+                <button class="cf-opt" role="menuitemradio" aria-checked="false" data-sort="alphabet"><span>Alphabetical</span><i class="ph-bold ph-check cf-check"></i></button>
+              </div>
             </div>
           </span>
         </span>
@@ -2353,6 +2400,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           <button class="wds-btn wds-btn-secondary wds-btn-sm" id="new-conv-btn" title="New conversation" aria-haspopup="dialog" aria-expanded="false" aria-controls="newconv-pop" style="width:28px;height:28px;min-height:unset;padding:0;border-radius:var(--radius-lg);"><i class="ph-bold ph-plus" style="font-size:13px;"></i></button>
         </div>
       </div>
+      <div class="conv-filter-chips" id="conv-filter-chips" role="status" aria-label="Active filters" hidden></div>
       <div class="psidebar-scroll">
 
         <div class="conv-section">
@@ -2427,7 +2475,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
           </div>
           <div class="topbar-right">
             <div class="wds-btn-group">
-              <button class="wds-group-btn" title="Meet now"><svg width="16px" height="14px" viewBox="0 0 18 16" fill="none"> <path d="M16.0037 4.97014C16.0037 4.31873 15.2947 3.9586 14.8196 4.36857L13.6081 5.61316V10.2581L14.8196 11.6129C15.2649 11.9973 15.9155 11.7051 15.9953 11.1304L16.0037 11.0113V4.97014ZM7.7171 1V2.58065H6.17652V1H7.7171ZM17.5 11.0113C17.5 12.9697 15.3434 14.1074 13.8719 12.8363L13.7976 12.7719L13.7316 12.6978L13.4436 12.3759L13.4001 12.4738C13.01 13.2738 12.4102 13.9374 11.6733 14.3843L11.5247 14.4708C10.9594 14.7836 10.3707 14.8986 9.7829 14.9506C9.2134 15.001 8.51942 15 7.7171 15H6.17652C5.3743 15 4.6802 15.001 4.11072 14.9506C3.59638 14.9051 3.08118 14.8116 2.58183 14.5793L2.36891 14.4708C1.61406 14.053 0.992137 13.4132 0.574485 12.6317L0.49349 12.4738C0.202089 11.8762 0.0945091 11.2544 0.0459281 10.6312C-0.00120059 10.0266 2.5042e-06 9.28926 2.89289e-06 8.43397V7.56603C2.50459e-06 6.71074 -0.00120061 5.97343 0.0459281 5.36883C0.0945091 4.74561 0.202089 4.12385 0.49349 3.52621L0.574485 3.36832C0.992137 2.58685 1.61406 1.94697 2.36891 1.52924L2.58183 1.42074C3.08118 1.18842 3.59638 1.0949 4.11072 1.0494C4.6802 0.999039 5.37431 1 6.17652 1V2.58065L5.08016 2.58594C4.11943 2.60228 3.53532 2.66756 3.06279 2.92906L2.86907 3.04725C2.4268 3.34003 2.06499 3.75467 1.82365 4.2495L1.76603 4.37828C1.49636 5.03461 1.49633 5.91286 1.49633 7.56603V8.43397L1.50134 9.60181C1.51669 10.625 1.57823 11.2472 1.82365 11.7505C2.09941 12.3159 2.53208 12.7772 3.06279 13.0709C3.53532 13.3324 4.11943 13.3977 5.08016 13.4141L6.17652 13.4194H7.7171L8.81346 13.4141C9.69414 13.3991 10.2579 13.3426 10.7098 13.1318L10.83 13.0709C11.2946 12.8138 11.684 12.4282 11.9589 11.9569L12.07 11.7505C12.3972 11.0794 12.3973 10.1973 12.3973 8.43397V7.56603C12.3973 5.91298 12.3972 5.03459 12.1276 4.37828L12.07 4.2495C11.8287 3.7547 11.4668 3.34005 11.0245 3.04725L10.83 2.92906C10.3576 2.66767 9.77387 2.60229 8.81346 2.58594L7.7171 2.58065V1C8.51942 1 9.2134 0.999011 9.7829 1.0494C10.3707 1.1014 10.9594 1.2164 11.5247 1.52924L11.6733 1.61568C12.4103 2.06263 13.01 2.72618 13.4001 3.52621L13.4294 3.5906L13.7759 3.23513L13.8226 3.18838L13.8719 3.14516C15.3434 1.87412 17.5 3.01182 17.5 4.97014V11.0113Z" fill="currentColor"/> <path d="M4.75737 4.25525C4.96117 4.25531 5.15005 4.3401 5.27837 4.53279L6.08981 5.74962L6.17382 5.88556C6.24482 6.01585 6.27837 6.13125 6.27837 6.23956L6.2739 6.30753C6.25211 6.46454 6.15562 6.60753 6.01028 6.76916C5.90866 6.88089 5.68903 7.20629 5.68588 7.21095C6.25671 8.11757 6.87079 8.76548 7.72073 9.37558C7.72073 9.37558 8.02854 9.13932 8.13271 9.03007C8.3062 8.84962 8.46076 8.74512 8.63047 8.74498C8.7664 8.74498 8.91792 8.80906 9.0916 8.93755L10.2507 9.8136C10.4279 9.95008 10.5 10.1425 10.5 10.3432L10.4937 10.4461C10.4671 10.6852 10.3497 10.9233 10.1747 11.1305L10.0424 11.2712C9.72398 11.5747 9.34343 11.713 8.91734 11.713L8.7118 11.6988C7.67248 11.5617 6.46732 10.4331 5.44459 9.34537C4.42181 8.26128 3.60775 7.23893 3.50983 6.16593L3.5 5.94975C3.50007 5.50372 3.6241 5.09439 3.90036 4.74897L4.02815 4.60453C4.25091 4.37564 4.50819 4.25525 4.75737 4.25525Z" fill="currentColor"/> </svg><span>Meet now</span></button>
+              <button class="wds-group-btn icon-only" title="Meet now" aria-label="Meet now"><svg width="16px" height="14px" viewBox="0 0 18 16" fill="none"> <path d="M16.0037 4.97014C16.0037 4.31873 15.2947 3.9586 14.8196 4.36857L13.6081 5.61316V10.2581L14.8196 11.6129C15.2649 11.9973 15.9155 11.7051 15.9953 11.1304L16.0037 11.0113V4.97014ZM7.7171 1V2.58065H6.17652V1H7.7171ZM17.5 11.0113C17.5 12.9697 15.3434 14.1074 13.8719 12.8363L13.7976 12.7719L13.7316 12.6978L13.4436 12.3759L13.4001 12.4738C13.01 13.2738 12.4102 13.9374 11.6733 14.3843L11.5247 14.4708C10.9594 14.7836 10.3707 14.8986 9.7829 14.9506C9.2134 15.001 8.51942 15 7.7171 15H6.17652C5.3743 15 4.6802 15.001 4.11072 14.9506C3.59638 14.9051 3.08118 14.8116 2.58183 14.5793L2.36891 14.4708C1.61406 14.053 0.992137 13.4132 0.574485 12.6317L0.49349 12.4738C0.202089 11.8762 0.0945091 11.2544 0.0459281 10.6312C-0.00120059 10.0266 2.5042e-06 9.28926 2.89289e-06 8.43397V7.56603C2.50459e-06 6.71074 -0.00120061 5.97343 0.0459281 5.36883C0.0945091 4.74561 0.202089 4.12385 0.49349 3.52621L0.574485 3.36832C0.992137 2.58685 1.61406 1.94697 2.36891 1.52924L2.58183 1.42074C3.08118 1.18842 3.59638 1.0949 4.11072 1.0494C4.6802 0.999039 5.37431 1 6.17652 1V2.58065L5.08016 2.58594C4.11943 2.60228 3.53532 2.66756 3.06279 2.92906L2.86907 3.04725C2.4268 3.34003 2.06499 3.75467 1.82365 4.2495L1.76603 4.37828C1.49636 5.03461 1.49633 5.91286 1.49633 7.56603V8.43397L1.50134 9.60181C1.51669 10.625 1.57823 11.2472 1.82365 11.7505C2.09941 12.3159 2.53208 12.7772 3.06279 13.0709C3.53532 13.3324 4.11943 13.3977 5.08016 13.4141L6.17652 13.4194H7.7171L8.81346 13.4141C9.69414 13.3991 10.2579 13.3426 10.7098 13.1318L10.83 13.0709C11.2946 12.8138 11.684 12.4282 11.9589 11.9569L12.07 11.7505C12.3972 11.0794 12.3973 10.1973 12.3973 8.43397V7.56603C12.3973 5.91298 12.3972 5.03459 12.1276 4.37828L12.07 4.2495C11.8287 3.7547 11.4668 3.34005 11.0245 3.04725L10.83 2.92906C10.3576 2.66767 9.77387 2.60229 8.81346 2.58594L7.7171 2.58065V1C8.51942 1 9.2134 0.999011 9.7829 1.0494C10.3707 1.1014 10.9594 1.2164 11.5247 1.52924L11.6733 1.61568C12.4103 2.06263 13.01 2.72618 13.4001 3.52621L13.4294 3.5906L13.7759 3.23513L13.8226 3.18838L13.8719 3.14516C15.3434 1.87412 17.5 3.01182 17.5 4.97014V11.0113Z" fill="currentColor"/> <path d="M4.75737 4.25525C4.96117 4.25531 5.15005 4.3401 5.27837 4.53279L6.08981 5.74962L6.17382 5.88556C6.24482 6.01585 6.27837 6.13125 6.27837 6.23956L6.2739 6.30753C6.25211 6.46454 6.15562 6.60753 6.01028 6.76916C5.90866 6.88089 5.68903 7.20629 5.68588 7.21095C6.25671 8.11757 6.87079 8.76548 7.72073 9.37558C7.72073 9.37558 8.02854 9.13932 8.13271 9.03007C8.3062 8.84962 8.46076 8.74512 8.63047 8.74498C8.7664 8.74498 8.91792 8.80906 9.0916 8.93755L10.2507 9.8136C10.4279 9.95008 10.5 10.1425 10.5 10.3432L10.4937 10.4461C10.4671 10.6852 10.3497 10.9233 10.1747 11.1305L10.0424 11.2712C9.72398 11.5747 9.34343 11.713 8.91734 11.713L8.7118 11.6988C7.67248 11.5617 6.46732 10.4331 5.44459 9.34537C4.42181 8.26128 3.60775 7.23893 3.50983 6.16593L3.5 5.94975C3.50007 5.50372 3.6241 5.09439 3.90036 4.74897L4.02815 4.60453C4.25091 4.37564 4.50819 4.25525 4.75737 4.25525Z" fill="currentColor"/> </svg></button>
               <button class="wds-group-btn icon-only" id="conv-search-btn" title="Search in conversation"><i class="ph-bold ph-magnifying-glass"></i></button>
               <button class="wds-group-btn icon-only" title="More"><i class="ph-bold ph-dots-three"></i></button>
             </div>
@@ -3066,6 +3114,8 @@ function wireConvItem(item) {
     syncConvHeader(item);       // avatar + title in the header
     setConvTab('conversations'); // selecting a conversation lands on the Conversations tab
     renderMessages();
+    // Reading a conversation can move it between the Unread and Read groups
+    if (typeof window.refreshConvGrouping === 'function') window.refreshConvGrouping();
   });
 }
 document.querySelectorAll('.conv-item').forEach(wireConvItem);
@@ -3074,72 +3124,162 @@ document.querySelectorAll('.conv-item').forEach(wireConvItem);
 const initialConv = document.querySelector('.conv-item.selected');
 if (initialConv) syncConvHeader(initialConv);
 
-// ── Conversation list: sort & filter menu (gear beside the "Conversations" title) ──
+// ── Conversation list: group & sort menu (gear beside the "Conversations" title) ──
+// Two independent axes: Group by (conversation type | unread) × Sort by (activity | alphabetical).
 (function(){
   const filter = document.getElementById('conv-filter');
   const btn    = document.getElementById('conv-filter-btn');
   const menu   = document.getElementById('conv-filter-menu');
   const scroll = document.querySelector('.psidebar-scroll');
   const flat   = document.getElementById('conv-flat');
+  const chips  = document.getElementById('conv-filter-chips');
   if (!filter || !btn || !menu || !scroll || !flat) return;
 
-  // Snapshot every item with its metadata and original home section
-  const items = [...scroll.querySelectorAll('.conv-item[data-conv]')].map(el => ({
-    el,
-    name:     (el.querySelector('.conv-name') ? el.querySelector('.conv-name').textContent : '').trim(),
-    unread:   el.classList.contains('unread') || !!el.querySelector('.conv-badge'),
-    activity: parseInt(el.dataset.activity || '0', 10),
-    home:     el.parentNode
-  }));
-  const sections = [...scroll.querySelectorAll('.conv-section')];
+  let groupBy = 'type';           // 'type' | 'folders' (folders pending)
+  let sortBy  = 'activity';       // 'activity' | 'alphabet'
+  const filters = new Set();      // 'unread' | 'favorites' (favorites pending) — empty means show all
 
-  function render(mode){
-    if (mode === 'type'){
-      // Restore the grouped layout: items back into their original sections, in original order
-      items.forEach(it => it.home.appendChild(it.el));
-      sections.forEach(s => s.style.display = '');
-      flat.style.display = 'none';
-      flat.innerHTML = '';
-      return;
-    }
-    let list = items.slice();
-    if      (mode === 'activity') list.sort((a,b) => b.activity - a.activity);
-    else if (mode === 'alphabet') list.sort((a,b) => a.name.localeCompare(b.name));
-    else if (mode === 'unread')   list = list.filter(it => it.unread).sort((a,b) => b.activity - a.activity);
-    sections.forEach(s => s.style.display = 'none');
-    flat.style.display = '';
+  const sections = [...scroll.querySelectorAll('.conv-section')];
+  const homes    = new Map(); // element → the section it belongs to under "conversation type"
+
+  // Read live from the DOM so conversations created later (and read-state changes)
+  // are picked up without a stale snapshot.
+  function collect(){
+    return [...scroll.querySelectorAll('.conv-item[data-conv]')].map(el => {
+      if (!homes.has(el)) {
+        const sec = el.closest('.conv-section');
+        if (sec) homes.set(el, sec);
+      }
+      return {
+        el,
+        name:     (el.querySelector('.conv-name') ? el.querySelector('.conv-name').textContent : '').trim(),
+        unread:   el.classList.contains('unread') || !!el.querySelector('.conv-badge'),
+        selected: el.classList.contains('selected'),
+        activity: parseInt(el.dataset.activity || '0', 10),
+        home:     homes.get(el)
+      };
+    });
+  }
+
+  // Filters combine with AND. The open conversation is always exempt, so it never
+  // vanishes from under the cursor the moment reading it clears its unread state.
+  function passes(it){
+    if (filters.size === 0 || it.selected) return true;
+    if (filters.has('unread')    && !it.unread) return false;
+    if (filters.has('favorites') && !it.favorite) return false;
+    return true;
+  }
+
+  function sorted(list){
+    const l = list.slice();
+    if (sortBy === 'alphabet') l.sort((a, b) => a.name.localeCompare(b.name));
+    else                       l.sort((a, b) => b.activity - a.activity);
+    return l;
+  }
+
+  function emptyMessage(){
+    if (filters.has('unread') && filters.has('favorites')) return 'Nothing matches these filters';
+    if (filters.has('favorites')) return 'No favorites';
+    if (filters.has('unread'))    return 'No unread conversations';
+    return 'No conversations';
+  }
+
+  function render(){
+    const items = collect();
+    const kept  = items.filter(passes);
+
+    // Filtered-out conversations stay in the DOM; they are just not shown
+    items.forEach(it => { it.el.style.display = kept.includes(it) ? '' : 'none'; });
+
+    flat.style.display = 'none';
     flat.innerHTML = '';
-    // Section headline reflecting the selected group-by option
-    const optSpan = menu.querySelector('.cf-opt[data-mode="' + mode + '"] span');
-    const head = document.createElement('div');
-    head.className = 'section-label';
-    head.textContent = optSpan ? optSpan.textContent : mode;
-    flat.appendChild(head);
-    if (list.length === 0){
+
+    // Grouping — only "conversation type" is implemented; folders fall back to it
+    sections.forEach(sec => {
+      const inSec = sorted(kept.filter(it => it.home === sec));
+      inSec.forEach(it => sec.appendChild(it.el));
+      sec.style.display = inSec.length ? '' : 'none';   // a group with nothing left is dropped
+    });
+
+    if (kept.length === 0){
+      flat.style.display = '';
       const e = document.createElement('div');
       e.className = 'conv-empty';
-      e.textContent = 'No unread conversations';
+      e.textContent = emptyMessage();
       flat.appendChild(e);
-    } else {
-      list.forEach(it => flat.appendChild(it.el));
     }
+
+    renderChips();
   }
+
+  // One chip per active filter; removing a chip clears that filter
+  function renderChips(){
+    if (!chips) return;
+    chips.innerHTML = '';
+    chips.hidden = filters.size === 0;
+    filters.forEach(key => {
+      const opt   = menu.querySelector('.cf-opt[data-filter="' + key + '"]');
+      const label = opt ? opt.querySelector('span').textContent : key;
+
+      const chip = document.createElement('span');
+      chip.className = 'wds-chip';
+      chip.appendChild(document.createTextNode(label));
+
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'wds-chip-remove';
+      x.setAttribute('aria-label', 'Remove ' + label + ' filter');
+      x.innerHTML = '<i class="ph-bold ph-x"></i>';
+      x.addEventListener('click', () => setFilter(key, false));
+      chip.appendChild(x);
+
+      chips.appendChild(chip);
+    });
+  }
+
+  function setFilter(key, on){
+    if (on) filters.add(key); else filters.delete(key);
+    const opt = menu.querySelector('.cf-opt[data-filter="' + key + '"]');
+    if (opt) {
+      opt.classList.toggle('active', on);
+      opt.setAttribute('aria-checked', on ? 'true' : 'false');
+    }
+    render();
+  }
+
+  // Opening a conversation marks it read, and adding one from the "+" menu inserts a
+  // new item — both need the current grouping reapplied.
+  window.refreshConvGrouping = render;
 
   function close(){ filter.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
   function open(){  filter.classList.add('open');    btn.setAttribute('aria-expanded','true'); }
 
   btn.addEventListener('click', e => { e.stopPropagation(); filter.classList.contains('open') ? close() : open(); });
+
+  // Group by and Sort by are radio axes; Filter by is a set of independent toggles
   menu.querySelectorAll('.cf-opt').forEach(opt => opt.addEventListener('click', () => {
-    menu.querySelectorAll('.cf-opt').forEach(o => {
-      const on = o === opt;
-      o.classList.toggle('active', on);
-      o.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-    render(opt.dataset.mode);
-    close();
+    if (opt.getAttribute('aria-disabled') === 'true') return;   // feature not built yet
+
+    if (opt.dataset.filter) {
+      setFilter(opt.dataset.filter, !filters.has(opt.dataset.filter));
+      return;
+    } else {
+      const axis = opt.dataset.group ? 'group' : 'sort';
+      menu.querySelectorAll('.cf-opt[data-' + axis + ']').forEach(o => {
+        const on = o === opt;
+        o.classList.toggle('active', on);
+        o.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      if (axis === 'group') groupBy = opt.dataset.group;
+      else                  sortBy  = opt.dataset.sort;
+    }
+    render();
   }));
+
   document.addEventListener('click', e => { if (!filter.contains(e.target)) close(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  render(); // the list should match the options checked on load
 })();
 
 // ── Composer ─────────────────────────────────────────────────────────────────
@@ -4210,40 +4350,59 @@ function sendMessage() {
 
   // Contact cast mirrors the prototype's own people: the first four already have a
   // 1:1 conversation, the rest are channel members whose 1:1 is created on demand.
+  // Presence mirrors what the 1:1 conversation list already shows.
   const CONTACTS = [
-    { key:'da', name:'Deniz Agha',      initials:'DA', color:'amber'  },
-    { key:'dl', name:'Dor Lewis',       initials:'DL', color:'blue'   },
-    { key:'jo', name:'Jaqueline Olaho', initials:'JO', color:'purple' },
-    { key:'mv', name:'Mara Voss',       initials:'MV', color:'purple' },
-    { key:'mp', name:'Marcel Pierrot',  initials:'MP', color:'red'    },
-    { key:'pa', name:'Priya Anand',     initials:'PA', color:'petrol' },
-    { key:'so', name:'Sam Okoye',       initials:'SO', color:'blue'   },
-    { key:'tb', name:'Tom Berger',      initials:'TB', color:'green'  },
+    { key:'da', name:'Deniz Agha',      initials:'DA', color:'amber',  presence:null        },
+    { key:'dl', name:'Dor Lewis',       initials:'DL', color:'blue',   presence:'available' },
+    { key:'jo', name:'Jaqueline Olaho', initials:'JO', color:'purple', presence:null        },
+    { key:'mv', name:'Mara Voss',       initials:'MV', color:'purple', presence:null        },
+    { key:'mp', name:'Marcel Pierrot',  initials:'MP', color:'red',    presence:'busy'      },
+    { key:'pa', name:'Priya Anand',     initials:'PA', color:'petrol', presence:null        },
+    { key:'so', name:'Sam Okoye',       initials:'SO', color:'blue',   presence:null        },
+    { key:'tb', name:'Tom Berger',      initials:'TB', color:'green',  presence:null        },
   ];
 
   const selected = new Set();
 
-  function avatarEl(c, size) {
-    const el = document.createElement('span');
-    el.className = 'nc-avatar';
-    el.style.background = 'var(--wire-identity-' + c.color + ')';
+  // Single source for the person avatar used by the 1:1 conversation list.
+  // Reproduces the markup of the existing .conv-item avatars, including the
+  // presence dot; `ring` is the surface the dot is punched out of.
+  function personAvatar(c, opts) {
+    opts = opts || {};
+    const size = opts.size || 20;
+    const ring = opts.ring || 'var(--wire-bg-base-secondary)';
+    const el = document.createElement('div');
+    el.setAttribute('style',
+      'position:relative;width:' + size + 'px;height:' + size + 'px;border-radius:100px;' +
+      'background:var(--wire-identity-' + c.color + ');' +
+      'border:1px solid var(--wire-border-base-primary);display:flex;align-items:center;' +
+      'justify-content:center;font-size:8px;font-weight:600;' +
+      'color:var(--wire-content-inverted-on-primary);flex-shrink:0;letter-spacing:0.3px;');
     el.textContent = c.initials;
-    if (size) { el.style.width = size + 'px'; el.style.height = size + 'px'; }
+    if (c.presence && !opts.hidePresence) {
+      const dot = document.createElement('span');
+      const fill = c.presence === 'busy'
+        ? 'background:var(--wire-bg-base-primary);box-shadow:inset 0 0 0 2px #C20013,0 0 0 2px ' + ring + ';'
+        : 'background:var(--wire-bg-positive-primary);box-shadow:0 0 0 2px ' + ring + ';';
+      dot.setAttribute('style',
+        'position:absolute;bottom:-3px;right:-3px;width:7px;height:7px;border-radius:9999px;' + fill);
+      el.appendChild(dot);
+    }
     return el;
   }
 
-  // ── Contact rows ──
+  // ── Contact rows — the .conv-item component from the 1:1 conversation list ──
   CONTACTS.forEach(c => {
     const row = document.createElement('div');
-    row.className = 'nc-row';
+    row.className = 'conv-item nc-contact';
     row.setAttribute('role', 'listitem');
     row.dataset.key = c.key;
 
-    row.appendChild(avatarEl(c));
+    row.appendChild(personAvatar(c));
 
     const name = document.createElement('button');
     name.type = 'button';
-    name.className = 'nc-name';
+    name.className = 'conv-name';
     name.textContent = c.name;
     name.addEventListener('click', () => openOneToOne(c));
     row.appendChild(name);
@@ -4258,7 +4417,7 @@ function sendMessage() {
 
     const check = document.createElement('button');
     check.type = 'button';
-    check.className = 'nc-check';
+    check.className = 'wds-checkbox';
     check.setAttribute('role', 'checkbox');
     check.setAttribute('aria-checked', 'false');
     check.setAttribute('aria-label', 'Select ' + c.name);
@@ -4267,6 +4426,8 @@ function sendMessage() {
       const on = !selected.has(c.key);
       if (on) selected.add(c.key); else selected.delete(c.key);
       check.setAttribute('aria-checked', on ? 'true' : 'false');
+      // Checked rows take the component's own selected treatment
+      row.classList.toggle('selected', on);
       renderStacks();
     });
     row.appendChild(check);
@@ -4285,7 +4446,8 @@ function sendMessage() {
 
       const avatars = document.createElement('div');
       avatars.className = 'nc-stack-avatars';
-      chosen.slice(0, 3).forEach(c => avatars.appendChild(avatarEl(c)));
+      chosen.slice(0, 3).forEach(c =>
+        avatars.appendChild(personAvatar(c, { size: 18, hidePresence: true })));
       stack.appendChild(avatars);
 
       if (chosen.length > 3) {
@@ -4301,7 +4463,7 @@ function sendMessage() {
   function applyFilter() {
     const q = (input.value || '').trim().toLowerCase();
     let visible = 0;
-    list.querySelectorAll('.nc-row').forEach(row => {
+    list.querySelectorAll('.nc-contact').forEach(row => {
       const c = CONTACTS.find(x => x.key === row.dataset.key);
       const hit = !q || c.name.toLowerCase().includes(q);
       row.hidden = !hit;
@@ -4328,21 +4490,15 @@ function sendMessage() {
         item.dataset.conv = c.key;
         item.dataset.type = 'people';
         item.dataset.activity = '100';
-        const av = document.createElement('div');
-        av.setAttribute('style',
-          'position:relative;width:20px;height:20px;border-radius:100px;' +
-          'background:var(--wire-identity-' + c.color + ');' +
-          'border:1px solid var(--wire-border-base-primary);display:flex;align-items:center;' +
-          'justify-content:center;font-size:8px;font-weight:600;' +
-          'color:var(--wire-content-inverted-on-primary);flex-shrink:0;letter-spacing:0.3px;');
-        av.textContent = c.initials;
         const nm = document.createElement('span');
         nm.className = 'conv-name';
         nm.textContent = c.name;
-        item.appendChild(av);
+        item.appendChild(personAvatar(c));
         item.appendChild(nm);
         section.appendChild(item);
         wireConvItem(item);
+        // Place it according to the active grouping/sorting rather than at the end
+        if (typeof window.refreshConvGrouping === 'function') window.refreshConvGrouping();
       }
     }
 
@@ -4375,7 +4531,8 @@ function sendMessage() {
     scrim.hidden = true;
     btn.setAttribute('aria-expanded', 'false');
     selected.clear();
-    list.querySelectorAll('.nc-check').forEach(ch => ch.setAttribute('aria-checked', 'false'));
+    list.querySelectorAll('.wds-checkbox').forEach(ch => ch.setAttribute('aria-checked', 'false'));
+    list.querySelectorAll('.nc-contact').forEach(r => r.classList.remove('selected'));
     input.value = '';
     applyFilter();
     renderStacks();
