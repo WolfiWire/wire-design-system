@@ -141,10 +141,13 @@
   --wire-bg-sheet-secondary:        #ffffff;
 
   /* Background / Bubbles */
-  --wire-bg-bubbles-primary:        #0667c8;
-  --wire-bg-bubbles-primary-focus:  #043e78;
-  --wire-bg-bubbles-secondary:      #0552a0;
-  --wire-bg-bubbles-others:         #edeff0;  /* others-chat-bubbles/primary */
+  --wire-bg-bubbles-own-primary:        #0667c8;
+  --wire-bg-bubbles-own-primary-focus:  #043e78;
+  --wire-bg-bubbles-own-secondary:      #0552a0;
+  --wire-bg-bubbles-others-primary:         #edeff0;  /* Gray/020 */
+  --wire-bg-bubbles-others-primary-focus:   #dce0e3;  /* Gray/040 */
+  --wire-bg-bubbles-others-secondary:       #ffffff;  /* White/100 */
+  --wire-bg-bubbles-others-secondary-focus: #fafafa;  /* Gray/010 */
 
   /* Content / Base */
   --wire-content-base-primary:      #000000;
@@ -180,10 +183,9 @@
   --wire-content-inverted-on-primary: #ffffff;
 
   /* Content / Bubbles */
-  --wire-content-bubbles-primary:     #ffffff;
-  --wire-content-bubbles-on-primary:  #cde1f4;
-  --wire-content-bubbles-on-secondary:#9bc2e9;
-  --wire-content-bubbles-others:      #000000;  /* others-chat-bubbles/on-primary */
+  --wire-content-bubbles-own-primary:     #ffffff;
+  --wire-content-bubbles-own-on-primary:  #cde1f4;
+  --wire-content-bubbles-own-on-secondary:#9bc2e9;
 
   /* Border / Base */
   --wire-border-base-primary:         #dce0e3;
@@ -269,9 +271,13 @@
   --wire-bg-inverted-secondary:     #54585f;
   --wire-bg-sheet-primary:          #17181a;
   --wire-bg-sheet-secondary:        #26272c;
-  --wire-bg-bubbles-primary:        #224266;
-  --wire-bg-bubbles-primary-focus:  #4385cc;
-  --wire-bg-bubbles-secondary:      #19324d;
+  --wire-bg-bubbles-own-primary:        #224266;
+  --wire-bg-bubbles-own-primary-focus:  #4385cc;
+  --wire-bg-bubbles-own-secondary:      #19324d;
+  --wire-bg-bubbles-others-primary:         #34373d;  /* Gray/090 */
+  --wire-bg-bubbles-others-primary-focus:   #54585f;  /* Gray/080 */
+  --wire-bg-bubbles-others-secondary:       #17181a;  /* Gray/100 */
+  --wire-bg-bubbles-others-secondary-focus: #34373d;  /* Gray/090 */
   --wire-content-base-primary:      #ffffff;
   --wire-content-base-secondary:    #9fa1a7;
   --wire-content-accent-primary:    #54a6ff;
@@ -289,9 +295,9 @@
   --wire-content-disabled-primary:    #9fa1a7;
   --wire-content-disabled-on-primary: #cbced1;
   --wire-content-inverted-on-primary: #000000;
-  --wire-content-bubbles-primary:     #ffffff;
-  --wire-content-bubbles-on-primary:  #76b8ff;
-  --wire-content-bubbles-on-secondary:#76b8ff;
+  --wire-content-bubbles-own-primary:     #ffffff;
+  --wire-content-bubbles-own-on-primary:  #76b8ff;
+  --wire-content-bubbles-own-on-secondary:#76b8ff;
   --wire-border-base-primary:         #34373d;
   --wire-border-base-secondary:       #34373d;
   --wire-border-base-focus:           #bbdbff;
@@ -361,7 +367,7 @@
   --wire-accent-300: #67a9b8; --wire-accent-500: #01718e;
   --wire-accent-600: #015a6e; --wire-accent-700: #014352;
   --bg-hue: var(--wire-identity-petrol); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-purple);
-  --wire-bg-bubbles-primary:#01718e; --wire-bg-bubbles-primary-focus:#014352; --wire-bg-bubbles-secondary:#015a6e; --wire-content-bubbles-on-primary:#cce2e7; --wire-content-bubbles-on-secondary:#99c6d0;
+  --wire-bg-bubbles-own-primary:#01718e; --wire-bg-bubbles-own-primary-focus:#014352; --wire-bg-bubbles-own-secondary:#015a6e; --wire-content-bubbles-own-on-primary:#cce2e7; --wire-content-bubbles-own-on-secondary:#99c6d0;
 }
 [data-accent="purple"] {
   --wire-bg-accent-primary:           #8944ab;
@@ -378,7 +384,7 @@
   --wire-accent-300: #b88fcd; --wire-accent-500: #8944ab;
   --wire-accent-600: #6e3689; --wire-accent-700: #522967;
   --bg-hue: var(--wire-identity-purple); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-red); --bg-h4: var(--wire-identity-petrol);
-  --wire-bg-bubbles-primary:#8944ab; --wire-bg-bubbles-primary-focus:#522967; --wire-bg-bubbles-secondary:#6e3689; --wire-content-bubbles-on-primary:#e7daee; --wire-content-bubbles-on-secondary:#d0b4dd;
+  --wire-bg-bubbles-own-primary:#8944ab; --wire-bg-bubbles-own-primary-focus:#522967; --wire-bg-bubbles-own-secondary:#6e3689; --wire-content-bubbles-own-on-primary:#e7daee; --wire-content-bubbles-own-on-secondary:#d0b4dd;
 }
 [data-accent="amber"] {
   --wire-bg-accent-primary:           #a25915;
@@ -395,7 +401,7 @@
   --wire-accent-300: #c79b73; --wire-accent-500: #a25915;
   --wire-accent-600: #824711; --wire-accent-700: #61350d;
   --bg-hue: var(--wire-identity-amber); --bg-h2: var(--wire-identity-red); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-petrol);
-  --wire-bg-bubbles-primary:#a25915; --wire-bg-bubbles-primary-focus:#61350d; --wire-bg-bubbles-secondary:#824711; --wire-content-bubbles-on-primary:#ecded0; --wire-content-bubbles-on-secondary:#dabda1;
+  --wire-bg-bubbles-own-primary:#a25915; --wire-bg-bubbles-own-primary-focus:#61350d; --wire-bg-bubbles-own-secondary:#824711; --wire-content-bubbles-own-on-primary:#ecded0; --wire-content-bubbles-own-on-secondary:#dabda1;
 }
 [data-accent="green"] {
   --wire-bg-accent-primary:           #1d7833;
@@ -412,7 +418,7 @@
   --wire-accent-300: #77ae85; --wire-accent-500: #1d7833;
   --wire-accent-600: #176029; --wire-accent-700: #11481f;
   --bg-hue: var(--wire-identity-green); --bg-h2: var(--wire-identity-petrol); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-blue);
-  --wire-bg-bubbles-primary:#1d7833; --wire-bg-bubbles-primary-focus:#11481f; --wire-bg-bubbles-secondary:#176029; --wire-content-bubbles-on-primary:#d2e4d6; --wire-content-bubbles-on-secondary:#a5c9ad;
+  --wire-bg-bubbles-own-primary:#1d7833; --wire-bg-bubbles-own-primary-focus:#11481f; --wire-bg-bubbles-own-secondary:#176029; --wire-content-bubbles-own-on-primary:#d2e4d6; --wire-content-bubbles-own-on-secondary:#a5c9ad;
 }
 [data-accent="red"] {
   --wire-bg-accent-primary:           #c20013;
@@ -429,7 +435,7 @@
   --wire-accent-300: #da6671; --wire-accent-500: #c20013;
   --wire-accent-600: #9b000f; --wire-accent-700: #74000b;
   --bg-hue: var(--wire-identity-red); --bg-h2: var(--wire-identity-purple); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-petrol);
-  --wire-bg-bubbles-primary:#c20013; --wire-bg-bubbles-primary-focus:#74000b; --wire-bg-bubbles-secondary:#9b000f; --wire-content-bubbles-on-primary:#f3ccd0; --wire-content-bubbles-on-secondary:#e799a1;
+  --wire-bg-bubbles-own-primary:#c20013; --wire-bg-bubbles-own-primary-focus:#74000b; --wire-bg-bubbles-own-secondary:#9b000f; --wire-content-bubbles-own-on-primary:#f3ccd0; --wire-content-bubbles-own-on-secondary:#e799a1;
 }
 
 /* ── DARK-MODE ACCENT OVERRIDES ──────────────────────────────────────
@@ -445,7 +451,7 @@
   --wire-border-accent-primary:#5de6ff; --wire-border-accent-secondary:#255c66; --wire-border-accent-focus:#bef5ff;
   --wire-accent-050:#effdff; --wire-accent-100:#dffaff; --wire-accent-200:#bef5ff; --wire-accent-300:#9ef0ff; --wire-accent-400:#7debff;
   --wire-accent-500:#5de6ff; --wire-accent-600:#4ab8cc; --wire-accent-700:#388a99; --wire-accent-800:#255c66; --wire-accent-900:#1c454d;
-  --wire-bg-bubbles-primary:#255c66; --wire-bg-bubbles-primary-focus:#4ab8cc; --wire-bg-bubbles-secondary:#1c454d; --wire-content-bubbles-on-primary:#7debff; --wire-content-bubbles-on-secondary:#7debff;
+  --wire-bg-bubbles-own-primary:#255c66; --wire-bg-bubbles-own-primary-focus:#4ab8cc; --wire-bg-bubbles-own-secondary:#1c454d; --wire-content-bubbles-own-on-primary:#7debff; --wire-content-bubbles-own-on-secondary:#7debff;
 }
 [data-theme="dark"][data-accent="purple"] {
   --wire-bg-accent-primary:#da8fff; --wire-bg-accent-primary-focus:#e9bcff;
@@ -454,7 +460,7 @@
   --wire-border-accent-primary:#da8fff; --wire-border-accent-secondary:#573966; --wire-border-accent-focus:#f0d2ff;
   --wire-accent-050:#fcf4ff; --wire-accent-100:#f8e9ff; --wire-accent-200:#f0d2ff; --wire-accent-300:#e9bcff; --wire-accent-400:#e1a5ff;
   --wire-accent-500:#da8fff; --wire-accent-600:#ae72cc; --wire-accent-700:#835699; --wire-accent-800:#573966; --wire-accent-900:#412b4d;
-  --wire-bg-bubbles-primary:#573966; --wire-bg-bubbles-primary-focus:#ae72cc; --wire-bg-bubbles-secondary:#412b4d; --wire-content-bubbles-on-primary:#e1a5ff; --wire-content-bubbles-on-secondary:#e1a5ff;
+  --wire-bg-bubbles-own-primary:#573966; --wire-bg-bubbles-own-primary-focus:#ae72cc; --wire-bg-bubbles-own-secondary:#412b4d; --wire-content-bubbles-own-on-primary:#e1a5ff; --wire-content-bubbles-own-on-secondary:#e1a5ff;
 }
 [data-theme="dark"][data-accent="amber"] {
   --wire-bg-accent-primary:#ffd426; --wire-bg-accent-primary-focus:#ffe57d;
@@ -463,7 +469,7 @@
   --wire-border-accent-primary:#ffd426; --wire-border-accent-secondary:#66550f; --wire-border-accent-focus:#ffeea8;
   --wire-accent-050:#fffbea; --wire-accent-100:#fff6d4; --wire-accent-200:#ffeea8; --wire-accent-300:#ffe57d; --wire-accent-400:#ffdd51;
   --wire-accent-500:#ffd426; --wire-accent-600:#ccaa1e; --wire-accent-700:#997f17; --wire-accent-800:#66550f; --wire-accent-900:#4d400b;
-  --wire-bg-bubbles-primary:#66550f; --wire-bg-bubbles-primary-focus:#ccaa1e; --wire-bg-bubbles-secondary:#4d400b; --wire-content-bubbles-on-primary:#ffdd51; --wire-content-bubbles-on-secondary:#ffdd51;
+  --wire-bg-bubbles-own-primary:#66550f; --wire-bg-bubbles-own-primary-focus:#ccaa1e; --wire-bg-bubbles-own-secondary:#4d400b; --wire-content-bubbles-own-on-primary:#ffdd51; --wire-content-bubbles-own-on-secondary:#ffdd51;
 }
 [data-theme="dark"][data-accent="green"] {
   --wire-bg-accent-primary:#30db5b; --wire-bg-accent-primary-focus:#83e99d;
@@ -472,7 +478,7 @@
   --wire-border-accent-primary:#30db5b; --wire-border-accent-secondary:#135824; --wire-border-accent-focus:#acf1bd;
   --wire-accent-050:#ebfcef; --wire-accent-100:#d6f8de; --wire-accent-200:#acf1bd; --wire-accent-300:#83e99d; --wire-accent-400:#59e27c;
   --wire-accent-500:#30db5b; --wire-accent-600:#26af49; --wire-accent-700:#1d8337; --wire-accent-800:#135824; --wire-accent-900:#0e421b;
-  --wire-bg-bubbles-primary:#135824; --wire-bg-bubbles-primary-focus:#26af49; --wire-bg-bubbles-secondary:#0e421b; --wire-content-bubbles-on-primary:#59e27c; --wire-content-bubbles-on-secondary:#59e27c;
+  --wire-bg-bubbles-own-primary:#135824; --wire-bg-bubbles-own-primary-focus:#26af49; --wire-bg-bubbles-own-secondary:#0e421b; --wire-content-bubbles-own-on-primary:#59e27c; --wire-content-bubbles-own-on-secondary:#59e27c;
 }
 [data-theme="dark"][data-accent="red"] {
   --wire-bg-accent-primary:#ff7770; --wire-bg-accent-primary-focus:#ffada9;
@@ -481,7 +487,7 @@
   --wire-border-accent-primary:#ff7770; --wire-border-accent-secondary:#66302d; --wire-border-accent-focus:#ffc9c6;
   --wire-accent-050:#fff2f1; --wire-accent-100:#ffe4e2; --wire-accent-200:#ffc9c6; --wire-accent-300:#ffada9; --wire-accent-400:#ff928d;
   --wire-accent-500:#ff7770; --wire-accent-600:#cc5f5a; --wire-accent-700:#994743; --wire-accent-800:#66302d; --wire-accent-900:#4d2422;
-  --wire-bg-bubbles-primary:#66302d; --wire-bg-bubbles-primary-focus:#cc5f5a; --wire-bg-bubbles-secondary:#4d2422; --wire-content-bubbles-on-primary:#ff928d; --wire-content-bubbles-on-secondary:#ff928d;
+  --wire-bg-bubbles-own-primary:#66302d; --wire-bg-bubbles-own-primary-focus:#cc5f5a; --wire-bg-bubbles-own-secondary:#4d2422; --wire-content-bubbles-own-on-primary:#ff928d; --wire-content-bubbles-own-on-secondary:#ff928d;
 }
 
 /* ── ACCENT COLOR — Ink (monochrome) ─────────────────────────────────
@@ -501,12 +507,12 @@
   --wire-accent-500:                  var(--wire-bg-inverted-primary);
   --bg-hue:#54585f; --bg-h2:#54585f; --bg-h3:#54585f; --bg-h4:#54585f;        /* greyscale wallpaper */
   /* own chat bubble → ink; on-bubble text uses inverted content so it stays legible on the white (dark-mode) bubble */
-  --wire-bg-bubbles-primary:          var(--wire-bg-inverted-primary);
-  --wire-bg-bubbles-primary-focus:    var(--wire-bg-inverted-primary-focus);
-  --wire-bg-bubbles-secondary:        var(--wire-bg-inverted-secondary);
-  --wire-content-bubbles-primary:     var(--wire-content-inverted-on-primary);
-  --wire-content-bubbles-on-primary:  var(--wire-content-inverted-on-primary);
-  --wire-content-bubbles-on-secondary:var(--wire-content-inverted-on-primary);
+  --wire-bg-bubbles-own-primary:          var(--wire-bg-inverted-primary);
+  --wire-bg-bubbles-own-primary-focus:    var(--wire-bg-inverted-primary-focus);
+  --wire-bg-bubbles-own-secondary:        var(--wire-bg-inverted-secondary);
+  --wire-content-bubbles-own-primary:     var(--wire-content-inverted-on-primary);
+  --wire-content-bubbles-own-on-primary:  var(--wire-content-inverted-on-primary);
+  --wire-content-bubbles-own-on-secondary:var(--wire-content-inverted-on-primary);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -733,7 +739,7 @@ input, textarea { font-family:var(--font-sans); }
 
 /* Individual bubble row */
 .own-msg-bubble {
-  background:var(--wire-bg-bubbles-primary);
+  background:var(--wire-bg-bubbles-own-primary);
   border-radius:16px; /* all corners always 16px for own messages */
   padding:10px;
   display:flex; flex-direction:column; align-items:flex-end;
@@ -750,7 +756,7 @@ input, textarea { font-family:var(--font-sans); }
   font-size:var(--font-size-base);
   font-weight:var(--font-weight-regular);
   line-height:22px;
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   max-width:100%;
   text-align:left;
   width:100%;
@@ -766,11 +772,11 @@ input, textarea { font-family:var(--font-sans); }
   font-family:var(--font-sans);
   font-size:12px; font-weight:var(--font-weight-regular);
   line-height:16px; letter-spacing:0;
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   white-space:nowrap; padding-right:4px;
 }
 .own-msg-checkmark {
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   font-size:11px; line-height:1; flex-shrink:0;
 }
 
@@ -900,7 +906,7 @@ input, textarea { font-family:var(--font-sans); }
 
 /* Individual bubble row */
 .own-msg-bubble {
-  background:var(--wire-bg-bubbles-primary);
+  background:var(--wire-bg-bubbles-own-primary);
   border-radius:16px; /* all corners always 16px for own messages */
   padding:10px;
   display:flex; flex-direction:column; align-items:flex-end;
@@ -917,7 +923,7 @@ input, textarea { font-family:var(--font-sans); }
   font-size:var(--font-size-base);
   font-weight:var(--font-weight-regular);
   line-height:22px;
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   max-width:100%;
 }
 
@@ -931,11 +937,11 @@ input, textarea { font-family:var(--font-sans); }
   font-family:var(--font-sans);
   font-size:12px; font-weight:var(--font-weight-regular);
   line-height:16px; letter-spacing:0;
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   white-space:nowrap; padding-right:4px;
 }
 .own-msg-checkmark {
-  color:var(--wire-content-bubbles-primary);
+  color:var(--wire-content-bubbles-own-primary);
   font-size:11px; line-height:1; flex-shrink:0;
 }
 
@@ -1034,7 +1040,7 @@ input, textarea { font-family:var(--font-sans); }
 
 /* File cell — inner container used in both solo and multipart */
 .own-msg-file-cell {
-  background:var(--wire-bg-bubbles-secondary);
+  background:var(--wire-bg-bubbles-own-secondary);
   border-radius:10px;
   padding-top:8px;
   width:250px;
@@ -1053,7 +1059,7 @@ input, textarea { font-family:var(--font-sans); }
 }
 .own-msg-file-type {
   font-size:12px; font-weight:var(--font-weight-regular);
-  line-height:16px; color:var(--wire-content-bubbles-primary);
+  line-height:16px; color:var(--wire-content-bubbles-own-primary);
   opacity:0.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   flex:1; min-width:0;
 }
@@ -1065,7 +1071,7 @@ input, textarea { font-family:var(--font-sans); }
 }
 .own-msg-file-name span {
   font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
-  line-height:18px; color:var(--wire-content-bubbles-primary);
+  line-height:18px; color:var(--wire-content-bubbles-own-primary);
   word-break:break-word;
   /* letter-spacing: -0.08px per spec */
   letter-spacing:-0.08px;
@@ -1076,7 +1082,7 @@ input, textarea { font-family:var(--font-sans); }
   height:94px; width:100%;
   border-radius:9px;
   overflow:hidden; margin-top:6px;
-  background:var(--wire-bg-bubbles-secondary);
+  background:var(--wire-bg-bubbles-own-secondary);
   flex-shrink:0;
 }
 .own-msg-file-thumb img {
@@ -1099,7 +1105,7 @@ input, textarea { font-family:var(--font-sans); }
 }
 .own-msg-bubble.file-solo .own-msg-status {
   padding:4px 10px;
-  background:var(--wire-bg-bubbles-secondary);
+  background:var(--wire-bg-bubbles-own-secondary);
 }
 
 /* ─── COMPOSER ── */
@@ -1566,7 +1572,7 @@ input, textarea { font-family:var(--font-sans); }
 }
 
 .other-msg-bubble {
-  background:var(--wire-bg-base-tertiary);
+  background:var(--wire-bg-bubbles-others-primary);
   border-radius:16px; padding:8px;
   display:flex; flex-direction:column; align-items:flex-start;
   gap:4px; word-break:break-word; text-align:left;
@@ -2378,6 +2384,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
             <div class="conv-filter-menu" id="conv-filter-menu" role="menu" aria-label="Group, filter and sort conversations">
               <div role="group" aria-label="Group by" class="cf-group">
                 <div class="cf-menu-label">Group by</div>
+                <button class="cf-opt" role="menuitemradio" aria-checked="false" data-group="none"><span>None</span><i class="ph-bold ph-check cf-check"></i></button>
                 <button class="cf-opt active" role="menuitemradio" aria-checked="true" data-group="type"><span>Conversation type</span><i class="ph-bold ph-check cf-check"></i></button>
                 <button class="cf-opt" role="menuitemradio" aria-checked="false" aria-disabled="true" data-group="folders" title="Not yet implemented"><span>Folders</span><i class="ph-bold ph-check cf-check"></i></button>
               </div>
@@ -3125,7 +3132,7 @@ const initialConv = document.querySelector('.conv-item.selected');
 if (initialConv) syncConvHeader(initialConv);
 
 // ── Conversation list: group & sort menu (gear beside the "Conversations" title) ──
-// Two independent axes: Group by (conversation type | unread) × Sort by (activity | alphabetical).
+// Three independent axes: Group by (none | conversation type | folders) × Filter by × Sort by.
 (function(){
   const filter = document.getElementById('conv-filter');
   const btn    = document.getElementById('conv-filter-btn');
@@ -3135,7 +3142,7 @@ if (initialConv) syncConvHeader(initialConv);
   const chips  = document.getElementById('conv-filter-chips');
   if (!filter || !btn || !menu || !scroll || !flat) return;
 
-  let groupBy = 'type';           // 'type' | 'folders' (folders pending)
+  let groupBy = 'type';           // 'none' | 'type' | 'folders' (folders pending)
   let sortBy  = 'activity';       // 'activity' | 'alphabet'
   const filters = new Set();      // 'unread' | 'favorites' (favorites pending) — empty means show all
 
@@ -3191,15 +3198,23 @@ if (initialConv) syncConvHeader(initialConv);
     // Filtered-out conversations stay in the DOM; they are just not shown
     items.forEach(it => { it.el.style.display = kept.includes(it) ? '' : 'none'; });
 
+    // Only the empty-state placeholder is disposable — when grouping is "none" the
+    // conversation items themselves live in this container, so wiping it would delete them.
     flat.style.display = 'none';
-    flat.innerHTML = '';
+    [...flat.querySelectorAll('.conv-empty')].forEach(e => e.remove());
 
-    // Grouping — only "conversation type" is implemented; folders fall back to it
-    sections.forEach(sec => {
-      const inSec = sorted(kept.filter(it => it.home === sec));
-      inSec.forEach(it => sec.appendChild(it.el));
-      sec.style.display = inSec.length ? '' : 'none';   // a group with nothing left is dropped
-    });
+    // Grouping — "none" is one flat list; "conversation type" sections; folders fall back to type
+    if (groupBy === 'none') {
+      sections.forEach(sec => { sec.style.display = 'none'; });
+      sorted(kept).forEach(it => flat.appendChild(it.el));   // sort order is the only ordering left
+      if (kept.length) flat.style.display = '';
+    } else {
+      sections.forEach(sec => {
+        const inSec = sorted(kept.filter(it => it.home === sec));
+        inSec.forEach(it => sec.appendChild(it.el));
+        sec.style.display = inSec.length ? '' : 'none';   // a group with nothing left is dropped
+      });
+    }
 
     if (kept.length === 0){
       flat.style.display = '';
@@ -4118,7 +4133,7 @@ function sendMessage() {
   if (listInput){
     listInput.addEventListener('input', () => {
       const q = listInput.value.trim().toLowerCase();
-      document.querySelectorAll('#product-sidebar .conv-section').forEach(sec => {
+      document.querySelectorAll('#product-sidebar .conv-section, #product-sidebar .conv-flat').forEach(sec => {
         let vis = 0;
         sec.querySelectorAll('.conv-item').forEach(it => {
           const nm = it.querySelector('.conv-name') ? it.querySelector('.conv-name').textContent.toLowerCase() : '';
