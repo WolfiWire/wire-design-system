@@ -919,7 +919,15 @@ body {
      group   — DS tri-colour people glyph; 15 colour variations are
                permutations of the identity palette.
      channel — DS hash glyph on Plain Colors (see note in README). */
-  var IDENTITY = ['blue', 'green', 'amber', 'purple', 'petrol', 'red'];
+  /* The 15 group-avatar variations are hand-picked in the library
+     (Mobile UI – Android / 3370:970), not permutations of the palette. */
+  var GROUP_VARIATIONS = [
+    ['green', 'purple', 'red'],    ['blue', 'green', 'amber'],   ['blue', 'red', 'purple'],
+    ['amber', 'green', 'purple'],  ['green', 'blue', 'purple'],  ['blue', 'amber', 'green'],
+    ['red', 'petrol', 'purple'],   ['green', 'red', 'blue'],     ['amber', 'blue', 'purple'],
+    ['purple', 'petrol', 'green'], ['green', 'purple', 'red'],   ['green', 'blue', 'red'],
+    ['purple', 'blue', 'green'],   ['green', 'blue', 'amber'],   ['green', 'amber', 'purple']
+  ];
 
   function personAvatar(a) {
     a = a || {};
@@ -932,11 +940,10 @@ body {
   }
 
   function groupAvatar(variation) {
-    var n = (variation || 1) - 1;
-    var c1 = IDENTITY[n % 6], c2 = IDENTITY[(n + 2) % 6], c3 = IDENTITY[(n + 4) % 6];
-    var vars = '--ga-1:var(--wire-identity-' + c1 + ');'
-             + '--ga-2:var(--wire-identity-' + c2 + ');'
-             + '--ga-3:var(--wire-identity-' + c3 + ')';
+    var c = GROUP_VARIATIONS[((variation || 1) - 1) % GROUP_VARIATIONS.length];
+    var vars = '--ga-1:var(--wire-identity-' + c[0] + ');'
+             + '--ga-2:var(--wire-identity-' + c[1] + ');'
+             + '--ga-3:var(--wire-identity-' + c[2] + ')';
     return '<div class="av-group" style="' + vars + '">' + WDS.icon('groupavatar', { size: 22 }) + '</div>';
   }
 
@@ -960,8 +967,8 @@ body {
       case 'ping':          return glyph('ping',       'filled glyph');
       case 'request':       return glyph('pending12',  'filled glyph');
       case 'muted':         return glyph('mute',       'outline glyph');
-      case 'muted-mention': return glyph('mention',    'outline glyph');
-      case 'muted-reply':   return glyph('reply',      'outline glyph');
+      case 'muted-mention': return glyph('mention',    'filled glyph');
+      case 'muted-reply':   return glyph('reply',      'filled glyph');
       case 'attention':     return glyph('attention',  'outline tall danger', 14);
       case 'onboarding':    return glyph('pending14',  'outline tall subtle', 14);
       case 'pending':       return '<span class="ci-badge outline word">pending</span>';
@@ -1488,12 +1495,12 @@ body {
   var MENU = [
     { axis: 'group', label: 'Group by', options: [
         { id: 'none',    label: 'None' },
-        { id: 'type',    label: 'Message types' },
+        { id: 'type',    label: 'Conversation type' },
         { id: 'folders', label: 'Folders', disabled: true }
       ] },
     { axis: 'sort', label: 'Sort by', options: [
         { id: 'activity', label: 'Activity' },
-        { id: 'alphabet', label: 'Alphabetically' }
+        { id: 'alphabet', label: 'Alphabetical' }
       ] }
   ];
   var groupBy = 'none';
