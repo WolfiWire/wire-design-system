@@ -217,8 +217,10 @@ body {
    The app surface sits on top of the wallpaper and is opaque.
    SwiftUI: List(.plain) inside a rounded container */
 .list-scroll {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column;
   overflow-y: auto; overflow-x: hidden;
+  padding-top: 107px;                 /* status bar + toolbar */
   scrollbar-width: none;
 }
 .list-scroll::-webkit-scrollbar { display: none; }
@@ -353,9 +355,10 @@ body {
   scrollbar-width: none;
 }
 
-/* Top scroll-edge effect — same construction as the one behind the
-   tab bar, mirrored. Kalium "Scroll Edge Effect - Soft" is 123 tall. */
-.set-top-edge {
+/* Top scroll-edge effect — same construction as the one behind the tab
+   bar, mirrored. Kalium "Scroll Edge Effect - Soft" is 123 tall; the
+   conversation header spec (144:22965) uses the same treatment. */
+.scroll-edge-top {
   position: absolute; left: 0; right: 0; top: 0; height: 123px;
   z-index: 2; pointer-events: none;
   -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
@@ -502,10 +505,11 @@ body {
 .cv-title span:first-child { overflow: hidden; text-overflow: ellipsis; }
 .cv-title .cv-chev { display: flex; flex-shrink: 0; color: var(--wire-content-base-secondary); }
 .cv-scroll {
-  flex: 1; min-height: 0; position: relative; z-index: 1;
+  position: absolute; inset: 0; z-index: 1;
   overflow-y: auto; overflow-x: hidden;
   background: var(--wire-bg-base-primary);
-  padding: 8px 0 12px; scrollbar-width: none;
+  padding: 115px 0 116px;             /* header 107 + 8, composer 104 + 12 */
+  scrollbar-width: none;
 }
 .cv-scroll::-webkit-scrollbar { display: none; }
 
@@ -533,7 +537,7 @@ body {
   display: flex; flex-direction: column; gap: 4px;
 }
 .bubble.other { background: var(--wire-bg-bubbles-others-primary); color: var(--wire-content-base-primary); }
-.bubble.own   { background: var(--wire-bg-bubbles-own-primary);   color: var(--wire-content-bubbles-own-on-primary); }
+.bubble.own   { background: var(--wire-bg-bubbles-own-primary);   color: var(--wire-content-bubbles-own-primary); }
 .msg-text {
   font-size: 17px; line-height: 22px; letter-spacing: -0.43px; max-width: 250px;
   white-space: pre-wrap; overflow-wrap: anywhere;
@@ -609,7 +613,7 @@ body {
 
 /* Composer — Kalium 59:2236, 104 tall -------------------------------- */
 .composer {
-  flex-shrink: 0; position: relative; z-index: 2; height: 104px;
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 104px;
   background: var(--wire-bg-base-primary);
   border-top: 0.5px solid var(--wire-border-base-primary);
 }
@@ -865,6 +869,7 @@ body {
 
     <!-- SwiftUI: List(.plain) on a rounded surface. The filter pills are
          the first row of that surface, so they scroll with the list. -->
+    <div class="scroll-edge-top" data-screen="conversations"></div>
     <div class="list-scroll" id="list-scroll" data-screen="conversations">
       <div class="conv-card">
         <div class="filter-bar" id="filter-bar" role="group"
@@ -886,6 +891,7 @@ body {
         <button class="glass-btn" id="cv-call" aria-label="Start a video call"></button>
       </div>
     </div>
+    <div class="scroll-edge-top" data-screen="conversation"></div>
     <div class="cv-scroll" data-screen="conversation" id="cv-scroll" data-swiftui="ScrollView">
       <div id="cv-messages" role="log"></div>
     </div>
@@ -907,7 +913,7 @@ body {
       <div class="tb-title" id="set-title">Settings</div>
     </div>
     <div class="set-scroll" data-screen="settings" id="set-scroll" data-swiftui="Form"></div>
-    <div class="set-top-edge" data-screen="settings"></div>
+    <div class="scroll-edge-top" data-screen="settings"></div>
     <div class="set-menu" id="set-menu" role="menu" data-screen="settings" data-swiftui="Menu"></div>
 
     <!-- SwiftUI: TabView — iOS 26 floating glass tab bar -->

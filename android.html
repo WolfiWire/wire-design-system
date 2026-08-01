@@ -354,8 +354,8 @@ html.hide-list-search .app-surface { min-height: 100%; }
 .pv-dot   { width: 11px; height: 11px; border-radius: 1000px; flex-shrink: 0; }
 .pv-line  { height: 8px; border-radius: 3px; background: var(--wire-bg-base-tertiary); }
 .pv-fab   { position: absolute; right: 8px; bottom: 10px; width: 18px; height: 18px; border-radius: 6px; background: var(--wire-bg-accent-primary); }
-.pv-bubble-own   { margin: 5px 6px 0 auto; width: 52%; height: 24px; border-radius: 8px; background: var(--wire-bg-accent-primary); }
-.pv-bubble-other { margin: 5px auto 0 6px; width: 62%; height: 30px; border-radius: 8px; background: var(--wire-bg-base-tertiary); }
+.pv-bubble-own   { margin: 5px 6px 0 auto; width: 52%; height: 24px; border-radius: 8px; background: var(--wire-bg-bubbles-own-primary); }
+.pv-bubble-other { margin: 5px auto 0 6px; width: 62%; height: 30px; border-radius: 8px; background: var(--wire-bg-bubbles-others-primary); }
 .pv-composer { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background: var(--wire-bg-base-primary); border-top: 1px solid var(--wire-border-base-primary); }
 .pv-header { position: absolute; left: 0; right: 0; top: 0; height: 36px; background: var(--wire-bg-base-primary); border-bottom: 1px solid var(--wire-border-base-primary); }
 
@@ -817,8 +817,8 @@ html.hide-list-search .app-surface { min-height: 100%; }
   max-width: 270px; border-radius: 16px; padding: 10px;
   display: flex; flex-direction: column; gap: 4px; min-width: 0;
 }
-.bubble.own   { background: var(--wire-bg-accent-primary); color: var(--wire-content-accent-on-primary); }
-.bubble.other { background: var(--wire-bg-base-tertiary);  color: var(--wire-content-base-primary); }
+.bubble.own   { background: var(--wire-bg-bubbles-own-primary);    color: var(--wire-content-bubbles-own-primary); }
+.bubble.other { background: var(--wire-bg-bubbles-others-primary); color: var(--wire-content-base-primary); }
 .msg-sender {
   font-size: 13px; font-weight: 500; line-height: 17px;
   display: flex; align-items: center; gap: 6px;
@@ -835,7 +835,7 @@ html.hide-list-search .app-surface { min-height: 100%; }
   font-size: 12px; line-height: 14px;
   color: var(--wire-content-base-secondary);
 }
-.bubble.own .msg-status { color: color-mix(in srgb, var(--wire-content-accent-on-primary) 75%, transparent); }
+.bubble.own .msg-status { color: inherit; opacity: .7; }
 
 /* Attachments — mirrors desktop's message types */
 .msg-media { border-radius: 12px; overflow: hidden; display: block; width: 100%; }
@@ -853,7 +853,7 @@ html.hide-list-search .app-surface { min-height: 100%; }
   background: var(--wire-bg-base-primary);
   color: var(--wire-content-base-primary);
 }
-.bubble.own .msg-file { background: color-mix(in srgb, #000 18%, transparent); color: var(--wire-content-accent-on-primary); }
+.bubble.own .msg-file { background: color-mix(in srgb, #000 18%, transparent); color: var(--wire-content-bubbles-own-primary); }
 .msg-file-meta { min-width: 0; }
 .msg-file-name { font-size: 14px; font-weight: 500; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .msg-file-sub  { font-size: 12px; line-height: 14px; opacity: .75; }
