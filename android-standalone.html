@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
 <style>
-/* ── INLINED ── */
+/* ── INLINED: wds-tokens.css ── */
 /* ═══════════════════════════════════════════════════════════════════
    WIRE DESIGN SYSTEM 2.0 — SHARED TOKEN LAYER
    Source of truth: Wire Design System Figma (grkG8ylzSzIM0C1Nnaxn3l)
@@ -729,13 +729,14 @@ body {
 .conv-list { list-style: none; margin: 0; padding: 0 0 60px; }
 
 /* ─── SEARCH BAR ───────────────────────────────────────────────────
-   344x40 at y86, radius 12. Opens global search (not yet built). */
+   344x40 at y86. Fully rounded per M3 SearchBar (supersedes the mock's
+   radius 12). Expands into the full-screen search view. */
 .search-bar {
   flex-shrink: 0; height: 40px; margin: 0 8px 8px;
   display: flex; align-items: center; padding-left: 4px;
   background: var(--wire-bg-base-primary);
   border: 1px solid var(--wire-border-base-primary);
-  border-radius: 12px; cursor: pointer;
+  border-radius: 1000px; cursor: pointer;
 }
 .search-bar:active { background: var(--wire-bg-base-primary-focus); }
 .search-icon {
@@ -979,6 +980,354 @@ body {
 }
 .sd-empty { padding: 40px 24px; text-align: center; font-size: 14px; color: var(--wire-content-base-secondary); }
 
+/* ═══ CONVERSATION DETAILS ══════════════════════════════════════════
+   Spec: Android / 39692:272100 (admin view) + 41404:135351
+   (participants list). Reached by pressing the conversation title in
+   the conversation header. The hero and action buttons scroll with the
+   content; the tab bar sticks once it reaches the page header. */
+#conv-details {
+  position: absolute; inset: 0; z-index: 46;
+  display: flex; flex-direction: column;
+  background: var(--wire-bg-base-tertiary);
+  /* M3 full-screen dialog: rises over the conversation and fades in,
+     rather than pushing in from the side. Dismissed with the X. */
+  transform: translateY(100%); opacity: 0; visibility: hidden;
+  transition: transform .24s cubic-bezier(.2, 0, 0, 1),
+              opacity .18s cubic-bezier(.2, 0, 0, 1),
+              visibility .24s;
+}
+#conv-details.open { transform: translateY(0); opacity: 1; visibility: visible; }
+#conv-details .cv-header { background: var(--wire-bg-base-tertiary); border-bottom: 0; }
+
+.cd-scroll {
+  flex: 1; min-height: 0; overflow-y: auto;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.cd-scroll::-webkit-scrollbar { display: none; }
+
+/* Hero — 64dp avatar, name, participant count. */
+.cd-hero {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 0 16px;
+}
+.cd-hero .av { width: 64px; height: 64px; }
+.cd-hero .av-person { font-size: 22px; }
+.cd-hero .av-group, .cd-hero .av-channel { border-radius: 10px; border-width: 2px; }
+.cd-name {
+  margin-top: 4px; width: 100%; text-align: center;
+  font-size: 15px; font-weight: 500; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary); word-break: break-word;
+}
+.cd-participants {
+  width: 100%; text-align: center;
+  font-size: 12px; font-weight: 400; line-height: 14px;
+  color: var(--wire-content-base-secondary);
+}
+
+/* Action row — Search / Media. 48dp, corner 16, surface with outline. */
+.cd-actions { display: flex; gap: 8px; padding: 24px 16px 0; }
+.cd-action {
+  flex: 1 0 0; min-width: 0; height: 48px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 16px; cursor: pointer; padding: 0;
+  font: inherit; font-size: 15px; font-weight: 500; line-height: 17px;
+  color: var(--wire-content-base-primary);
+}
+.cd-action:active { background: var(--wire-bg-base-primary-focus); }
+
+/* Material Tabs — 12/14 medium, uppercase, 0.5 tracking. Sticky. */
+.cd-tabs {
+  position: sticky; top: 0; z-index: 2; margin-top: 24px;
+  display: flex; background: var(--wire-bg-base-tertiary);
+}
+.cd-tab {
+  flex: 1 0 0; min-width: 0; padding: 17px 8px 16px;
+  background: none; border: 0; cursor: pointer;
+  font: inherit; font-size: 12px; font-weight: 500; line-height: 14px;
+  letter-spacing: 0.5px; text-transform: uppercase; text-align: center;
+  color: var(--wire-content-base-secondary);
+  border-bottom: 2px solid var(--wire-border-base-primary);
+}
+.cd-tab[aria-selected="true"] {
+  color: var(--wire-content-accent-primary);
+  border-bottom-color: var(--wire-bg-accent-primary);
+}
+
+/* Section label — same component as the Options and Participants heads. */
+.cd-title {
+  height: 24px; display: flex; align-items: center; padding: 0 16px;
+  background: var(--wire-bg-base-tertiary);
+  font-size: 12px; font-weight: 500; line-height: 14px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--wire-content-base-secondary);
+}
+
+/* Data row — label over value, trailing chevron. */
+.cd-data {
+  position: relative; padding: 16px 40px 16px 16px;
+  background: var(--wire-bg-base-primary);
+  border-bottom: 1px solid var(--wire-border-base-primary);
+  display: flex; flex-direction: column; gap: 4px; cursor: pointer;
+}
+.cd-data:active { background: var(--wire-bg-base-primary-focus); }
+.cd-data-label {
+  font-size: 12px; font-weight: 400; line-height: 14px;
+  letter-spacing: 0.25px; text-transform: uppercase;
+  color: var(--wire-content-base-secondary);
+}
+.cd-data-value {
+  font-size: 15px; font-weight: 500; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary);
+}
+.cd-chevron {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--wire-content-base-secondary);
+}
+
+/* Setting row — title, state, switch, description. */
+.cd-setting {
+  padding: 12px 12px 12px 16px;
+  background: var(--wire-bg-base-primary);
+  border-bottom: 1px solid var(--wire-border-base-primary);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cd-setting-head { display: flex; align-items: center; gap: 8px; }
+.cd-setting-name {
+  flex: 1 0 0; min-width: 0;
+  font-size: 15px; font-weight: 500; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary);
+}
+.cd-setting-state {
+  font-size: 15px; font-weight: 400; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary);
+}
+.cd-setting-desc {
+  font-size: 15px; font-weight: 400; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-secondary);
+}
+
+/* M3 Switch — 52x32 track, 16dp thumb off / 24dp on. The mock still
+   draws the legacy 48x24 Wire toggle; Material 3 is the brief. */
+.m3-switch {
+  position: relative; width: 52px; height: 32px; flex-shrink: 0;
+  box-sizing: border-box; padding: 0; cursor: pointer;
+  border-radius: 16px;
+  background: var(--wire-bg-base-tertiary);
+  border: 2px solid var(--wire-border-base-secondary);
+  transition: background .15s, border-color .15s;
+}
+.m3-switch[aria-checked="true"] {
+  background: var(--wire-bg-accent-primary);
+  border-color: var(--wire-bg-accent-primary);
+}
+.m3-switch-thumb {
+  position: absolute; top: 50%; left: 6px;
+  width: 16px; height: 16px; border-radius: 100px;
+  background: var(--wire-content-base-secondary);
+  transform: translateY(-50%);
+  transition: left .15s, width .15s, height .15s, background .15s;
+}
+.m3-switch[aria-checked="true"] .m3-switch-thumb {
+  left: 22px; width: 24px; height: 24px;
+  background: var(--wire-content-accent-on-primary);
+}
+
+/* Participants tab — intro block and filled action. */
+.cd-part-intro {
+  padding: 16px; background: var(--wire-bg-base-primary);
+  font-size: 15px; font-weight: 400; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary);
+}
+.cd-part-intro b { font-weight: 500; }
+.cd-filled {
+  width: 100%; height: 48px; margin-top: 16px; box-sizing: border-box;
+  background: var(--wire-bg-accent-primary); border: 0; border-radius: 16px;
+  color: var(--wire-content-accent-on-primary); cursor: pointer;
+  font: inherit; font-size: 15px; font-weight: 500; line-height: 17px;
+}
+.cd-filled:active { background: var(--wire-bg-accent-primary-focus); }
+.cd-panel { padding-bottom: 32px; }
+.cd-panel .conv-item:first-child { border-top: 0; }
+
+/* ═══ MESSAGE RESULT ROW ════════════════════════════════════════════
+   Spec: Android / 39692:274163. Used by the global search for message
+   hits, whether the search is scoped to one conversation or not. */
+.cs-row {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 12px 16px 12px 8px; cursor: pointer;
+}
+.cs-row:active { background: var(--wire-bg-base-primary-focus); }
+.cs-in { font-weight: 400; color: var(--wire-content-base-secondary); }
+.cs-row .av { width: 32px; height: 32px; }
+.cs-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cs-head { display: flex; align-items: center; gap: 6px; }
+.cs-sender {
+  font-size: 14px; font-weight: 700; line-height: 19px; letter-spacing: 0.35px;
+  color: var(--wire-content-base-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cs-time {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 11px; font-weight: 500; line-height: 12px; letter-spacing: 0.5px;
+  color: var(--wire-content-base-secondary);
+}
+.cs-snippet {
+  font-size: 15px; font-weight: 400; line-height: 19px; letter-spacing: 0.05px;
+  color: var(--wire-content-base-primary);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Matches are marked by weight, per the Figma spec — no highlight fill. */
+.hit-body { font-weight: 500; }
+.hit-name { font-weight: 700; }
+
+/* The conversation title opens the details screen. */
+.cv-title { cursor: pointer; }
+
+/* ═══ GLOBAL SEARCH ═════════════════════════════════════════════════
+   M3 full-screen search view. No Android mock exists yet, so this is
+   built to the M3 search spec with WDS tokens, functionally matched to
+   the desktop prototype: the same entity index (conversations + every
+   message with text), the same filters minus Files, the same match
+   highlighting. Two entry points — the docked bar in the list and the
+   Search item in the navigation bar. Opening it leaves the selected
+   navigation destination untouched. */
+#search-view {
+  position: absolute; inset: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  background: var(--wire-bg-base-primary);
+  opacity: 0; visibility: hidden; transform: scale(1.02);
+  transition: opacity .18s cubic-bezier(.2, 0, 0, 1),
+              transform .18s cubic-bezier(.2, 0, 0, 1),
+              visibility .18s;
+}
+#search-view.open { opacity: 1; visibility: visible; transform: none; }
+
+.sv-header { flex-shrink: 0; padding: 8px; }
+
+/* M3 SearchView docked field — 48dp, fully rounded, leading back,
+   trailing clear. Same corner treatment as the docked bar it grew from. */
+.sv-bar {
+  height: 48px; margin-top: 8px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 4px; padding: 0 4px;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 1000px;
+  transition: border-color .12s, background .12s;
+}
+/* Active — the field is focused the moment the view opens, so this is
+   the resting appearance rather than an exception. */
+.sv-bar:focus-within {
+  border-color: var(--wire-border-accent-primary);
+  background: var(--wire-bg-base-primary-focus);
+}
+.sv-icon-btn {
+  width: 40px; height: 40px; flex-shrink: 0; padding: 0; border: 0;
+  border-radius: 1000px; background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-base-primary);
+}
+.sv-icon-btn:active { background: var(--wire-bg-base-primary-focus); }
+.sv-input {
+  flex: 1; min-width: 0; border: 0; outline: none; background: none;
+  font: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+  color: var(--wire-content-base-primary);
+  caret-color: var(--wire-content-accent-primary);
+}
+.sv-input::placeholder { color: var(--wire-content-base-secondary); }
+
+/* Scope chip — narrows the search to one conversation, the way the
+   desktop prototype does. Removing it searches everywhere again. */
+.sv-scope {
+  flex-shrink: 0; max-width: 45%; height: 28px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 2px; padding: 0 2px 0 10px;
+  border-radius: 1000px; background: var(--wire-bg-accent-secondary);
+  font-size: 13px; font-weight: 500; line-height: 16px;
+  color: var(--wire-content-accent-on-secondary);
+}
+.sv-scope-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-scope-clear {
+  flex-shrink: 0; width: 24px; height: 24px; padding: 0; border: 0;
+  background: none; border-radius: 1000px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-accent-on-secondary);
+}
+
+/* Filter chips — the desktop tab set minus Files, on the list's own
+   .filter-pill component. Horizontally scrollable, single select. */
+.sv-chips {
+  flex-shrink: 0; display: flex; gap: 8px; padding: 0 16px 8px;
+  overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
+}
+.sv-chips::-webkit-scrollbar { display: none; }
+.sv-count { margin-left: 6px; font-weight: 400; opacity: .6; }
+
+.sv-results {
+  flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 24px;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.sv-results::-webkit-scrollbar { display: none; }
+.sv-results .section-label { background: var(--wire-bg-base-primary); }
+
+/* Message hits reuse .conv-item, relaxed to two snippet lines. */
+.conv-item.sv-msg { height: auto; min-height: 56px; padding-top: 8px; padding-bottom: 8px; }
+.sv-in { font-weight: 400; color: var(--wire-content-base-secondary); }
+.sv-snippet {
+  font-size: 14px; font-weight: 400; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; white-space: normal;
+}
+/* Matches are marked by weight, matching the search-in-conversation spec. */
+.sv-empty {
+  padding: 48px 32px; text-align: center;
+  font-size: 14px; font-weight: 400; line-height: 20px;
+  color: var(--wire-content-base-secondary);
+}
+
+/* ─── ANDROID KEYBOARD ──────────────────────────────────────────────
+   Gboard's layout and proportions on a 360dp phone — suggestion strip
+   plus four rows — drawn in WDS tokens so it themes with everything
+   else. The keys type into the search field, so the prototype can be
+   driven by touch alone. */
+.kb {
+  flex-shrink: 0; user-select: none;
+  padding: 0 4px 8px;
+  background: var(--wire-bg-base-tertiary);
+  border-top: 1px solid var(--wire-border-base-primary);
+}
+.kb-suggest {
+  height: 44px; display: flex; align-items: center;
+  color: var(--wire-content-base-primary);
+}
+.kb-suggest span {
+  flex: 1; text-align: center; font-size: 14px; line-height: 18px;
+  border-right: 1px solid var(--wire-border-base-primary);
+}
+.kb-suggest span:last-child { border-right: 0; }
+.kb-row { display: flex; gap: 5px; margin-bottom: 7px; }
+.kb-row:last-child { margin-bottom: 0; }
+.kb-key {
+  flex: 1 0 0; height: 42px; min-width: 0; padding: 0; border: 0;
+  border-radius: 6px; cursor: pointer;
+  font: inherit; font-size: 16px; font-weight: 400; line-height: 42px;
+  background: var(--wire-bg-base-primary);
+  color: var(--wire-content-base-primary);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+.kb-key:active { background: var(--wire-bg-base-primary-focus); }
+.kb-key.mod {                            /* shift, backspace, ?123 */
+  background: var(--wire-bg-base-tertiary-focus); font-size: 14px;
+}
+.kb-key.action {                         /* the search / enter key */
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+}
+.kb-key.wide  { flex: 1.5 0 0; }
+.kb-key.space { flex: 5 0 0; }
+.kb-spacer    { flex: 0.5 0 0; }
+
 /* ═══ CONVERSATION VIEW ═════════════════════════════════════════════
    Spec: Android / 50940:84197. Pushes over the list the way an Android
    screen transition does; back returns. Header 86, composer 56. */
@@ -1007,7 +1356,11 @@ body {
   border: 0; background: none; padding: 0; cursor: pointer;
   color: var(--wire-content-base-primary);
 }
-.cv-action { background: var(--wire-bg-base-primary); border: 1px solid var(--wire-border-base-primary); }
+/* Ghost, not outlined — the pressed state carries the affordance. */
+.cv-back:active, .cv-action:active {
+  background: color-mix(in srgb, var(--wire-content-base-primary) 10%, transparent);
+}
+.cv-action .wds-ic[data-icon="videocall"] { width: 20px !important; height: 16px !important; }
 .cv-avatar { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
 .cv-title { flex: 1; min-width: 0; display: flex; align-items: center; }
 .cv-title-text {
@@ -1399,10 +1752,11 @@ body {
     <!-- Everything below the title bar scrolls together -->
     <main class="app-scroll" id="list-stack">
 
-      <!-- M3: SearchBar — opens global search, not yet built -->
-      <div class="search-bar" id="search-bar" role="search" data-m3="SearchBar">
+      <!-- M3: SearchBar — expands into the full-screen search view -->
+      <div class="search-bar" id="search-bar" role="search" data-m3="SearchBar"
+           tabindex="0" aria-label="Search Wire">
         <span class="search-icon" id="search-icon"></span>
-        <span class="search-placeholder">Search for conversation</span>
+        <span class="search-placeholder">Search conversations</span>
         <span class="search-spacer"></span>
       </div>
 
@@ -1456,7 +1810,7 @@ body {
         <span class="cv-avatar av" id="cv-avatar"></span>
         <span class="cv-title"><span class="cv-title-text" id="cv-title">Conversation</span>
           <span class="cv-title-chevron" id="cv-chevron"></span></span>
-        <button class="cv-action" aria-label="More options" data-m3="IconButton" id="cv-action"></button>
+        <button class="cv-action" aria-label="Start video call" data-m3="IconButton" id="cv-action"></button>
       </div>
     </header>
     <div class="cv-scroll" id="cv-scroll"><div id="cv-messages"></div></div>
@@ -1466,12 +1820,64 @@ body {
     </div>
   </section>
 
+  <!-- ── CONVERSATION DETAILS — pushes over the conversation ── -->
+  <section id="conv-details" aria-label="Conversation details" data-m3="Screen">
+    <header class="cv-header">
+      <div class="cv-statusbar">
+        <span>12:34</span>
+        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
+      </div>
+      <div class="cv-titlebar">
+        <button class="cv-back" id="cd-close" aria-label="Close" data-m3="IconButton"></button>
+        <span class="cv-title"><span class="cv-title-text">Conversation Details</span></span>
+        <button class="cv-action" id="cd-overflow" aria-label="More options" data-m3="IconButton"></button>
+      </div>
+    </header>
+    <div class="cd-scroll" id="cd-scroll">
+      <div class="cd-hero">
+        <div class="av" id="cd-avatar"></div>
+        <div class="cd-name" id="cd-name">Conversation name</div>
+        <div class="cd-participants" id="cd-participants">0 participants</div>
+      </div>
+      <div class="cd-actions">
+        <button class="cd-action" id="cd-search" data-m3="OutlinedButton"></button>
+        <button class="cd-action" id="cd-media" data-m3="OutlinedButton"></button>
+      </div>
+      <div class="cd-tabs" id="cd-tabs" role="tablist" data-m3="Tabs"></div>
+      <div class="cd-panel" id="cd-panel"></div>
+    </div>
+  </section>
+
+  <!-- ── GLOBAL SEARCH — full-screen M3 search view ── -->
+  <section id="search-view" aria-label="Search" data-m3="SearchView">
+    <header class="sv-header">
+      <div class="cv-statusbar">
+        <span>12:34</span>
+        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
+      </div>
+      <div class="sv-bar" data-m3="SearchBar">
+        <button class="sv-icon-btn" id="sv-back" aria-label="Back" data-m3="IconButton"></button>
+        <span class="sv-scope" id="sv-scope" style="display:none">
+          <span class="sv-scope-name" id="sv-scope-name"></span>
+          <button class="sv-scope-clear" id="sv-scope-clear" aria-label="Search everywhere"></button>
+        </span>
+        <input class="sv-input" id="sv-input" type="text" autocomplete="off"
+               placeholder="Search Wire" aria-label="Search Wire"/>
+        <button class="sv-icon-btn" id="sv-clear" aria-label="Clear search"
+                data-m3="IconButton" style="display:none"></button>
+      </div>
+    </header>
+    <div class="sv-chips" id="sv-chips" role="group" aria-label="Filter results" data-m3="FilterChips"></div>
+    <div class="sv-results" id="sv-results" role="list" data-m3="LazyColumn"></div>
+    <div class="kb" id="sv-keyboard" aria-hidden="true" data-m3="Keyboard"></div>
+  </section>
+
 </div>
 
 
 
 <script>
-/* ── INLINED ── */
+/* ── INLINED: wds-icons.js ── */
 /* ═══════════════════════════════════════════════════════════════════
    WIRE DESIGN SYSTEM 2.0 — SHARED ICON REGISTRY
    Consumed by: prototype.html (desktop), android.html, ios.html
@@ -1526,6 +1932,8 @@ body {
     "legalholdpending": { svg: { active: "<svg viewBox=\"0 0 12 12\" fill=\"none\"><path d=\"M6 0C9.31371 0 12 2.68629 12 6C12 9.31371 9.31371 12 6 12C2.68629 12 0 9.31371 0 6C0 2.68629 2.68629 0 6 0ZM6 1.5C3.51472 1.5 1.5 3.51472 1.5 6C1.5 8.48528 3.51472 10.5 6 10.5C8.48528 10.5 10.5 8.48528 10.5 6C10.5 3.51472 8.48528 1.5 6 1.5ZM6 7.5C6.41421 7.5 6.75 7.83579 6.75 8.25C6.75 8.66421 6.41421 9 6 9C5.58579 9 5.25 8.66421 5.25 8.25C5.25 7.83579 5.58579 7.5 6 7.5ZM6.75 6.75H5.25V3H6.75V6.75Z\" fill=\"currentColor\"/></svg>", inactive: "<svg viewBox=\"0 0 12 12\" fill=\"none\"><path d=\"M6 0C9.31371 0 12 2.68629 12 6C12 9.31371 9.31371 12 6 12C2.68629 12 0 9.31371 0 6C0 2.68629 2.68629 0 6 0ZM6 1.5C3.51472 1.5 1.5 3.51472 1.5 6C1.5 8.48528 3.51472 10.5 6 10.5C8.48528 10.5 10.5 8.48528 10.5 6C10.5 3.51472 8.48528 1.5 6 1.5ZM6 7.5C6.41421 7.5 6.75 7.83579 6.75 8.25C6.75 8.66421 6.41421 9 6 9C5.58579 9 5.25 8.66421 5.25 8.25C5.25 7.83579 5.58579 7.5 6 7.5ZM6.75 6.75H5.25V3H6.75V6.75Z\" fill=\"currentColor\"/></svg>" } },
     "channel": { svg: { active: "<svg viewBox=\"0 0 15 14\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.62891 0.985346C9.70723 0.516286 10.151 0.199191 10.6201 0.277338C11.0893 0.355528 11.4062 0.799419 11.3281 1.26855L10.9209 3.71093H13.4316C13.9073 3.71093 14.2928 4.09667 14.293 4.57226C14.293 5.04796 13.9073 5.43359 13.4316 5.43359H10.6338L10.1826 8.14062H12.9395C13.4151 8.14062 13.8006 8.52636 13.8008 9.00195C13.8008 9.47765 13.4152 9.86328 12.9395 9.86328H9.89551L9.35938 13.081C9.28117 13.5503 8.83739 13.8673 8.36816 13.7891C7.89898 13.7108 7.58196 13.267 7.66016 12.7978L8.14941 9.86328H5.46582L4.92969 13.081C4.85148 13.5503 4.4077 13.8673 3.93848 13.7891C3.46929 13.7108 3.15227 13.267 3.23047 12.7978L3.71973 9.86328H1.12695C0.651255 9.86328 0.265625 9.47765 0.265625 9.00195C0.265757 8.52636 0.651336 8.14062 1.12695 8.14062H4.00684L4.45801 5.43359H1.61914C1.14344 5.43359 0.757812 5.04796 0.757812 4.57226C0.757945 4.09667 1.14352 3.71093 1.61914 3.71093H4.74512L5.19922 0.985346C5.27754 0.516286 5.72132 0.199191 6.19043 0.277338C6.65957 0.355528 6.97648 0.799419 6.89844 1.26855L6.49121 3.71093H9.1748L9.62891 0.985346ZM6.2041 5.43359L5.75293 8.14062H8.43652L8.8877 5.43359H6.2041Z\" fill=\"currentColor\"/></svg>", inactive: "<svg viewBox=\"0 0 15 14\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.62891 0.985346C9.70723 0.516286 10.151 0.199191 10.6201 0.277338C11.0893 0.355528 11.4062 0.799419 11.3281 1.26855L10.9209 3.71093H13.4316C13.9073 3.71093 14.2928 4.09667 14.293 4.57226C14.293 5.04796 13.9073 5.43359 13.4316 5.43359H10.6338L10.1826 8.14062H12.9395C13.4151 8.14062 13.8006 8.52636 13.8008 9.00195C13.8008 9.47765 13.4152 9.86328 12.9395 9.86328H9.89551L9.35938 13.081C9.28117 13.5503 8.83739 13.8673 8.36816 13.7891C7.89898 13.7108 7.58196 13.267 7.66016 12.7978L8.14941 9.86328H5.46582L4.92969 13.081C4.85148 13.5503 4.4077 13.8673 3.93848 13.7891C3.46929 13.7108 3.15227 13.267 3.23047 12.7978L3.71973 9.86328H1.12695C0.651255 9.86328 0.265625 9.47765 0.265625 9.00195C0.265757 8.52636 0.651336 8.14062 1.12695 8.14062H4.00684L4.45801 5.43359H1.61914C1.14344 5.43359 0.757812 5.04796 0.757812 4.57226C0.757945 4.09667 1.14352 3.71093 1.61914 3.71093H4.74512L5.19922 0.985346C5.27754 0.516286 5.72132 0.199191 6.19043 0.277338C6.65957 0.355528 6.97648 0.799419 6.89844 1.26855L6.49121 3.71093H9.1748L9.62891 0.985346ZM6.2041 5.43359L5.75293 8.14062H8.43652L8.8877 5.43359H6.2041Z\" fill=\"currentColor\"/></svg>" } },
     "groupavatar": { svg: { active: "<svg viewBox=\"0 0 22 11\" fill=\"none\"><path d=\"M4.11831 5.04802C3.04688 5.04802 2.14844 4.09378 2.14844 2.88842C2.14286 1.70538 3.05246 0.767883 4.11831 0.767883C5.18416 0.767883 6.09375 1.68864 6.09375 2.88284C6.09375 4.09378 5.18974 5.04802 4.11831 5.04802ZM1.06585 10.1317C0.284602 10.1317 3.8147e-06 9.7969 3.8147e-06 9.21096C3.8147e-06 7.72101 1.64063 5.89623 4.11831 5.89623C5.10045 5.89623 5.90402 6.18083 6.51228 6.56587C5.21764 7.59266 4.6038 9.27235 5.20648 10.1317H1.06585Z\" fill=\"var(--ga-1)\"/><path d=\"M10.7466 4.92188C9.51339 4.92188 8.48661 3.82813 8.48102 2.43862C8.48102 1.08259 9.51897 0 10.7466 0C11.9743 0 13.0123 1.06585 13.0123 2.42746C13.0123 3.82813 11.9799 4.92188 10.7466 4.92188ZM7.28683 10.1283C6.33817 10.1283 6.01451 9.83259 6.01451 9.30246C6.01451 7.8683 7.85044 5.90402 10.7466 5.90402C13.6373 5.90402 15.4732 7.8683 15.4732 9.30246C15.4732 9.83259 15.1496 10.1283 14.2009 10.1283H7.28683Z\" fill=\"var(--ga-2)\"/><path d=\"M17.5513 5.04802C16.4743 5.04802 15.5759 4.09378 15.5759 2.88284C15.5759 1.68864 16.4855 0.767883 17.5513 0.767883C18.6172 0.767883 19.5268 1.70538 19.5212 2.88842C19.5212 4.09378 18.6228 5.04802 17.5513 5.04802ZM20.6038 10.1317H16.4632C17.0658 9.27235 16.452 7.59266 15.1574 6.56587C15.7656 6.18083 16.5692 5.89623 17.5513 5.89623C20.029 5.89623 21.6696 7.72101 21.6696 9.21096C21.6696 9.7969 21.385 10.1317 20.6038 10.1317Z\" fill=\"var(--ga-3)\"/></svg>", inactive: "<svg viewBox=\"0 0 22 11\" fill=\"none\"><path d=\"M4.11831 5.04802C3.04688 5.04802 2.14844 4.09378 2.14844 2.88842C2.14286 1.70538 3.05246 0.767883 4.11831 0.767883C5.18416 0.767883 6.09375 1.68864 6.09375 2.88284C6.09375 4.09378 5.18974 5.04802 4.11831 5.04802ZM1.06585 10.1317C0.284602 10.1317 3.8147e-06 9.7969 3.8147e-06 9.21096C3.8147e-06 7.72101 1.64063 5.89623 4.11831 5.89623C5.10045 5.89623 5.90402 6.18083 6.51228 6.56587C5.21764 7.59266 4.6038 9.27235 5.20648 10.1317H1.06585Z\" fill=\"var(--ga-1)\"/><path d=\"M10.7466 4.92188C9.51339 4.92188 8.48661 3.82813 8.48102 2.43862C8.48102 1.08259 9.51897 0 10.7466 0C11.9743 0 13.0123 1.06585 13.0123 2.42746C13.0123 3.82813 11.9799 4.92188 10.7466 4.92188ZM7.28683 10.1283C6.33817 10.1283 6.01451 9.83259 6.01451 9.30246C6.01451 7.8683 7.85044 5.90402 10.7466 5.90402C13.6373 5.90402 15.4732 7.8683 15.4732 9.30246C15.4732 9.83259 15.1496 10.1283 14.2009 10.1283H7.28683Z\" fill=\"var(--ga-2)\"/><path d=\"M17.5513 5.04802C16.4743 5.04802 15.5759 4.09378 15.5759 2.88284C15.5759 1.68864 16.4855 0.767883 17.5513 0.767883C18.6172 0.767883 19.5268 1.70538 19.5212 2.88842C19.5212 4.09378 18.6228 5.04802 17.5513 5.04802ZM20.6038 10.1317H16.4632C17.0658 9.27235 16.452 7.59266 15.1574 6.56587C15.7656 6.18083 16.5692 5.89623 17.5513 5.89623C20.029 5.89623 21.6696 7.72101 21.6696 9.21096C21.6696 9.7969 21.385 10.1317 20.6038 10.1317Z\" fill=\"var(--ga-3)\"/></svg>" } },
+    "videocall": { svg: { active: "<svg viewBox=\"0 0 20 16\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0 7.44C0 5.16204 0 4.02306 0.450346 3.1561C0.829848 2.42553 1.42553 1.82985 2.1561 1.45035C3.02306 1 4.16204 1 6.44 1H8.56C10.838 1 11.9769 1 12.8439 1.45035C13.5745 1.82985 14.1702 2.42553 14.5497 3.1561C15 4.02306 15 5.16204 15 7.44V8.56C15 10.838 15 11.9769 14.5497 12.8439C14.1702 13.5745 13.5745 14.1702 12.8439 14.5497C11.9769 15 10.838 15 8.56 15H6.44C4.16204 15 3.02306 15 2.1561 14.5497C1.42553 14.1702 0.829848 13.5745 0.450346 12.8439C0 11.9769 0 10.838 0 8.56V7.44ZM5.5 9.64241C6.90291 11.043 8.5728 12.5 9.96601 12.5C10.5922 12.5 11.1407 12.2819 11.5825 11.7972C11.8398 11.5113 12 11.1769 12 10.8473C12 10.605 11.9077 10.3723 11.6796 10.2076L10.1893 9.15104C9.966 8.99595 9.77185 8.9184 9.59708 8.9184C9.37861 8.9184 9.17961 9.04442 8.9563 9.26249C8.82236 9.39435 8.42719 9.67933 8.42719 9.67933C7.33428 8.94298 6.54466 8.16129 5.81068 7.06704C5.81068 7.06704 6.09659 6.66965 6.22815 6.53392C6.44174 6.31098 6.57281 6.11712 6.57281 5.89418C6.57281 5.71971 6.49514 5.53069 6.33009 5.3029L5.2864 3.83441C5.12135 3.60178 4.87864 3.5 4.6165 3.5C4.29612 3.5 3.96602 3.64539 3.67961 3.92165C3.20874 4.37237 3 4.92972 3 5.54523C3 6.93618 4.09709 8.24661 5.5 9.64241Z\" fill=\"currentColor\"/><path d=\"M20 4.09822V11.9018C20 12.7433 19.0239 13.2086 18.3702 12.6785L16.3 11V5L18.3702 3.32146C19.0239 2.79145 20 3.25666 20 4.09822Z\" fill=\"currentColor\"/></svg>", inactive: "<svg viewBox=\"0 0 20 16\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0 7.44C0 5.16204 0 4.02306 0.450346 3.1561C0.829848 2.42553 1.42553 1.82985 2.1561 1.45035C3.02306 1 4.16204 1 6.44 1H8.56C10.838 1 11.9769 1 12.8439 1.45035C13.5745 1.82985 14.1702 2.42553 14.5497 3.1561C15 4.02306 15 5.16204 15 7.44V8.56C15 10.838 15 11.9769 14.5497 12.8439C14.1702 13.5745 13.5745 14.1702 12.8439 14.5497C11.9769 15 10.838 15 8.56 15H6.44C4.16204 15 3.02306 15 2.1561 14.5497C1.42553 14.1702 0.829848 13.5745 0.450346 12.8439C0 11.9769 0 10.838 0 8.56V7.44ZM5.5 9.64241C6.90291 11.043 8.5728 12.5 9.96601 12.5C10.5922 12.5 11.1407 12.2819 11.5825 11.7972C11.8398 11.5113 12 11.1769 12 10.8473C12 10.605 11.9077 10.3723 11.6796 10.2076L10.1893 9.15104C9.966 8.99595 9.77185 8.9184 9.59708 8.9184C9.37861 8.9184 9.17961 9.04442 8.9563 9.26249C8.82236 9.39435 8.42719 9.67933 8.42719 9.67933C7.33428 8.94298 6.54466 8.16129 5.81068 7.06704C5.81068 7.06704 6.09659 6.66965 6.22815 6.53392C6.44174 6.31098 6.57281 6.11712 6.57281 5.89418C6.57281 5.71971 6.49514 5.53069 6.33009 5.3029L5.2864 3.83441C5.12135 3.60178 4.87864 3.5 4.6165 3.5C4.29612 3.5 3.96602 3.64539 3.67961 3.92165C3.20874 4.37237 3 4.92972 3 5.54523C3 6.93618 4.09709 8.24661 5.5 9.64241Z\" fill=\"currentColor\"/><path d=\"M20 4.09822V11.9018C20 12.7433 19.0239 13.2086 18.3702 12.6785L16.3 11V5L18.3702 3.32146C19.0239 2.79145 20 3.25666 20 4.09822Z\" fill=\"currentColor\"/></svg>" } },
+    "dropdown": { svg: { active: "<svg viewBox=\"0 0 16 16\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M3.85355 5.85355C3.53857 5.53857 3.76165 5 4.20711 5H11.7929C12.2383 5 12.4614 5.53857 12.1464 5.85355L8.35355 9.64645C8.15829 9.84171 7.84171 9.84171 7.64645 9.64645L3.85355 5.85355Z\" fill=\"currentColor\"/></svg>", inactive: "<svg viewBox=\"0 0 16 16\" fill=\"none\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M3.85355 5.85355C3.53857 5.53857 3.76165 5 4.20711 5H11.7929C12.2383 5 12.4614 5.53857 12.1464 5.85355L8.35355 9.64645C8.15829 9.84171 7.84171 9.84171 7.64645 9.64645L3.85355 5.85355Z\" fill=\"currentColor\"/></svg>" } },
   };
 
   /**
@@ -1566,7 +1974,10 @@ body {
 
   /* ── Background moods — same set the desktop prototype exposes ── */
   var MOODS   = ['vibrant', 'balanced', 'calm', 'solid', 'mono'];
-  var ACCENTS = ['blue', 'petrol', 'purple', 'amber', 'green', 'red', 'ink'];
+  /* Same five the desktop prototype offers, in the same order.
+     Petrol and Red exist as tokens but are not offered on either
+     platform, so they stay out of the picker. */
+  var ACCENTS = ['blue', 'green', 'amber', 'purple', 'ink'];
   var currentMood = 'mono';   /* desktop default */
 
   /* Chrome contrast over the wallpaper — mirrors railFor() on desktop.
@@ -1782,10 +2193,12 @@ body {
 
   /* Appearance mirrors the desktop section: profile picture, display
      name, username, theme, accent colour, background. */
+  /* Kept complete so a stray data-accent value still resolves to a
+     label, even though only ACCENTS is offered in the picker. */
   var ACCENT_LABELS = { blue: 'Blue', petrol: 'Petrol', purple: 'Purple', amber: 'Amber',
                         green: 'Green', red: 'Red', ink: 'Inverted' };
   function accentSwatchStyle(a) {
-    return a === 'ink' ? 'var(--wire-content-base-primary)' : 'var(--wire-identity-' + a + ')';
+    return a === 'ink' ? 'var(--wire-bg-inverted-primary)' : 'var(--wire-identity-' + a + ')';
   }
   function currentAccent() { return root.getAttribute('data-accent') || 'blue'; }
 
@@ -2174,7 +2587,536 @@ body {
   }
 
   /* ── Open / close ──────────────────────────────────────────────*/
+  /* ── Global search ───────────────────────────────────────────────
+     Mirrors the desktop engine: conversations are matched on name,
+     messages on body text, both highlighted. Files are left out until
+     Drive exists on Android. With an empty query the view lists the
+     conversations only — messages join once something is typed. */
+
+  var SEARCH_FILTERS = [
+    { id: 'all',       label: 'All' },
+    { id: 'favorites', label: 'Favorites' },
+    { id: 'channels',  label: 'Channels' },
+    { id: 'groups',    label: 'Groups' },
+    { id: 'people',    label: 'People' },
+    { id: 'messages',  label: 'Messages' }
+  ];
+  var searchFilter = 'all';
+  var searchQuery  = '';
+  var searchScope  = null;   /* a conversation, or null for everywhere */
+
+  function svEsc(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function svHi(text, q, cls) {
+    var safe = svEsc(text);
+    if (!q) return safe;
+    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return safe.replace(re, '<span class="' + (cls || 'hit-body') + '">$1</span>');
+  }
+
+  function svTypeLabel(c) {
+    return c.kind === 'channel' ? 'Channel' : c.kind === 'group' ? 'Group' : '1:1 conversation';
+  }
+
+  /* Every message with text, flattened and tied back to its conversation. */
+  function svMessages() {
+    var out = [];
+    CONVERSATIONS.forEach(function (c) {
+      convMessages(c.convKey).forEach(function (m) {
+        out.push({ conv: c, sender: m.sender, color: m.color, initials: m.initials,
+                   external: m.external, time: m.time, day: m.day, text: m.text });
+      });
+    });
+    return out;
+  }
+
+  function svMatchConvs(q) {
+    return CONVERSATIONS.filter(function (c) {
+      if (searchScope && c.convKey !== searchScope.convKey) return false;
+      return !q || c.name.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  function svMatchMessages(q) {
+    if (!q) return [];
+    return svMessages().filter(function (m) {
+      if (searchScope && m.conv.convKey !== searchScope.convKey) return false;
+      return m.text.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  function svRenderScope() {
+    var chip = document.getElementById('sv-scope');
+    var input = document.getElementById('sv-input');
+    if (!searchScope) {
+      chip.style.display = 'none';
+      input.placeholder = 'Search Wire';
+      return;
+    }
+    chip.style.display = 'flex';
+    document.getElementById('sv-scope-name').textContent = searchScope.name;
+    input.placeholder = 'Search this conversation';
+  }
+
+  function svCounts(q) {
+    var c = svMatchConvs(q), m = svMatchMessages(q);
+    var by = function (k) { return c.filter(function (x) { return x.kind === k; }).length; };
+    return {
+      favorites: c.filter(function (x) { return x.favorite; }).length,
+      channels: by('channel'), groups: by('group'), people: by('person'),
+      messages: m.length, all: c.length + m.length
+    };
+  }
+
+  function svRenderChips() {
+    var counts = svCounts(searchQuery);
+    document.getElementById('sv-chips').innerHTML = SEARCH_FILTERS.map(function (f) {
+      var n = counts[f.id];
+      return '<button class="filter-pill" data-sv-filter="' + f.id + '" '
+           +   'aria-pressed="' + (f.id === searchFilter) + '" data-m3="FilterChip">'
+           +   f.label + (n ? '<span class="sv-count">' + n + '</span>' : '')
+           + '</button>';
+    }).join('');
+  }
+
+  function svConvRow(c, q) {
+    return '<li class="conv-item" data-sv-conv="' + c.convKey + '" data-state="default" data-m3="ListItem">'
+         +   '<div class="av">' + avatarFor(c) + '</div>'
+         +   '<div class="ci-body">'
+         +     '<div class="ci-line"><span class="ci-name">' + svHi(c.name, q, 'hit-name') + '</span></div>'
+         +     '<div class="ci-sub">' + svTypeLabel(c) + '</div>'
+         +   '</div>'
+         + '</li>';
+  }
+  /* Spec: Android / 39692:274163 — avatar, sender, right-aligned date,
+     snippet trimmed around the match. The conversation is named only
+     when the search is not already scoped to one. */
+  function svMsgRow(m, q) {
+    var self = m.sender === 'self';
+    var av = personAvatar(self
+      ? { initials: 'KD', color: 'blue' }
+      : { initials: m.initials, color: m.color });
+    return '<li class="cs-row" data-sv-conv="' + m.conv.convKey + '" role="listitem">'
+         +   '<div class="av">' + av + '</div>'
+         +   '<div class="cs-body">'
+         +     '<div class="cs-head">'
+         +       '<span class="cs-sender">' + (self ? 'You' : svEsc(m.sender))
+         +         (searchScope ? '' : ' <span class="cs-in">in ' + svEsc(m.conv.name) + '</span>')
+         +       '</span>'
+         +       (m.external ? '<span class="msg-external">External</span>' : '')
+         +       '<span class="cs-time">' + shortDay(m.day) + ', ' + svEsc(m.time) + '</span>'
+         +     '</div>'
+         +     '<div class="cs-snippet">' + csSnippet(m.text, q) + '</div>'
+         +   '</div>'
+         + '</li>';
+  }
+
+  function svRenderResults() {
+    var q = searchQuery, el = document.getElementById('sv-results');
+    var convs = svMatchConvs(q), msgs = svMatchMessages(q), html = '';
+
+    function section(label, rows) {
+      if (!rows.length) return '';
+      return '<li class="section-label" role="presentation">' + label + '</li>' + rows.join('');
+    }
+    var pick = function (k) {
+      return convs.filter(function (c) { return c.kind === k; }).map(function (c) { return svConvRow(c, q); });
+    };
+
+    if (searchFilter === 'all') {
+      html = section('Channels', pick('channel'))
+           + section('Groups',   pick('group'))
+           + section('People',   pick('person'))
+           + section('Messages', msgs.map(function (m) { return svMsgRow(m, q); }));
+    } else if (searchFilter === 'favorites') {
+      html = convs.filter(function (c) { return c.favorite; })
+                  .map(function (c) { return svConvRow(c, q); }).join('');
+    } else if (searchFilter === 'messages') {
+      html = msgs.map(function (m) { return svMsgRow(m, q); }).join('');
+    } else {
+      html = pick(searchFilter === 'channels' ? 'channel'
+                : searchFilter === 'groups'   ? 'group' : 'person').join('');
+    }
+
+    if (!html) {
+      html = '<li class="sv-empty">'
+           + (searchFilter === 'messages' && !q
+                ? (searchScope ? 'Type to search this conversation' : 'Type to search messages')
+                : q ? 'No results for \u201C' + svEsc(q) + '\u201D'
+                    : 'Nothing to show')
+           + '</li>';
+    }
+    el.innerHTML = '<ul class="conv-list" style="padding-bottom:0">' + html + '</ul>';
+  }
+
+  function svRender() { svRenderScope(); svRenderChips(); svRenderResults(); }
+
+  /* ── Android keyboard ────────────────────────────────────────────
+     Rises with the search view, the way Gboard does when a field takes
+     focus. Keys drive the search field so the prototype is usable on a
+     touch screen without a hardware keyboard. */
+  var KB_ROWS = [
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['\u21e7','z','x','c','v','b','n','m','\u232b'],
+    ['?123',',',' ','.','\u2315']
+  ];
+
+  function renderKeyboard() {
+    var rows = KB_ROWS.map(function (row, ri) {
+      var keys = row.map(function (k) {
+        if (k === ' ')     return '<button class="kb-key space" data-key=" " aria-label="Space"></button>';
+        if (k === '\u21e7') return '<button class="kb-key mod wide" data-key="shift" aria-label="Shift">\u21e7</button>';
+        if (k === '\u232b') return '<button class="kb-key mod wide" data-key="back" aria-label="Backspace">\u232b</button>';
+        if (k === '?123')  return '<button class="kb-key mod wide" data-key="sym" aria-label="Symbols">?123</button>';
+        if (k === '\u2315') return '<button class="kb-key action wide" data-key="go" aria-label="Search">\u2315</button>';
+        return '<button class="kb-key" data-key="' + k + '">' + k + '</button>';
+      }).join('');
+      /* Gboard insets the home row by half a key. */
+      if (ri === 1) return '<div class="kb-row"><span class="kb-spacer"></span>' + keys + '<span class="kb-spacer"></span></div>';
+      return '<div class="kb-row">' + keys + '</div>';
+    }).join('');
+
+    document.getElementById('sv-keyboard').innerHTML =
+        '<div class="kb-suggest"><span>design</span><span>designs</span><span>designer</span></div>' + rows;
+  }
+
+  function bindKeyboard() {
+    var kb = document.getElementById('sv-keyboard');
+    renderKeyboard();
+
+    /* Keep the field focused — a key press must not steal the caret. */
+    kb.addEventListener('mousedown', function (e) { e.preventDefault(); });
+
+    kb.addEventListener('click', function (e) {
+      var key = e.target.closest('[data-key]');
+      if (!key) return;
+      var input = document.getElementById('sv-input');
+      var k = key.dataset.key;
+
+      if (k === 'back')                      input.value = input.value.slice(0, -1);
+      else if (k === 'shift' || k === 'sym' || k === 'go') { input.focus(); return; }
+      else if (k === 'suggest')              return;
+      else                                   input.value += k;
+
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+    });
+  }
+
+  function searchIsOpen() {
+    return document.getElementById('search-view').classList.contains('open');
+  }
+  function openSearch(scope, filter) {
+    searchQuery = '';
+    searchScope = scope || null;
+    searchFilter = filter || 'all';
+    var input = document.getElementById('sv-input');
+    input.value = '';
+    document.getElementById('sv-clear').style.display = 'none';
+    svRender();
+    document.getElementById('search-view').classList.add('open');
+    document.getElementById('sv-results').scrollTop = 0;
+    /* The field is active as soon as the view lands, keyboard up. */
+    input.focus({ preventScroll: true });
+    setTimeout(function () { input.focus({ preventScroll: true }); }, 60);
+  }
+  function closeSearch() {
+    document.getElementById('search-view').classList.remove('open');
+    document.getElementById('sv-input').blur();
+  }
+
+  function bindSearch() {
+    var input = document.getElementById('sv-input');
+    var clear = document.getElementById('sv-clear');
+
+    document.getElementById('sv-back').innerHTML = WDS.icon('back',  { size: 16 });
+    clear.innerHTML = WDS.icon('close', { size: 16 });
+    document.getElementById('sv-back').addEventListener('click', closeSearch);
+
+    clear.addEventListener('click', function () {
+      input.value = ''; searchQuery = '';
+      clear.style.display = 'none';
+      svRender(); input.focus();
+    });
+
+    input.addEventListener('input', function () {
+      searchQuery = input.value.trim().toLowerCase();
+      clear.style.display = input.value ? 'flex' : 'none';
+      svRender();
+      document.getElementById('sv-results').scrollTop = 0;
+    });
+
+    document.getElementById('sv-chips').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-sv-filter]');
+      if (!btn) return;
+      searchFilter = btn.dataset.svFilter;
+      svRender();
+      document.getElementById('sv-results').scrollTop = 0;
+    });
+
+    document.getElementById('sv-results').addEventListener('click', function (e) {
+      var row = e.target.closest('[data-sv-conv]');
+      if (!row) return;
+      var conv = CONVERSATIONS.find(function (c) { return c.convKey === row.dataset.svConv; });
+      if (!conv) return;
+      closeSearch();
+      openConversation(conv);
+    });
+
+    document.getElementById('sv-scope-clear').innerHTML = WDS.icon('close', { size: 12 });
+    document.getElementById('sv-scope-clear').addEventListener('click', function () {
+      searchScope = null;
+      svRender();
+      input.focus();
+    });
+
+    /* Entry point 1 — the docked bar in the conversation list. */
+    var bar = document.getElementById('search-bar');
+    bar.addEventListener('click', function () { openSearch(); });
+    bar.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSearch(); }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && searchIsOpen()) closeSearch();
+    });
+  }
+
+  /* ── Conversation details + search in conversation ────────────────
+     Details is reached by pressing the conversation title; the Search
+     button inside it opens a search scoped to that conversation. */
+
+  var currentConv = null;
+
+  /* Flatten a thread, carrying the day divider forward so each hit can
+     show a date the way the spec does ("Sep 3, 12:23 PM"). */
+  function convMessages(key) {
+    var out = [], day = 0;
+    (THREADS[key] || []).forEach(function (m) {
+      if (m.divider === 'day') { day = m.day; return; }
+      if (m.divider || !m.text) return;
+      out.push({
+        sender: m.sender, color: m.color, initials: m.initials,
+        external: !!m.external, time: m.time, text: m.text, day: day
+      });
+    });
+    return out;
+  }
+
+  function shortDay(n) {
+    if (n === 0) return 'Today';
+    if (n === 1) return 'Yesterday';
+    var d = new Date(Date.now() - n * DAY_MS);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  /* Participants are derived from who actually speaks in the thread,
+     plus the signed-in user. Admins are the first two. */
+  function participantsFor(c) {
+    var seen = {}, list = [];
+    convMessages(c.convKey).forEach(function (m) {
+      if (m.sender === 'self' || seen[m.sender]) return;
+      seen[m.sender] = true;
+      list.push({
+        name: m.sender, color: m.color, initials: m.initials,
+        qualifier: m.external ? 'External' : null,
+        handle: '@' + m.sender.toLowerCase().replace(/\s+/g, '.')
+      });
+    });
+    if (c.kind === 'person' && !seen[c.name]) {
+      list.unshift({
+        name: c.name, color: c.avatar.color, initials: c.avatar.initials,
+        presence: c.avatar.presence, qualifier: null,
+        handle: '@' + c.name.toLowerCase().replace(/\s+/g, '.')
+      });
+    }
+    list.push({
+      name: 'Kasimir Dengler (You)', color: 'blue', initials: 'KD',
+      presence: 'available', qualifier: null, handle: '@kasimir'
+    });
+    return list;
+  }
+
+  /* ── Details screen ───────────────────────────────────────────── */
+
+  var detailsTab = 'options';
+
+  var CD_SETTINGS = [
+    { section: 'Access', items: [
+      { id: 'guests', label: 'Guests', on: false,
+        desc: 'Turn this option ON to open this conversation to people outside your team, even if they don\u2019t have Wire.' },
+      { id: 'apps', label: 'Apps', on: false,
+        desc: 'Turn this option ON to open this conversation to apps.' }
+    ] },
+    { section: 'Messaging', items: [
+      { id: 'receipts', label: 'Read receipts', on: false,
+        desc: 'When this is on, people can see when their messages in this conversation are read.' },
+      { id: 'ephemeral', label: 'Self-deleting messages', on: false,
+        desc: 'When this is on, all messages in this group will disappear after a certain time.' }
+    ] }
+  ];
+
+  function m3Switch(id, on) {
+    return '<button class="m3-switch" role="switch" data-switch="' + id + '" '
+         +   'aria-checked="' + (on ? 'true' : 'false') + '" data-m3="Switch">'
+         +   '<span class="m3-switch-thumb"></span>'
+         + '</button>';
+  }
+
+  function renderDetailsTabs(count) {
+    document.getElementById('cd-tabs').innerHTML =
+        '<button class="cd-tab" role="tab" data-tab="options" aria-selected="'
+      +   (detailsTab === 'options') + '">Options</button>'
+      + '<button class="cd-tab" role="tab" data-tab="participants" aria-selected="'
+      +   (detailsTab === 'participants') + '">Participants (' + count + ')</button>';
+  }
+
+  function renderOptionsPanel(c) {
+    var html = '<div class="cd-data">'
+             +   '<div class="cd-data-label">Group name</div>'
+             +   '<div class="cd-data-value">' + svEsc(c.name) + '</div>'
+             +   '<span class="cd-chevron">' + WDS.icon('chevron', { size: 16 }) + '</span>'
+             + '</div>';
+    CD_SETTINGS.forEach(function (g) {
+      html += '<div class="cd-title">' + g.section + '</div>';
+      g.items.forEach(function (it) {
+        html += '<div class="cd-setting">'
+             +    '<div class="cd-setting-head">'
+             +      '<span class="cd-setting-name">' + it.label + '</span>'
+             +      '<span class="cd-setting-state" data-state-for="' + it.id + '">'
+             +        (it.on ? 'ON' : 'OFF') + '</span>'
+             +      m3Switch(it.id, it.on)
+             +    '</div>'
+             +    '<div class="cd-setting-desc">' + it.desc + '</div>'
+             +  '</div>';
+      });
+    });
+    return html;
+  }
+
+  function participantRow(p) {
+    var av = personAvatar({ initials: p.initials, color: p.color, presence: p.presence });
+    return '<li class="conv-item" data-state="default" data-m3="ListItem">'
+         +   '<div class="av">' + av + '</div>'
+         +   '<div class="ci-body">'
+         +     '<div class="ci-line"><span class="ci-name">' + svEsc(p.name) + '</span>'
+         +       (p.qualifier ? '<span class="ci-qualifier">' + p.qualifier + '</span>' : '')
+         +     '</div>'
+         +     '<div class="ci-sub">' + svEsc(p.handle) + '</div>'
+         +   '</div>'
+         +   '<div class="ci-trail">' + WDS.icon('chevron', { size: 16 }) + '</div>'
+         + '</li>';
+  }
+
+  function renderParticipantsPanel(c, people) {
+    var admins = people.slice(0, 2), members = people.slice(2);
+    var html = '<div class="cd-part-intro">'
+             +   'This group has <b>' + people.length + '</b> participants. '
+             +   'Up to 500 people can join a group conversation.'
+             +   '<button class="cd-filled" data-m3="FilledButton">Add participants</button>'
+             + '</div>';
+    if (admins.length) {
+      html += '<div class="cd-title">Group Admins (' + admins.length + ')</div>'
+           +  '<ul class="conv-list" style="padding-bottom:0">'
+           +  admins.map(participantRow).join('') + '</ul>';
+    }
+    if (members.length) {
+      html += '<div class="cd-title">Group Members (' + members.length + ')</div>'
+           +  '<ul class="conv-list" style="padding-bottom:0">'
+           +  members.map(participantRow).join('') + '</ul>';
+    }
+    return html;
+  }
+
+  function renderDetails() {
+    var c = currentConv;
+    if (!c) return;
+    var people = participantsFor(c);
+    document.getElementById('cd-avatar').innerHTML = avatarFor(c);
+    document.getElementById('cd-name').textContent = c.name;
+    document.getElementById('cd-participants').textContent =
+      people.length + (people.length === 1 ? ' participant' : ' participants');
+    renderDetailsTabs(people.length);
+    document.getElementById('cd-panel').innerHTML =
+      detailsTab === 'options' ? renderOptionsPanel(c) : renderParticipantsPanel(c, people);
+  }
+
+  function openDetails() {
+    if (!currentConv) return;
+    detailsTab = 'options';
+    renderDetails();
+    document.getElementById('conv-details').classList.add('open');
+    document.getElementById('cd-scroll').scrollTop = 0;
+  }
+  function closeDetails() { document.getElementById('conv-details').classList.remove('open'); }
+  function detailsIsOpen() {
+    return document.getElementById('conv-details').classList.contains('open');
+  }
+
+  function bindDetails() {
+    document.getElementById('cd-close').innerHTML    = WDS.icon('close',    { size: 16 });
+    document.getElementById('cd-overflow').innerHTML = WDS.icon('overflow', { size: 16 });
+    document.getElementById('cd-search').innerHTML =
+      WDS.icon('search', { size: 16 }) + '<span>Search</span>';
+    document.getElementById('cd-media').innerHTML =
+      WDS.icon('drive', { size: 16 }) + '<span>Media</span>';
+
+    document.getElementById('cd-close').addEventListener('click', closeDetails);
+    /* Desktop parity: search opens the global view, narrowed to this
+       conversation with Messages preselected. */
+    document.getElementById('cd-search').addEventListener('click', function () {
+      openSearch(currentConv, 'messages');
+    });
+
+    document.getElementById('cd-tabs').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-tab]');
+      if (!btn) return;
+      detailsTab = btn.dataset.tab;
+      renderDetails();
+      document.getElementById('cd-panel').scrollIntoView({ block: 'nearest' });
+    });
+
+    /* Switches are live so the row reads correctly; nothing behind them. */
+    document.getElementById('cd-panel').addEventListener('click', function (e) {
+      var sw = e.target.closest('.m3-switch');
+      if (!sw) return;
+      var on = sw.getAttribute('aria-checked') !== 'true';
+      sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      var state = document.querySelector('[data-state-for="' + sw.dataset.switch + '"]');
+      if (state) state.textContent = on ? 'ON' : 'OFF';
+      CD_SETTINGS.forEach(function (g) {
+        g.items.forEach(function (it) { if (it.id === sw.dataset.switch) it.on = on; });
+      });
+    });
+
+    document.querySelector('#conv-view .cv-title').addEventListener('click', openDetails);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && detailsIsOpen() && !searchIsOpen()) closeDetails();
+    });
+  }
+
+  /* Trim the snippet around the first match, the way the spec does:
+     a leading ellipsis when the line is cut, match marked by weight. */
+  function csSnippet(text, q) {
+    var i = text.toLowerCase().indexOf(q);
+    if (i === -1) return svEsc(text);
+    var start = Math.max(0, i - 40);
+    var head = (start > 0 ? '\u2026' : '') + text.slice(start, i);
+    var out = svEsc(head) + '<span class="hit-body">' + svEsc(text.substr(i, q.length)) + '</span>';
+    var rest = text.slice(i + q.length), from = 0, j;
+    while ((j = rest.toLowerCase().indexOf(q, from)) !== -1) {
+      out += svEsc(rest.slice(from, j))
+           + '<span class="hit-body">' + svEsc(rest.substr(j, q.length)) + '</span>';
+      from = j + q.length;
+    }
+    return out + svEsc(rest.slice(from));
+  }
+
   function openConversation(c) {
+    currentConv = c;
     document.getElementById('cv-title').textContent = c.name;
     document.getElementById('cv-avatar').innerHTML = avatarFor(c);
     renderThread(c.convKey, c.kind !== 'person');
@@ -2185,13 +3127,12 @@ body {
 
   function bindConversationView() {
     document.getElementById('cv-back').innerHTML   = WDS.icon('back',     { size: 16 });
-    document.getElementById('cv-action').innerHTML = WDS.icon('overflow', { size: 16 });
-    document.getElementById('cv-chevron').innerHTML = WDS.icon('back',    { size: 16 });
-    document.getElementById('cv-chevron').style.transform = 'rotate(180deg)';
+    document.getElementById('cv-action').innerHTML = WDS.icon('videocall', { size: 16 });
+    document.getElementById('cv-chevron').innerHTML = WDS.icon('dropdown', { size: 16 });
     document.getElementById('cv-send').innerHTML   = WDS.icon('send',     { size: 16 });
     document.getElementById('cv-back').addEventListener('click', closeConversation);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeConversation();
+      if (e.key === 'Escape' && !searchIsOpen() && !detailsIsOpen()) closeConversation();
     });
   }
 
@@ -2399,6 +3340,9 @@ body {
     nav.addEventListener('click', function (e) {
       var btn = e.target.closest('.nav-item');
       if (!btn) return;
+      /* Search opens over whatever is on screen; the selected
+         destination stays where it was. */
+      if (btn.dataset.dest === 'search') { openSearch(); return; }
       if (btn.dataset.ready !== 'true') return;   // placeholder destination
       nav.querySelectorAll('.nav-item').forEach(function (b) {
         var on = b === btn;
@@ -2446,6 +3390,9 @@ body {
   renderSettings();
   bindSettings();
   bindConversationView();
+  bindSearch();
+  bindDetails();
+  bindKeyboard();
   renderMenu();
   bindMenu();
   renderFilters();
