@@ -123,14 +123,12 @@ body {
 }
 .conv-list { list-style: none; margin: 0; padding: 0 0 60px; }
 
-/* Search bar toggle (Settings > Appearance): with the bar hidden the
-   surface reclaims the band it occupied, and the Search destination in
-   the navigation bar becomes the only way in. */
+/* The conversation list has no search bar: the surface reclaims the
+   band it occupied and the Search destination in the navigation bar is
+   the way in. */
 html.hide-list-search .search-bar { display: none; }
 html.hide-list-search .app-surface { min-height: 100%; }
 
-/* Label and control on one line, hint underneath. */
-.sd-inline { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 
 /* ─── SEARCH BAR ───────────────────────────────────────────────────
    344x40 at y86. Fully rounded per M3 SearchBar (supersedes the mock's
@@ -1602,15 +1600,6 @@ html.hide-list-search .app-surface { min-height: 100%; }
       +     MOODS.map(function (m) {
               return seg('mood', m, m.charAt(0).toUpperCase() + m.slice(1));
             }).join('') + '</div></div>'
-      + '<div class="sd-row">'
-      +   '<div class="sd-inline"><span class="sd-label">Search bar</span>'
-      +     '<button class="m3-switch" role="switch" data-pref="list-search"'
-      +       ' aria-checked="' + (!root.classList.contains('hide-list-search')) + '"'
-      +       ' aria-label="Show the search bar" data-m3="Switch">'
-      +       '<span class="m3-switch-thumb"></span></button></div>'
-      +   '<span class="sd-hint">Show the search bar above the conversation list. '
-      +     'Search is always reachable from the navigation bar.</span>'
-      + '</div>'
       + '<div class="sd-row">' + previewsHtml() + '</div>';
   }
 
@@ -2777,14 +2766,6 @@ html.hide-list-search .app-surface { min-height: 100%; }
       if (t.dataset.accentSet) setAccent(t.dataset.accentSet);
       if (t.dataset.moodSet)   applyMood(t.dataset.moodSet);
       syncAppearanceControls();
-    });
-
-    document.addEventListener('click', function (e) {
-      var sw = e.target.closest('.m3-switch[data-pref="list-search"]');
-      if (!sw) return;
-      var show = sw.getAttribute('aria-checked') !== 'true';
-      sw.setAttribute('aria-checked', show ? 'true' : 'false');
-      root.classList.toggle('hide-list-search', !show);
     });
   }
 
