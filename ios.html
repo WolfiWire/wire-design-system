@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-accent="blue">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wire — iOS Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<link rel="stylesheet" href="wds-tokens.css"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   WIRE — iOS PROTOTYPE (native SwiftUI / iOS 26 geometry, WDS 2.0 tokens)
+   Spec: Design Vision 278:14030 "Conversation list - header expanded"
+   Component reference: Wire iOS Kalium (fqEQKuaF7L9AzooBNuy9Zm)
+   No hardcoded surface colours — every fill resolves to a --wire-* token.
+   SwiftUI mapping is annotated per block via data-swiftui attributes.
+   ═══════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--wire-bg-base-tertiary);
+  color: var(--wire-content-base-primary);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start;
+  justify-content: safe center;
+  min-height: 100%; gap: 20px; padding: 24px;
+}
+
+/* ─── LIQUID GLASS MATERIALS ───────────────────────────────────────
+   iOS 26 chrome is a *material*, not a flat fill. Derived from
+   --wire-bg-base-primary so it inverts correctly with the theme. */
+:root {
+  /* Chrome that sits directly on the wallpaper (status bar, nav title).
+     JS overrides this per mood/theme; this is the safe default. */
+  --chrome-fg: var(--wire-content-base-primary);
+  --ios-glass-fill:  color-mix(in srgb, var(--wire-bg-base-primary) 65%, transparent);
+  --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 40%, transparent);
+  --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
+  --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 80%, transparent);
+  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  --ios-glass-blur:  blur(30px) saturate(1.7);
+}
+[data-theme="dark"] {
+  --ios-glass-fill:  color-mix(in srgb, var(--wire-bg-base-secondary) 62%, transparent);
+  --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 55%, transparent);
+  --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
+  --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 80%, transparent);
+  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.40);
+}
+
+/* ─── DEVICE FRAME ─────────────────────────────────────────────────
+   390 x 844 pt — matches the Figma frame exactly (iPhone 14/15). */
+.device {
+  width: 390px; height: 844px;
+  position: relative; overflow: hidden;
+  border-radius: 47px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+/* ─── WALLPAPER LAYER ──────────────────────────────────────────────
+   Identical contract to desktop and Android: id="page" + .bg-mood-*,
+   driven by --bg-hue/-h2/-h3 and --bg-base from wds-tokens.css. */
+#page {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+}
+
+/* ─── STATUS BAR ───────────────────────────────────────────────────
+   Sits directly on the wallpaper. */
+.status-bar {
+  height: 53px; flex-shrink: 0; position: relative; z-index: 3;
+  display: flex; align-items: center;
+  color: var(--chrome-fg);
+}
+.sb-time {
+  flex: 1; text-align: center;
+  font-size: 17px; line-height: 22px; font-weight: 600;
+  letter-spacing: -0.408px;
+  padding-left: 6px;
+}
+.sb-notch {
+  width: 172px; height: 32px; flex-shrink: 0;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+}
+.sb-right { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.sb-right svg { display: block; }
+.sb-batt {
+  width: 25px; height: 13px; border-radius: 4px;
+  border: 1px solid currentColor; opacity: .9;
+  position: relative; display: block;
+}
+.sb-batt::before {
+  content: ""; position: absolute; inset: 2px; width: 17px;
+  background: currentColor; border-radius: 2px;
+}
+.sb-batt::after {
+  content: ""; position: absolute; right: -3px; top: 4px;
+  width: 1.5px; height: 5px; background: currentColor; border-radius: 0 1px 1px 0;
+}
+
+/* ─── TOOLBAR ──────────────────────────────────────────────────────
+   SwiftUI: .toolbar { ToolbarItem(.topBarLeading/.principal/.topBarTrailing) } */
+.toolbar {
+  flex-shrink: 0; position: relative; z-index: 3;
+  min-height: 54px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 0 16px 10px;
+}
+.tb-title {
+  position: absolute; left: 50%; top: 13px; transform: translateX(-50%);
+  font-size: 17px; line-height: 22px; font-weight: 600;
+  letter-spacing: -0.43px; white-space: nowrap;
+  color: var(--chrome-fg);
+}
+.tb-avatar {
+  width: 44px; height: 44px; position: relative; flex-shrink: 0;
+  border-radius: 100px;
+}
+.tb-avatar .av { width: 44px; height: 44px; border-radius: 100px;
+  border: 1px solid var(--wire-border-base-primary); }
+.tb-presence {
+  position: absolute; right: 1px; bottom: 1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--wire-bg-positive-primary);
+  border: 2px solid var(--wire-bg-base-primary);
+}
+
+/* Glass capsule button group — iOS 26 toolbar material */
+.glass-group {
+  height: 44px; display: flex; align-items: center; gap: 20px;
+  padding: 0 4px; border-radius: 296px;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-shadow);
+}
+.glass-btn {
+  width: 36px; height: 36px; border: 0; padding: 0; background: none;
+  border-radius: 100px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-base-primary);
+}
+.glass-btn:active { opacity: .5; }
+.glass-btn:focus { outline: none; }
+.glass-btn:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
+/* The capsule does not sit above the menu — it becomes it. */
+.glass-group {
+  transition: opacity .14s linear, transform .28s cubic-bezier(.32,.72,0,1);
+}
+.glass-group[data-absorbed="true"] {
+  opacity: 0; pointer-events: none; transform: scale(.96);
+}
+
+/* ─── FILTER CHIP ROW ──────────────────────────────────────────────
+   SwiftUI: ScrollView(.horizontal) of Capsule buttons */
+.filter-bar {
+  flex-shrink: 0; display: flex; gap: 8px;
+  padding: 8px 16px;
+  background: var(--wire-bg-base-primary);
+}
+.filter-pill {
+  height: 28px; padding: 4px 10px; border-radius: 1000px;
+  border: 1px solid transparent;
+  background: var(--wire-bg-base-tertiary);
+  color: var(--wire-content-base-primary);
+  font: inherit; font-size: 15px; font-weight: 400; line-height: 20px;
+  cursor: pointer; white-space: nowrap;
+}
+.filter-pill[aria-pressed="true"] {
+  background: var(--wire-bg-base-primary);
+  border-color: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-primary);
+  font-weight: 700;
+}
+.filter-pill:active { opacity: .6; }
+
+/* ─── CONVERSATION LIST CARD ───────────────────────────────────────
+   The app surface sits on top of the wallpaper and is opaque.
+   SwiftUI: List(.plain) inside a rounded container */
+.list-scroll {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  border-radius: 16px 16px 0 0;
+  scrollbar-width: none;
+}
+.list-scroll::-webkit-scrollbar { display: none; }
+.conv-card {
+  background: var(--wire-bg-base-primary);
+  padding-bottom: 110px;
+  display: flex; flex-direction: column;
+  min-height: 100%;
+}
+
+/* ─── CONVERSATION ROW ─────────────────────────────────────────────
+   Kalium "Grouped Row" — 60pt, avatar 44, hairline inset to the text */
+.conv-row {
+  display: flex; align-items: center; width: 100%; min-height: 60px;
+  background: var(--wire-bg-base-primary);
+  border: 0; padding: 0; font: inherit; text-align: left; cursor: pointer;
+  overflow: hidden;
+}
+.conv-row:active { background: var(--wire-bg-base-primary-focus); }
+.cr-inner { flex: 1; min-width: 0; height: 60px; display: flex; align-items: center;
+  gap: 4px; padding-left: 16px; }
+.cr-avatar { height: 60px; display: flex; align-items: center; padding-right: 8px; flex-shrink: 0; }
+.cr-body {
+  flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; gap: 8px;
+  border-bottom: 0.5px solid var(--wire-border-base-primary);
+}
+.conv-row:last-child .cr-body { border-bottom: 0; }
+.conv-row:has(+ .sec-header) .cr-body { border-bottom: 0; }
+.cr-text { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.cr-title {
+  font-size: 16px; line-height: 21px; font-weight: 600; letter-spacing: -0.31px;
+  color: var(--wire-content-base-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cr-detail {
+  font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: -0.23px;
+  color: var(--wire-content-base-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cr-trail { flex-shrink: 0; height: 100%; display: flex; align-items: center;
+  justify-content: flex-end; padding-right: 16px; }
+
+/* Avatars ------------------------------------------------------- */
+.av-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+.av-user {                                    /* DS "Initials" variant */
+  width: 44px; height: 44px; border-radius: 100px;
+  border: 1.286px solid var(--wire-border-base-primary);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-inverted-on-primary);
+  font-size: 16px; font-weight: 600; letter-spacing: .2px;
+  background-size: cover; background-position: center;
+}
+.av-group {                                   /* 44pt, r 12.571, 1px border */
+  width: 44px; height: 44px; border-radius: 12.571px;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.av-group .wds-ic { width: 29.8px !important; height: 13.93px !important; }
+.av-channel {                                 /* 44pt, r 12.571 — Plain Colors */
+  width: 44px; height: 44px; border-radius: 12.571px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-plain-blue-secondary);
+  border: 1px solid var(--wire-plain-blue-secondary-focus);
+  color: var(--wire-plain-blue-primary);
+}
+.av-channel[data-color="purple"] { background: var(--wire-plain-purple-secondary); border-color: var(--wire-plain-purple-secondary-focus); color: var(--wire-plain-purple-primary); }
+.av-channel[data-color="red"]    { background: var(--wire-plain-red-secondary);    border-color: var(--wire-plain-red-secondary-focus);    color: var(--wire-plain-red-primary); }
+.av-channel[data-color="green"]  { background: var(--wire-plain-green-secondary);  border-color: var(--wire-plain-green-secondary-focus);  color: var(--wire-plain-green-primary); }
+.av-channel[data-color="amber"]  { background: var(--wire-plain-amber-secondary);  border-color: var(--wire-plain-amber-secondary-focus);  color: var(--wire-plain-amber-primary); }
+.av-channel[data-color="petrol"] { background: var(--wire-plain-petrol-secondary); border-color: var(--wire-plain-petrol-secondary-focus); color: var(--wire-plain-petrol-primary); }
+.av-channel[data-color="gray"]   { background: var(--wire-plain-gray-secondary);   border-color: var(--wire-plain-gray-secondary-focus);   color: var(--wire-plain-gray-primary); }
+.av-badge {                                   /* "Closed" lock — r 4.714, inset -5.5 */
+  position: absolute; right: -5.5px; bottom: -5.5px;
+  display: flex; align-items: center; justify-content: center; padding: 3px;
+  border-radius: 4.714px;
+  background: var(--wire-content-base-primary);
+  color: var(--wire-content-inverted-on-primary);
+}
+
+/* Trailing accessories ------------------------------------------ */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px; overflow: hidden;
+}
+.badge-count {
+  background: var(--wire-bg-inverted-primary);
+  color: var(--wire-content-inverted-on-primary);
+  padding: 1px 8px;
+  font-size: 12px; line-height: 16px; font-weight: 600;
+}
+.badge-mention {
+  background: var(--wire-bg-inverted-primary);
+  color: var(--wire-content-inverted-on-primary);
+  padding: 3px 6px;
+}
+.badge-mute {
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-secondary);
+  padding: 3px 6px;
+}
+
+/* ─── SCREENS ──────────────────────────────────────────────────────
+   One status bar; toolbar and content swap per destination. */
+#page[data-dest="conversations"] [data-screen="settings"],
+#page[data-dest="settings"] [data-screen="conversations"] { display: none; }
+#page[data-dest="settings"] { --chrome-fg: var(--wire-content-base-primary); }
+
+/* Settings sits on its own grouped-sheet background rather than the
+   wallpaper: sheet/primary behind, sheet/secondary for the cards. */
+.set-backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  background: var(--wire-bg-sheet-primary);
+}
+
+/* ─── SETTINGS — native inset grouped list ─────────────────────────
+   Spec: Kalium 327:54288. Cards 358 wide (16pt inset), radius 26,
+   rows 52 with a 48pt symbol column and a separator inset past it. */
+.set-scroll {
+  position: absolute; inset: 0; z-index: 1;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 107px 16px 118px;
+  scrollbar-width: none;
+}
+
+/* Top scroll-edge effect — same construction as the one behind the
+   tab bar, mirrored. Kalium "Scroll Edge Effect - Soft" is 123 tall. */
+.set-top-edge {
+  position: absolute; left: 0; right: 0; top: 0; height: 123px;
+  z-index: 2; pointer-events: none;
+  -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  background: linear-gradient(to bottom, var(--ios-edge-fill), transparent 96%);
+}
+.set-scroll::-webkit-scrollbar { display: none; }
+.set-head, .set-foot {
+  padding: 8px 16px 6px;
+  font-size: 13px; line-height: 16px; letter-spacing: -0.08px;
+  color: var(--wire-content-base-secondary);
+}
+.set-head { padding-top: 16px; }
+.set-card {
+  background: var(--wire-bg-sheet-secondary);
+  border-radius: 26px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.set-row {
+  display: flex; align-items: center; width: 100%; height: 52px;
+  padding: 0 16px; border: 0; background: none; font: inherit;
+  text-align: left; color: var(--wire-content-base-primary);
+}
+.set-row[role="button"] { cursor: pointer; }
+.set-row[role="button"]:active { background: var(--wire-bg-base-primary-focus); }
+.set-row:focus { outline: none; }
+.set-row:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: -2px; }
+.set-sym {
+  width: 48px; padding-right: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-accent-primary);
+}
+.set-contents {
+  flex: 1; min-width: 0; height: 100%; padding-bottom: 1px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.set-sep { height: 1px; width: 100%; flex-shrink: 0; background: var(--wire-border-base-primary); }
+.set-row:first-child .set-sep { visibility: hidden; }
+.set-main { flex: 1; min-height: 0; display: flex; align-items: center; gap: 8px; }
+.set-label {
+  flex: 1; min-width: 0;
+  font-size: 17px; line-height: 22px; letter-spacing: -0.43px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.set-trail {
+  flex-shrink: 0; display: flex; align-items: center; gap: 16px;
+  font-size: 17px; line-height: 22px; letter-spacing: -0.43px;
+  color: var(--wire-content-base-secondary);
+}
+.set-chev { width: 8px; display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-disabled-primary); }
+.set-popout { width: 16px; height: 16px; color: var(--wire-content-base-secondary); }
+.set-swatch {
+  width: 22px; height: 22px; border-radius: 100px; flex-shrink: 0;
+  border: 1px solid var(--wire-border-base-primary);
+  background-size: cover; overflow: hidden;
+}
+.set-check { width: 20px; display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-accent-primary); opacity: 0; }
+.set-row[aria-checked="true"] .set-check { opacity: 1; }
+
+/* Live previews — abstract wireframes, same as the Android build. */
+.sd-previews { display: flex; gap: 12px; width: 100%; padding: 0 0 12px; }
+.sd-prev-wrap { flex: 1 1 0; min-width: 0; }
+.sd-prev {
+  width: 100%; aspect-ratio: 92 / 176; border-radius: 12px; overflow: hidden;
+  position: relative; border: 1px solid var(--wire-border-base-primary);
+}
+.pv-bar { position: absolute; border-radius: 3px; background: var(--wire-bg-base-tertiary); }
+.pv-surface { position: absolute; left: 0; right: 0; background: var(--wire-bg-base-primary); }
+.pv-row {
+  display: flex; align-items: center; gap: 6px; padding: 5px 6px;
+  border-bottom: 1px solid var(--wire-border-base-primary);
+}
+.pv-dot { width: 11px; height: 11px; border-radius: 1000px; flex-shrink: 0; }
+.pv-line { height: 8px; border-radius: 3px; background: var(--wire-bg-base-tertiary); }
+.pv-fab {
+  position: absolute; right: 8px; bottom: 10px; width: 18px; height: 18px;
+  border-radius: 6px; background: var(--wire-bg-accent-primary);
+}
+.pv-bubble-own {
+  margin: 5px 6px 0 auto; width: 52%; height: 24px; border-radius: 8px;
+  background: var(--wire-bg-accent-primary);
+}
+.pv-bubble-other {
+  margin: 5px auto 0 6px; width: 62%; height: 30px; border-radius: 8px;
+  background: var(--wire-bg-base-tertiary);
+}
+.pv-composer {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 22px;
+  background: var(--wire-bg-base-primary); border-top: 1px solid var(--wire-border-base-primary);
+}
+.pv-header {
+  position: absolute; left: 0; right: 0; top: 0; height: 36px;
+  background: var(--wire-bg-base-primary); border-bottom: 1px solid var(--wire-border-base-primary);
+}
+
+/* Row-anchored menu inside Settings — same surface as the toolbar menu,
+   presented from its anchor rather than morphing out of a capsule. */
+.set-menu {
+  position: absolute; z-index: 45;
+  min-width: 250px; padding: 10px 16px; border-radius: 32px;
+  background: var(--ios-menu-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-shadow);
+  display: flex; flex-direction: column;
+  transform-origin: top right; transform: scale(.86);
+  opacity: 0; pointer-events: none;
+  transition: transform .28s cubic-bezier(.32,.72,0,1), opacity .14s linear;
+}
+.set-menu.open { transform: scale(1); opacity: 1; pointer-events: auto; }
+.set-menu .menu-opt { padding: 0 8px 0 6px; }
+
+/* Inline segmented control (Theme) */
+.set-seg {
+  display: flex; padding: 2px; border-radius: 9px; gap: 2px;
+  background: var(--wire-bg-base-tertiary);
+}
+.set-seg button {
+  border: 0; font: inherit; font-size: 13px; line-height: 18px; font-weight: 500;
+  padding: 4px 12px; border-radius: 7px; cursor: pointer;
+  background: none; color: var(--wire-content-base-primary);
+}
+.set-seg button[aria-pressed="true"] {
+  background: var(--wire-bg-base-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+
+/* Back control — the same glass capsule as the trailing toolbar group. */
+.glass-group[hidden] { display: none; }
+
+/* ─── PERSON AVATAR ────────────────────────────────────────────────
+   DS "Initials" variant — identity tint, optional presence dot. */
+.av-person {
+  width: 44px; height: 44px; border-radius: 100px;
+  border: 1.286px solid var(--wire-border-base-primary);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-inverted-on-primary);
+  font-size: 16px; font-weight: 600; letter-spacing: .2px;
+  background-size: cover; background-position: center;
+}
+.av-presence {
+  position: absolute; right: -1px; bottom: -1px;
+  width: 10px; height: 10px; border-radius: 100px;
+  background: var(--wire-bg-positive-primary);
+  box-shadow: 0 0 0 2px var(--wire-bg-base-primary);
+}
+.av-presence[data-status="busy"] { background: var(--wire-bg-base-primary);
+  box-shadow: inset 0 0 0 2px var(--wire-bg-danger-primary), 0 0 0 2px var(--wire-bg-base-primary); }
+.av-presence[data-status="away"] { background: var(--wire-bg-warning-primary); }
+.av-presence[data-status="none"] { display: none; }
+
+/* ─── TRAILING BADGES ──────────────────────────────────────────────
+   Same eleven types as desktop and Android, in the iOS shapes from
+   Design Vision 278:14030 — dark pill r 6, outline pill for muted. */
+.ci-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px; overflow: hidden;
+}
+.ci-badge.filled {
+  background: var(--wire-bg-inverted-primary);
+  color: var(--wire-content-inverted-on-primary);
+}
+.ci-badge.outline {
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-secondary);
+}
+.ci-badge.count { padding: 1px 8px; font-size: 12px; line-height: 16px; font-weight: 600; }
+.ci-badge.glyph { padding: 3px 6px; }
+.ci-badge.word  { padding: 1px 8px; font-size: 12px; line-height: 16px; font-weight: 500; }
+.ci-badge.danger { color: var(--wire-content-danger-primary); border-color: var(--wire-border-danger-primary); }
+.ci-badge.subtle { color: var(--wire-content-base-secondary); }
+
+/* ─── SECTION HEADER (Group by → Conversation type) ────────────────
+   SwiftUI: Section { … } header */
+.sec-header {
+  padding: 14px 16px 6px;
+  font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: -0.08px;
+  color: var(--wire-content-base-secondary);
+  background: var(--wire-bg-base-primary);
+}
+.list-empty {
+  padding: 40px 16px; text-align: center;
+  font-size: 15px; line-height: 20px;
+  color: var(--wire-content-base-secondary);
+}
+
+/* ─── MENU (group / sort) ──────────────────────────────────────────
+   Native iOS 26 menu — Kalium "Menu - iPhone" (370:56933).
+   Glass container r 32, leading checkmark column, 17pt rows.
+   SwiftUI: Menu { Picker(...) } on the toolbar's "more" button */
+.menu {
+  position: absolute; z-index: 40;
+  background: var(--ios-menu-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-shadow);
+  display: flex; flex-direction: column; overflow: hidden;
+  /* Closed = the trailing capsule's exact footprint (100 x 44, r 296)
+     at its exact position, so opening reads as one shape reshaping
+     rather than a second surface appearing. */
+  top: 0; right: 16px;
+  width: 100px; height: 44px; border-radius: 296px;
+  padding: 10px 16px;
+  opacity: 0; pointer-events: none;
+  transition:
+    width  .34s cubic-bezier(.32,.72,0,1),
+    height .34s cubic-bezier(.32,.72,0,1),
+    border-radius .34s cubic-bezier(.32,.72,0,1),
+    opacity .12s linear;
+}
+.menu.open {
+  width: 250px; border-radius: 32px;
+  opacity: 1; pointer-events: auto;
+}
+/* Fixed inner width so the rows never reflow while the shell resizes. */
+.menu-inner {
+  width: 218px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; transition: opacity .16s linear;
+}
+.menu.open .menu-inner { opacity: 1; transition-delay: .10s; }
+@media (prefers-reduced-motion: reduce) {
+  .menu, .menu-inner, .glass-group { transition-duration: .01s; }
+}
+.menu-label {                                 /* Section Title */
+  padding: 4px 8px 10px;
+  font-size: 13px; line-height: 15px; font-weight: 500; letter-spacing: -0.08px;
+  color: var(--wire-content-base-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.menu-opt {                                   /* Item */
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  border: 0; background: none; cursor: pointer; font: inherit; text-align: left;
+  padding: 0 8px 0 6px;
+  color: var(--wire-content-base-primary);
+}
+.menu-opt:active { opacity: .55; }
+.menu-check {
+  width: 24px; height: 22px; flex-shrink: 0; opacity: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-accent-primary);
+}
+.menu-opt[aria-checked="true"] .menu-check { opacity: 1; }
+.menu-lbl {
+  flex: 1; min-width: 0; padding: 10px 0;
+  font-size: 17px; line-height: 22px; font-weight: 400; letter-spacing: -0.43px;
+}
+.menu-opt[aria-checked="true"] .menu-lbl {
+  font-weight: 600; color: var(--wire-content-accent-primary);
+}
+.menu-opt[aria-disabled="true"] { cursor: default; }
+.menu-opt[aria-disabled="true"] .menu-lbl { color: var(--wire-content-disabled-primary); }
+.menu-sep {                                   /* Separator — 21pt row, 1px rule */
+  height: 21px; padding: 0 8px; display: flex; align-items: center;
+}
+.menu-sep::before {
+  content: ""; display: block; width: 100%; height: 1px;
+  background: var(--wire-border-base-primary);
+}
+
+/* ─── TAB BAR ──────────────────────────────────────────────────────
+   iOS 26 floating glass TabView + bottom scroll-edge effect.
+   SwiftUI: TabView { Tab(...) } — chrome material is automatic. */
+.tab-wrap {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 95px;
+  z-index: 4; pointer-events: none;
+}
+.tab-edge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 112px;
+  -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+  -webkit-mask-image: linear-gradient(to top, #000 42%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 42%, transparent 100%);
+  background: linear-gradient(to top, var(--ios-edge-fill), transparent 96%);
+}
+.tab-bar {
+  position: absolute; left: 21px; right: 21px; top: 17px;
+  height: 49px; border-radius: 296px; pointer-events: auto;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-shadow);
+  display: flex; align-items: center; padding: 0 6px;
+}
+.tab {
+  flex: 1; height: 41px; border: 0; background: none; padding: 0; cursor: pointer;
+  border-radius: 100px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-base-primary);
+}
+.tab[aria-selected="true"] {
+  background: var(--wire-bg-base-tertiary);
+  color: var(--wire-content-accent-primary);
+}
+.tab:active { opacity: .6; }
+.tab:focus { outline: none; }
+.tab:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
+
+/* ─── TEMPORARY DEMO CONTROLS ──────────────────────────────────────
+   Theme / accent / background move into Settings → Appearance once
+   that screen is built, exactly as on Android. */
+.controls { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+.ctl { display: flex; align-items: center; gap: 6px; }
+.ctl-label { font-size: 12px; font-weight: 600; opacity: .6; text-transform: uppercase; letter-spacing: .6px; }
+.ctl button {
+  font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--wire-border-base-primary);
+  background: var(--wire-bg-base-primary); color: var(--wire-content-base-primary);
+}
+.ctl button[aria-pressed="true"] {
+  background: var(--wire-bg-accent-primary); color: #fff;
+  border-color: var(--wire-bg-accent-primary);
+}
+.sw { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--wire-border-base-primary); cursor: pointer; padding: 0; }
+.caption { font-size: 13px; opacity: .65; max-width: 560px; text-align: center; margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div id="page" class="bg-mood-mono" data-dest="conversations">
+
+    <!-- SwiftUI: system status bar -->
+    <div class="status-bar" data-swiftui="StatusBar">
+      <span class="sb-time">9:41</span>
+      <span class="sb-notch"></span>
+      <span class="sb-right">
+        <svg class="sb-sig" viewBox="0 0 18 12" width="18" height="12" aria-hidden="true">
+          <rect x="0"  y="8"   width="3" height="4"  rx="1" fill="currentColor"/>
+          <rect x="5"  y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/>
+          <rect x="10" y="3"   width="3" height="9"  rx="1" fill="currentColor"/>
+          <rect x="15" y="0"   width="3" height="12" rx="1" fill="currentColor"/>
+        </svg>
+        <svg class="sb-wifi" viewBox="0 0 17 12" width="17" height="12" aria-hidden="true">
+          <path d="M8.5 11.2 5.9 8.4a3.9 3.9 0 0 1 5.2 0z" fill="currentColor"/>
+          <path d="M3.6 6.1a7.2 7.2 0 0 1 9.8 0" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+          <path d="M1.1 3.5a10.9 10.9 0 0 1 14.8 0" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="sb-batt"></span>
+      </span>
+    </div>
+
+    <!-- SwiftUI: .toolbar — leading avatar, principal title, trailing glass group -->
+    <div class="toolbar" data-screen="conversations" data-swiftui="Toolbar">
+      <div class="tb-avatar" data-swiftui="ToolbarItem(.topBarLeading)">
+        <div class="av av-user" id="tb-av"></div>
+        <span class="tb-presence" title="Available"></span>
+      </div>
+      <div class="tb-title" data-swiftui="ToolbarItem(.principal)">Conversations</div>
+      <div class="glass-group" data-swiftui="ToolbarItem(.topBarTrailing)">
+        <button class="glass-btn" id="tb-more" aria-label="Group and sort conversations"
+                aria-haspopup="menu" aria-expanded="false"></button>
+        <button class="glass-btn" id="tb-plus" aria-label="New conversation"></button>
+      </div>
+      <div class="menu" id="conv-menu" role="menu" aria-label="Group and sort conversations"
+           data-swiftui="Menu"></div>
+    </div>
+
+    <!-- SwiftUI: List(.plain) on a rounded surface. The filter pills are
+         the first row of that surface, so they scroll with the list. -->
+    <div class="list-scroll" id="list-scroll" data-screen="conversations">
+      <div class="conv-card">
+        <div class="filter-bar" id="filter-bar" role="group"
+             aria-label="Filter conversations" data-swiftui="Picker(.segmented)"></div>
+        <div id="conv-list" role="list" data-swiftui="List"></div>
+      </div>
+    </div>
+
+    <!-- SwiftUI: NavigationStack + Form — settings destination -->
+    <div class="set-backdrop" data-screen="settings"></div>
+    <div class="toolbar" data-screen="settings" data-swiftui="Toolbar">
+      <div class="glass-group" id="set-back-wrap" hidden>
+        <button class="glass-btn" id="set-back" aria-label="Back"></button>
+      </div>
+      <div class="tb-title" id="set-title">Settings</div>
+    </div>
+    <div class="set-scroll" data-screen="settings" id="set-scroll" data-swiftui="Form"></div>
+    <div class="set-top-edge" data-screen="settings"></div>
+    <div class="set-menu" id="set-menu" role="menu" data-screen="settings" data-swiftui="Menu"></div>
+
+    <!-- SwiftUI: TabView — iOS 26 floating glass tab bar -->
+    <div class="tab-wrap" data-swiftui="TabView">
+      <div class="tab-edge"></div>
+      <div class="tab-bar" id="tab-bar" role="tablist"></div>
+    </div>
+
+  </div>
+</div>
+
+<p class="caption">
+  Native SwiftUI / iOS 26 geometry, Wire Design System 2.0 tokens.
+  Theme, accent and background live in Settings &rarr; Appearance.
+</p>
+
+<script src="wds-icons.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+
+  /* ── Icons ───────────────────────────────────────────────────────
+     Exactly the registry the Android prototype consumes. */
+  function ic(name, size, active) {
+    if (window.WDS) { return window.WDS.icon(name, { size: size, active: !!active }); }
+    return '<span class="wds-ic" data-icon="' + name + '" style="display:inline-flex;'
+         + 'width:' + size + 'px;height:' + size + 'px;flex-shrink:0;"></span>';
+  }
+
+  /* ── Avatars — Kalium ❖ Avatars (18:2807) ────────────────────────
+     The 15 group variations are hand-picked in the library, not
+     permutations of the palette. */
+  var GROUP_VARIATIONS = [
+    ['green', 'purple', 'red'],    ['blue', 'green', 'amber'],   ['blue', 'red', 'purple'],
+    ['amber', 'green', 'purple'],  ['green', 'blue', 'purple'],  ['blue', 'amber', 'green'],
+    ['red', 'petrol', 'purple'],   ['green', 'red', 'blue'],     ['amber', 'blue', 'purple'],
+    ['purple', 'petrol', 'green'], ['green', 'purple', 'red'],   ['green', 'blue', 'red'],
+    ['purple', 'blue', 'green'],   ['green', 'blue', 'amber'],   ['green', 'amber', 'purple']
+  ];
+
+  function personAvatar(a) {
+    a = a || {};
+    var bg = a.photo ? "background-image:url('avatars/" + a.photo + "')"
+                     : 'background:var(--wire-identity-' + (a.color || 'blue') + ')';
+    return '<span class="av-wrap"><span class="av-person" style="' + bg + '">'
+         + (a.photo ? '' : (a.initials || '')) + '</span>'
+         + '<span class="av-presence" data-status="' + (a.presence || 'none') + '"></span></span>';
+  }
+  function groupAvatar(variation) {
+    var c = GROUP_VARIATIONS[(((variation || 1) - 1) % 15 + 15) % 15];
+    var vars = '--ga-1:var(--wire-identity-' + c[0] + ');'
+             + '--ga-2:var(--wire-identity-' + c[1] + ');'
+             + '--ga-3:var(--wire-identity-' + c[2] + ')';
+    return '<span class="av-wrap"><span class="av-group" style="' + vars + '">'
+         + ic('groupavatar', 30) + '</span></span>';
+  }
+  function channelAvatar(color) {
+    return '<span class="av-wrap"><span class="av-channel" data-color="' + (color || 'blue') + '">'
+         + ic('channel', 22) + '</span></span>';
+  }
+  function avatarFor(c) {
+    if (c.kind === 'person')  { return personAvatar(c.avatar); }
+    if (c.kind === 'channel') { return channelAvatar(c.color); }
+    return groupAvatar(c.variation);
+  }
+
+  /* ── Conversations — same content as desktop and Android ─────────── */
+  var CONVERSATIONS = [
+    { activity: 100, kind: 'channel', color: 'purple', favorite: true,
+      convKey: 'prodeng', name: 'Product & Engineering', sub: 'Riley: shipping the build tonight' },
+    { activity: 95,  kind: 'channel', color: 'green', favorite: true,
+      convKey: 'design', name: 'Design System', sub: 'Deniz: tokens are updated', state: 'unread', badge: 'unread', count: 3 },
+    { activity: 90,  kind: 'group', variation: 2,
+      convKey: 'marketing-grp', name: 'Marketing Team', sub: 'Paul Nagel: did you read my message?', state: 'unread', badge: 'unread', count: 1 },
+    { activity: 85,  kind: 'channel', color: 'petrol',
+      convKey: 'security', name: 'Security & Compliance', sub: 'Ron Zhou: the audit report is ready', state: 'mention', badge: 'mention' },
+    { activity: 80,  kind: 'channel', color: 'blue',
+      convKey: 'marketing', name: 'Marketing Team', sub: 'Barbara: the campaign brief is up' },
+    { activity: 75,  kind: 'person', avatar: { initials: 'RD', color: 'green', presence: 'available' },
+      convKey: 'rd', name: 'Riley Davies', sub: 'Can you take a look before Friday?', state: 'unread', badge: 'unread', count: 2 },
+    { activity: 70,  kind: 'group', variation: 5,
+      convKey: 'q3', name: 'Q3 Planning', sub: 'Kim: moved the review to Thursday' },
+    { activity: 65,  kind: 'group', variation: 9,
+      convKey: 'onsite', name: 'Onsite Berlin', sub: 'Josephine Pliego: hotel is booked', state: 'muted', badge: 'muted' },
+    { activity: 60,  kind: 'person', avatar: { initials: 'JO', color: 'purple' },
+      convKey: 'jo', name: 'Jaqueline Olaho', sub: 'Thanks, that works' },
+    { activity: 55,  kind: 'person', avatar: { initials: 'DL', color: 'blue', presence: 'available' }, favorite: true,
+      convKey: 'dl', name: 'Dor Lewis', sub: 'See you at the standup' },
+    { activity: 50,  kind: 'channel', color: 'amber',
+      convKey: 'general', name: 'General', sub: 'Alex: the coffee machine is fixed' },
+    { activity: 45,  kind: 'channel', color: 'gray', favorite: true,
+      convKey: 'release', name: 'Release Notes', sub: 'Anthony Powel: 4.17 is out' },
+    { activity: 40,  kind: 'person', avatar: { initials: 'DA', color: 'amber' },
+      convKey: 'da', name: 'Deniz Agha', sub: 'Sent the files over' },
+    { activity: 30,  kind: 'person', avatar: { initials: 'MP', color: 'red', presence: 'busy' },
+      convKey: 'mp', name: 'Marcel Pierrot', sub: 'Hello, how are you?' },
+    { activity: 20,  kind: 'person', avatar: { initials: 'RZ', color: 'petrol' },
+      convKey: 'rz', name: 'Ron Zhou', sub: 'Missed call', state: 'missed-call', badge: 'missedcall' }
+  ];
+
+  /* ── Trailing badges — same eleven types, iOS shapes ─────────────── */
+  function badge(type, count) {
+    function glyph(name, cls, size) {
+      return '<span class="ci-badge ' + cls + '">' + ic(name, size || 12) + '</span>';
+    }
+    switch (type) {
+      case 'unread':        return '<span class="ci-badge filled count">' + (count || 1) + '</span>';
+      case 'mention':       return glyph('mention',    'filled glyph');
+      case 'reply':         return glyph('reply',      'filled glyph');
+      case 'missedcall':    return glyph('missedcall', 'filled glyph');
+      case 'thread':        return glyph('thread',     'filled glyph');
+      case 'ping':          return glyph('ping',       'filled glyph');
+      case 'request':       return glyph('pending12',  'filled glyph');
+      case 'muted':         return glyph('mute',       'outline glyph');
+      case 'muted-mention': return glyph('mention',    'filled glyph');
+      case 'muted-reply':   return glyph('reply',      'filled glyph');
+      case 'attention':     return glyph('attention',  'outline glyph danger', 14);
+      case 'onboarding':    return glyph('pending14',  'outline glyph subtle', 14);
+      case 'pending':       return '<span class="ci-badge outline word">pending</span>';
+      default:              return '';
+    }
+  }
+
+  /* ── Filters — All / Unread / Favorites, AND semantics ───────────── */
+  var FILTERS = [
+    { id: 'all',       label: 'All' },
+    { id: 'unread',    label: 'Unread' },
+    { id: 'favorites', label: 'Favorites' }
+  ];
+  var UNREAD_STATES = ['unread', 'mention', 'reply', 'thread', 'ping',
+                       'missed-call', 'muted-mention', 'muted-reply',
+                       'incoming-request', 'onboarding'];
+  var activeFilters = [];
+
+  function hasFilter(id) { return activeFilters.indexOf(id) !== -1; }
+  function toggleFilter(id) {
+    var i = activeFilters.indexOf(id);
+    if (i === -1) { activeFilters.push(id); } else { activeFilters.splice(i, 1); }
+  }
+  function matchesFilter(c) {
+    if (!activeFilters.length) { return true; }
+    if (hasFilter('unread')    && UNREAD_STATES.indexOf(c.state) === -1) { return false; }
+    if (hasFilter('favorites') && !c.favorite) { return false; }
+    return true;
+  }
+  function emptyMessage() {
+    if (hasFilter('unread') && hasFilter('favorites')) { return 'Nothing matches these filters'; }
+    if (hasFilter('favorites')) { return 'No favorites'; }
+    if (hasFilter('unread'))    { return 'No unread conversations'; }
+    return 'No conversations';
+  }
+
+  /* ── Group by / Sort by — same menu as Android ───────────────────── */
+  var MENU = [
+    { axis: 'group', label: 'Group by', options: [
+        { id: 'none',    label: 'None' },
+        { id: 'type',    label: 'Conversation type' },
+        { id: 'folders', label: 'Folders', disabled: true }
+      ] },
+    { axis: 'sort', label: 'Sort by', options: [
+        { id: 'activity', label: 'Activity' },
+        { id: 'alphabet', label: 'Alphabetical' }
+      ] }
+  ];
+  var groupBy = 'none';
+  var sortBy  = 'activity';
+  var BUCKETS = [
+    { kind: 'channel', label: 'Channels' },
+    { kind: 'group',   label: 'Groups' },
+    { kind: 'person',  label: '1:1 Conversations' }
+  ];
+
+  /* ── Render ─────────────────────────────────────────────────────── */
+  function rowHTML(c) {
+    return '<div class="conv-row" role="listitem" tabindex="0" data-conv="' + c.convKey + '">'
+         +   '<span class="cr-inner">'
+         +     '<span class="cr-avatar">' + avatarFor(c) + '</span>'
+         +     '<span class="cr-body">'
+         +       '<span class="cr-text">'
+         +         '<span class="cr-title">' + c.name + '</span>'
+         +         (c.sub ? '<span class="cr-detail">' + c.sub + '</span>' : '')
+         +       '</span>'
+         +       '<span class="cr-trail">' + badge(c.badge, c.count) + '</span>'
+         +     '</span>'
+         +   '</span>'
+         + '</div>';
+  }
+
+  function sortRows(list) {
+    var l = list.slice();
+    if (sortBy === 'alphabet') { l.sort(function (a, b) { return a.name.localeCompare(b.name); }); }
+    else { l.sort(function (a, b) { return b.activity - a.activity; }); }
+    return l;
+  }
+
+  function renderList() {
+    var list = document.getElementById('conv-list');
+    var shown = sortRows(CONVERSATIONS.filter(matchesFilter));
+    if (!shown.length) {
+      list.innerHTML = '<div class="list-empty">' + emptyMessage() + '</div>';
+      return;
+    }
+    if (groupBy === 'type') {
+      list.innerHTML = BUCKETS.map(function (b) {
+        var inBucket = shown.filter(function (c) { return c.kind === b.kind; });
+        if (!inBucket.length) { return ''; }
+        return '<div class="sec-header">' + b.label + '</div>' + inBucket.map(rowHTML).join('');
+      }).join('');
+    } else {
+      list.innerHTML = shown.map(rowHTML).join('');
+    }
+  }
+
+  function syncFilterPills() {
+    Array.prototype.forEach.call(document.querySelectorAll('.filter-pill'), function (b) {
+      var on = b.dataset.filter === 'all' ? !activeFilters.length : hasFilter(b.dataset.filter);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  }
+
+  function renderFilters() {
+    var bar = document.getElementById('filter-bar');
+    bar.innerHTML = FILTERS.map(function (f) {
+      return '<button class="filter-pill" data-filter="' + f.id + '" aria-pressed="false">'
+           + f.label + '</button>';
+    }).join('');
+    syncFilterPills();
+    bar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.filter-pill'); if (!btn) { return; }
+      if (btn.dataset.filter === 'all') { activeFilters = []; }
+      else { toggleFilter(btn.dataset.filter); }
+      syncFilterPills(); renderList();
+    });
+  }
+
+  function renderMenu() {
+    var inner = MENU.map(function (sec, si) {
+      var current = sec.axis === 'group' ? groupBy : sortBy;
+      var opts = sec.options.map(function (o) {
+        var on = o.id === current && !o.disabled;
+        return '<button class="menu-opt" role="menuitemradio" data-axis="' + sec.axis + '" data-id="' + o.id + '"'
+             + ' aria-checked="' + on + '"'
+             + (o.disabled ? ' aria-disabled="true" title="Not available yet"' : '')
+             + '><span class="menu-check">' + ic('check', 17) + '</span>'
+             + '<span class="menu-lbl">' + o.label + '</span></button>';
+      }).join('');
+      return (si ? '<div class="menu-sep" role="separator"></div>' : '')
+           + '<div class="menu-label">' + sec.label + '</div>' + opts;
+    }).join('');
+    document.getElementById('conv-menu').innerHTML =
+      '<div class="menu-inner">' + inner + '</div>';
+  }
+
+  function bindMenu() {
+    var btn   = document.getElementById('tb-more');
+    var menu  = document.getElementById('conv-menu');
+    var group = document.querySelector('.glass-group');
+
+    /* Natural height of the expanded menu: inner content + 10pt padding
+       top and bottom. Measured live so it survives content changes. */
+    function naturalHeight() {
+      var inner = menu.querySelector('.menu-inner');
+      return inner.scrollHeight + 20;
+    }
+    function isOpen() { return menu.classList.contains('open'); }
+
+    function open() {
+      menu.style.height = naturalHeight() + 'px';
+      menu.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      group.setAttribute('data-absorbed', 'true');
+    }
+    function close() {
+      if (!isOpen()) { return; }
+      menu.classList.remove('open');
+      menu.style.height = '';
+      btn.setAttribute('aria-expanded', 'false');
+      group.removeAttribute('data-absorbed');
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (isOpen()) { close(); } else { open(); }
+    });
+    menu.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var opt = e.target.closest('.menu-opt');
+      if (!opt || opt.getAttribute('aria-disabled') === 'true') { return; }
+      if (opt.dataset.axis === 'group') { groupBy = opt.dataset.id; }
+      else { sortBy = opt.dataset.id; }
+      /* Update the checkmark, then collapse back into the capsule. */
+      renderMenu(); renderList(); close();
+    });
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
+  }
+
+  /* ── Settings — same three groups and ten entries as desktop and
+     Android. Only Appearance opens a detail there, so only Appearance
+     opens one here; the rest are drawn and simply do not route yet. */
+  var SETTINGS = [
+    { group: 'Personal information', items: [
+      { id: 'account',       icon: 'account',       label: 'Account' },
+      { id: 'devices',       icon: 'devices',       label: 'Devices' },
+      { id: 'backup',        icon: 'backup',        label: 'Backup' }
+    ] },
+    { group: 'Preferences', items: [
+      { id: 'appearance',    icon: 'appearance',    label: 'Appearance', ready: true },
+      { id: 'conversations', icon: 'chat',          label: 'Conversations' },
+      { id: 'calls',         icon: 'calls',         label: 'Calls' },
+      { id: 'privacy',       icon: 'privacy',       label: 'Privacy & Security' },
+      { id: 'notifications', icon: 'notifications', label: 'Notifications' }
+    ] },
+    { group: 'Resources', items: [
+      { id: 'support',       icon: 'support',       label: 'Support' },
+      { id: 'about',         icon: 'about',         label: 'About' }
+    ] }
+  ];
+  var SETTINGS_FOOTER = "To improve Wire's quality, please send us your feedback "
+                      + "and let us know about any problems.";
+
+  var ACCENTS = ['blue', 'green', 'amber', 'purple', 'ink'];
+  /* Kept complete so a stray data-accent value still resolves to a label. */
+  var ACCENT_LABELS = { blue: 'Blue', petrol: 'Petrol', purple: 'Purple', amber: 'Amber',
+                        green: 'Green', red: 'Red', ink: 'Inverted' };
+  function accentSwatch(a) {
+    return a === 'ink' ? 'var(--wire-bg-inverted-primary)' : 'var(--wire-identity-' + a + ')';
+  }
+  var MOODS = ['vibrant', 'balanced', 'calm', 'solid', 'mono'];
+  var MOOD_LABELS = { vibrant: 'Vibrant', balanced: 'Balanced', calm: 'Calm',
+                      solid: 'Solid', mono: 'Mono' };
+  var currentMood = 'mono';
+
+  function currentAccent() { return root.getAttribute('data-accent') || 'blue'; }
+  function currentTheme()  { return root.getAttribute('data-theme')  || 'light'; }
+
+  /* Chrome sitting directly on the wallpaper. Gradient moods track the
+     theme; the solid variant is always dark, so its chrome is light. */
+  function applyChrome() {
+    var onDark = (currentMood === 'solid') || currentTheme() === 'dark';
+    root.style.setProperty('--chrome-fg', onDark ? '#ffffff' : '#000000');
+  }
+
+  /* Row builders — Kalium "Setting" (52pt, 48pt symbol column). */
+  function setRow(o) {
+    return '<div class="set-row"' + (o.inert ? '' : ' role="button" tabindex="0"')
+         +   ' ' + (o.attrs || '') + '>'
+         +   (o.symbol ? '<span class="set-sym">' + o.symbol + '</span>' : '')
+         +   '<span class="set-contents">'
+         +     '<span class="set-sep"></span>'
+         +     '<span class="set-main">'
+         +       '<span class="set-label">' + o.label + '</span>'
+         +       '<span class="set-trail">' + (o.trail || '') + '</span>'
+         +     '</span>'
+         +   '</span>'
+         + '</div>';
+  }
+  function chevron() { return '<span class="set-chev">' + ic('chevron', 14) + '</span>'; }
+  /* Rows that open a menu carry SF Symbols' chevron.up.chevron.down.
+     Not in the shared registry — this is iOS-only chrome, so it lives
+     here rather than in wds-icons.js. */
+  var CHEVRON_UP_DOWN =
+      '<svg viewBox="0 0 16 16" fill="none" width="100%" height="100%" aria-hidden="true">'
+    + '<path d="M4.4 6.5 8 2.9l3.6 3.6" stroke="currentColor" stroke-width="1.9"'
+    + ' stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<path d="M4.4 9.5 8 13.1l3.6-3.6" stroke="currentColor" stroke-width="1.9"'
+    + ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function popout() {
+    return '<span class="set-chev set-popout" data-icon="chevron.up.chevron.down">'
+         + CHEVRON_UP_DOWN + '</span>';
+  }
+  function accentDot(a) {
+    return '<span class="set-swatch" style="background:' + accentSwatch(a) + '"></span>';
+  }
+  /* The background dot renders the actual wallpaper, as on desktop. */
+  function moodDot(m) {
+    return '<span class="set-swatch bg-preview bg-mood-' + m + '"></span>';
+  }
+  function card(rows) { return '<div class="set-card">' + rows + '</div>'; }
+
+  /* ── Settings screens ────────────────────────────────────────────── */
+  var setStack = ['root'];
+
+  function settingsRootHtml() {
+    return SETTINGS.map(function (g, i) {
+      var rows = g.items.map(function (it) {
+        return setRow({
+          attrs: 'data-setting="' + it.id + '" data-ready="' + (it.ready ? 'true' : 'false') + '"',
+          symbol: ic(it.icon, 22),
+          label: it.label,
+          trail: chevron()
+        });
+      }).join('');
+      return '<div class="set-head">' + g.group + '</div>' + card(rows)
+           + (i === SETTINGS.length - 1 ? '<div class="set-foot">' + SETTINGS_FOOTER + '</div>' : '');
+    }).join('');
+  }
+
+  /* Live previews — conversation list and conversation view, showing
+     how accent, theme and background read together. */
+  function previewsHtml() {
+    var tints = ['blue', 'purple', 'green', 'amber', 'petrol', 'red', 'blue'];
+    var rows = '';
+    for (var i = 0; i < 7; i++) {
+      rows += '<div class="pv-row">'
+           +   '<span class="pv-dot" style="background:var(--wire-identity-' + tints[i] + ')"></span>'
+           +   '<span class="pv-line" style="width:' + (52 + (i % 3) * 14) + '%"></span>'
+           + '</div>';
+    }
+    return '<div class="sd-previews">'
+      + '<div class="sd-prev-wrap">'
+      +   '<div class="sd-prev bg-preview bg-mood-' + currentMood + '">'
+      +     '<span class="pv-bar" style="left:8px;top:8px;width:28%;height:6px"></span>'
+      +     '<span class="pv-bar" style="left:8px;top:20px;width:58%;height:9px"></span>'
+      +     '<div class="pv-surface" style="top:36px;bottom:0;border-radius:8px 8px 0 0;overflow:hidden">' + rows + '</div>'
+      +     '<span class="pv-fab"></span>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="sd-prev-wrap">'
+      +   '<div class="sd-prev" style="background:var(--wire-bg-base-primary)">'
+      +     '<div class="pv-header">'
+      +       '<span class="pv-bar" style="left:8px;top:8px;width:28%;height:6px"></span>'
+      +       '<span class="pv-bar" style="left:8px;top:20px;width:44%;height:7px"></span></div>'
+      +     '<div style="position:absolute;left:0;right:0;top:36px;bottom:22px">'
+      +       '<div class="pv-bubble-other"></div>'
+      +       '<div class="pv-bubble-own"></div>'
+      +       '<div class="pv-bubble-other" style="width:44px;height:20px"></div>'
+      +       '<div class="pv-bubble-own" style="width:34px;height:14px"></div>'
+      +     '</div>'
+      +     '<div class="pv-composer"></div>'
+      +   '</div>'
+      + '</div></div>';
+  }
+
+  function appearanceHtml() {
+    var theme = currentTheme(), a = currentAccent();
+    var seg = '<span class="set-seg" role="group" aria-label="Theme">'
+            + '<button data-theme-set="light" aria-pressed="' + (theme === 'light') + '">Light</button>'
+            + '<button data-theme-set="dark" aria-pressed="'  + (theme === 'dark')  + '">Dark</button>'
+            + '</span>';
+    return '<div class="set-head">Appearance</div>'
+         + card(
+             setRow({ label: 'Theme', trail: seg, inert: true })
+           + setRow({ label: 'Accent color', attrs: 'data-menu="accent"',
+                      trail: accentDot(a) + '<span>' + ACCENT_LABELS[a] + '</span>' + popout() })
+           + setRow({ label: 'Background', attrs: 'data-menu="background"',
+                      trail: moodDot(currentMood) + '<span>' + MOOD_LABELS[currentMood] + '</span>' + popout() })
+           )
+         + '<div class="set-head">Preview</div>'
+         + previewsHtml();
+  }
+
+  /* Menu contents for the two pickers — same rows as the toolbar menu. */
+  function menuOpt(attrs, checked, label, swatch, swatchCls) {
+    var dot = '';
+    if (swatch)         { dot = '<span class="set-swatch" style="background:' + swatch + ';margin-right:8px"></span>'; }
+    else if (swatchCls) { dot = '<span class="set-swatch ' + swatchCls + '" style="margin-right:8px"></span>'; }
+    return '<button class="menu-opt" role="menuitemradio" aria-checked="' + checked + '" ' + attrs + '>'
+         +   '<span class="menu-check">' + ic('check', 17) + '</span>'
+         +   dot
+         +   '<span class="menu-lbl">' + label + '</span>'
+         + '</button>';
+  }
+  var PICKERS = {
+    accent: function () {
+      var a = currentAccent();
+      return '<div class="menu-label">Accent color</div>'
+           + ACCENTS.map(function (x) {
+               return menuOpt('data-accent-set="' + x + '"', x === a, ACCENT_LABELS[x],
+                              accentSwatch(x));
+             }).join('');
+    },
+    background: function () {
+      return '<div class="menu-label">Background</div>'
+           + MOODS.map(function (m) {
+               return menuOpt('data-mood-set="' + m + '"', m === currentMood,
+                              MOOD_LABELS[m], null, 'bg-preview bg-mood-' + m);
+             }).join('');
+    }
+  };
+
+  var SET_SCREENS = {
+    root:       { title: 'Settings',   html: settingsRootHtml },
+    appearance: { title: 'Appearance', html: appearanceHtml }
+  };
+
+  function renderSettings() {
+    var id = setStack[setStack.length - 1];
+    var screen = SET_SCREENS[id];
+    document.getElementById('set-scroll').innerHTML = screen.html();
+    document.getElementById('set-title').textContent = screen.title;
+    var wrap = document.getElementById('set-back-wrap');
+    var prev = SET_SCREENS[setStack[setStack.length - 2]];
+    wrap.hidden = setStack.length < 2;
+    var back = document.getElementById('set-back');
+    back.innerHTML = ic('back', 20);
+    back.setAttribute('aria-label', prev ? 'Back to ' + prev.title : 'Back');
+  }
+
+  function applyAccent(v) { root.setAttribute('data-accent', v); }
+  function applyMood(v) {
+    var p = document.getElementById('page');
+    currentMood = v;
+    MOODS.forEach(function (m) { p.classList.remove('bg-mood-' + m); });
+    p.classList.add('bg-mood-' + currentMood);
+    applyChrome();
+  }
+
+  function closeSetMenu() {
+    var m = document.getElementById('set-menu');
+    m.classList.remove('open');
+    Array.prototype.forEach.call(document.querySelectorAll('.set-row[aria-expanded]'), function (r) {
+      r.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function openSetMenu(kind, row) {
+    var m = document.getElementById('set-menu');
+    m.dataset.kind = kind;
+    m.innerHTML = PICKERS[kind]();
+    m.style.right = '16px';
+    m.style.top = '0px';
+
+    /* Layout metrics (offset*, not rects) so the entry transform does
+       not skew the measurement. */
+    var pageRect = document.getElementById('page').getBoundingClientRect();
+    var r = row.getBoundingClientRect();
+    var rowTop = r.top - pageRect.top;
+    var h = m.offsetHeight;
+    var checked = m.querySelector('.menu-opt[aria-checked="true"]') || m.querySelector('.menu-opt');
+
+    /* Sit the selected option directly over the row it came from. */
+    var top = rowTop + (r.height - checked.offsetHeight) / 2 - checked.offsetTop;
+    top = Math.max(115, Math.min(top, 741 - h));
+
+    m.style.top = top + 'px';
+    m.style.transformOrigin = 'right ' + Math.round(rowTop + r.height / 2 - top) + 'px';
+    m.classList.add('open');
+    row.setAttribute('aria-expanded', 'true');
+  }
+
+  function bindSettings() {
+    document.getElementById('set-back').addEventListener('click', function () {
+      closeSetMenu();
+      if (setStack.length > 1) { setStack.pop(); renderSettings(); }
+    });
+
+    document.getElementById('set-scroll').addEventListener('click', function (e) {
+      /* The segmented control lives inside a row, so it is checked first. */
+      var seg = e.target.closest('[data-theme-set]');
+      if (seg) {
+        root.setAttribute('data-theme', seg.dataset.themeSet);
+        applyChrome(); renderSettings(); return;
+      }
+      var row = e.target.closest('.set-row'); if (!row) { return; }
+      var d = row.dataset;
+      if (d.setting) { if (d.ready === 'true') { setStack.push('appearance'); renderSettings(); } return; }
+      if (d.menu) {
+        e.stopPropagation();
+        var m = document.getElementById('set-menu');
+        if (m.classList.contains('open') && m.dataset.kind === d.menu) { closeSetMenu(); }
+        else { openSetMenu(d.menu, row); }
+      }
+    });
+
+    document.getElementById('set-menu').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var opt = e.target.closest('.menu-opt'); if (!opt) { return; }
+      if (opt.dataset.accentSet) { applyAccent(opt.dataset.accentSet); }
+      if (opt.dataset.moodSet)   { applyMood(opt.dataset.moodSet); }
+      var kind = this.dataset.kind;
+      this.innerHTML = PICKERS[kind]();
+      renderSettings();
+      closeSetMenu();
+    });
+
+    /* Scrolling or tapping elsewhere dismisses it, as a menu should. */
+    document.addEventListener('click', closeSetMenu);
+    document.getElementById('set-scroll').addEventListener('scroll', closeSetMenu);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSetMenu(); } });
+  }
+
+  /* ── Tabs — same destinations and glyphs as the Android nav bar ──── */
+  var TABS = [
+    { id: 'conversations', label: 'Conversations', selected: true },
+    { id: 'drive',         label: 'Drive' },
+    { id: 'meetings',      label: 'Meetings' },
+    { id: 'settings',      label: 'Settings' },
+    { id: 'search',        label: 'Search' }
+  ];
+  function renderTabs() {
+    var bar = document.getElementById('tab-bar');
+    bar.innerHTML = TABS.map(function (t) {
+      return '<button class="tab" role="tab" data-tab="' + t.id + '" aria-label="' + t.label + '"'
+           + ' aria-selected="' + (t.selected ? 'true' : 'false') + '">'
+           + ic(t.id, 24, !!t.selected) + '</button>';
+    }).join('');
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('.tab'); if (!b) { return; }
+      Array.prototype.forEach.call(bar.querySelectorAll('.tab'), function (el) {
+        el.setAttribute('aria-selected', String(el === b));
+        el.innerHTML = ic(el.dataset.tab, 24, el === b);
+      });
+      var dest = b.dataset.tab === 'settings' ? 'settings' : 'conversations';
+      document.getElementById('page').setAttribute('data-dest', dest);
+      closeSetMenu();
+      if (dest === 'settings') { setStack = ['root']; renderSettings(); }
+    });
+  }
+
+  function renderChrome() {
+    document.getElementById('tb-more').innerHTML = ic('overflow', 20);
+    document.getElementById('tb-plus').innerHTML = ic('compose', 20);
+    var av = document.getElementById('tb-av');
+    av.style.background = 'var(--wire-identity-petrol)';
+    av.textContent = 'KD';
+  }
+
+  renderChrome(); renderFilters(); renderMenu(); bindMenu(); renderList(); renderTabs();
+  renderSettings(); bindSettings(); applyChrome();
+})();
+</script>
+</body>
+</html>
