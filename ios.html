@@ -327,16 +327,17 @@ body {
 
 /* ─── SCREENS ──────────────────────────────────────────────────────
    One status bar; toolbar and content swap per destination. */
-#page[data-dest="conversations"] [data-screen="settings"],
-#page[data-dest="conversations"] [data-screen="conversation"],
-#page[data-dest="settings"] [data-screen="conversations"],
-#page[data-dest="settings"] [data-screen="conversation"],
-#page[data-dest="conversation"] [data-screen="conversations"],
-#page[data-dest="conversation"] [data-screen="settings"] { display: none; }
+#page[data-dest="conversations"] [data-screen]:not([data-screen~="conversations"]),
+#page[data-dest="settings"]      [data-screen]:not([data-screen~="settings"]),
+#page[data-dest="conversation"]  [data-screen]:not([data-screen~="conversation"]),
+#page[data-dest="search"]        [data-screen]:not([data-screen~="search"]) { display: none; }
 #page[data-dest="settings"],
-#page[data-dest="conversation"] { --chrome-fg: var(--wire-content-base-primary); }
-/* The tab bar belongs to the list, not to a conversation. */
-#page[data-dest="conversation"] .tab-wrap { display: none; }
+#page[data-dest="conversation"],
+#page[data-dest="search"] { --chrome-fg: var(--wire-content-base-primary); }
+/* The tab bar belongs to the list. A conversation replaces it; search
+   turns it into the search field. */
+#page[data-dest="conversation"] .tab-wrap,
+#page[data-dest="search"] .tab-wrap { display: none; }
 
 /* Settings sits on its own grouped-sheet background rather than the
    wallpaper: sheet/primary behind, sheet/secondary for the cards. */
@@ -358,6 +359,14 @@ body {
 /* Top scroll-edge effect — same construction as the one behind the tab
    bar, mirrored. Kalium "Scroll Edge Effect - Soft" is 123 tall; the
    conversation header spec (144:22965) uses the same treatment. */
+/* Hidden at rest — it appears only once content scrolls beneath.
+   No transition: opacity tracks scroll position directly, and the
+   ramp over the first points of travel is the fade. will-change keeps
+   the blurred layer composited so the first scroll is not stalled by
+   promoting it. */
+.scroll-edge-top, .sv-edge-bottom, .tab-edge {
+  opacity: 0; will-change: opacity;
+}
 .scroll-edge-top {
   position: absolute; left: 0; right: 0; top: 0; height: 123px;
   z-index: 2; pointer-events: none;
@@ -365,6 +374,18 @@ body {
   -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
   background: linear-gradient(to bottom, var(--ios-edge-fill), transparent 96%);
+}
+.scroll-edge-top.tall { height: 113px; }    /* status bar 53 + chips 44 + fade */
+
+/* Mirrored effect behind the search field, so results diffuse as they
+   pass under it rather than being clipped short of it. */
+.sv-edge-bottom {
+  position: absolute; left: 0; right: 0; bottom: 291px; height: 112px;
+  z-index: 3; pointer-events: none;
+  -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+  -webkit-mask-image: linear-gradient(to top, #000 42%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 42%, transparent 100%);
+  background: linear-gradient(to top, var(--ios-edge-fill), transparent 96%);
 }
 .set-scroll::-webkit-scrollbar { display: none; }
 .set-head, .set-foot {
@@ -496,12 +517,20 @@ body {
    Spec: Kalium 50:9784 / 149:24147 — header 107, content, composer 104.
    SwiftUI: NavigationStack destination with a .safeAreaInset composer. */
 .cv-title {
-  position: absolute; left: 50%; top: 13px; transform: translateX(-50%);
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
   display: flex; align-items: center; gap: 4px;
-  border: 0; background: none; padding: 0; font: inherit; cursor: pointer;
+  height: 44px; padding: 0 14px; border: 0; border-radius: 296px;
+  font: inherit; cursor: pointer; max-width: 240px;
   font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -0.43px;
-  color: var(--chrome-fg); white-space: nowrap; max-width: 200px;
+  color: var(--wire-content-base-primary); white-space: nowrap;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-lift);
 }
+.cv-title:active { opacity: .6; }
+.cv-title:focus { outline: none; }
+.cv-title:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
 .cv-title span:first-child { overflow: hidden; text-overflow: ellipsis; }
 .cv-title .cv-chev { display: flex; flex-shrink: 0; color: var(--wire-content-base-secondary); }
 .cv-scroll {
@@ -653,6 +682,124 @@ body {
 .cmp-actions button:first-child { border-radius: 12px 0 0 12px; }
 .cmp-actions button:last-child  { border-radius: 0 12px 12px 0; margin-right: 0; }
 .cmp-actions button:active, .cmp-btn:active, .cmp-send:active { opacity: .6; }
+
+/* ─── GLOBAL SEARCH ────────────────────────────────────────────────
+   iOS 26 puts search in the tab bar: the tab capsule becomes the search
+   field, which then sits directly on top of the keyboard. Results fill
+   the screen above and scroll under the header. */
+.sv-chips {
+  position: absolute; left: 0; right: 0; top: 53px; z-index: 3;
+  display: flex; gap: 8px; padding: 8px 16px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.sv-chips::-webkit-scrollbar { display: none; }
+.sv-chips .filter-pill { flex-shrink: 0; }
+.sv-count {
+  margin-left: 6px; opacity: .55; font-weight: 400; font-variant-numeric: tabular-nums;
+}
+.sv-results {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 291px; z-index: 1;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 97px 0 69px;               /* status bar 53 + chips 44; field 49 + 20 */
+  background: var(--wire-bg-base-primary);
+  scrollbar-width: none;
+}
+.sv-results::-webkit-scrollbar { display: none; }
+.sv-section {
+  padding: 14px 16px 6px;
+  font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: -0.08px;
+  color: var(--wire-content-base-secondary);
+}
+.sv-empty {
+  padding: 40px 24px; text-align: center;
+  font-size: 15px; line-height: 20px; color: var(--wire-content-base-secondary);
+}
+/* Matches are marked by weight, not by a fill — same as desktop. */
+.hit-body { font-weight: 600; }
+.hit-name { font-weight: 700; }
+
+/* Message result row */
+.sv-msg { display: flex; gap: 8px; padding: 8px 16px; align-items: flex-start; }
+.sv-msg .av-wrap, .sv-msg .av-person { width: 32px; height: 32px; }
+.sv-msg .av-person { font-size: 12px; }
+.sv-msg-body { flex: 1; min-width: 0; }
+.sv-msg-head { display: flex; align-items: baseline; gap: 6px; }
+.sv-msg-sender {
+  flex: 1; min-width: 0; font-size: 15px; line-height: 20px; font-weight: 600;
+  letter-spacing: -0.23px; color: var(--wire-content-base-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sv-msg-in { font-weight: 400; color: var(--wire-content-base-secondary); }
+.sv-msg-time { flex-shrink: 0; font-size: 12px; line-height: 16px; color: var(--wire-content-base-secondary); }
+.sv-msg-snippet {
+  font-size: 15px; line-height: 20px; letter-spacing: -0.23px;
+  color: var(--wire-content-base-secondary);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* File rows are drawn but inert until Drive exists. */
+.sv-file-ic {
+  width: 44px; height: 44px; border-radius: 12.571px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  background: var(--wire-bg-base-tertiary);
+}
+.sv-row-inert { cursor: default; }
+
+/* Search field — the tab capsule, morphed. Sits on the keyboard. */
+.sv-close {
+  position: absolute; right: 21px; bottom: 299px; z-index: 4;
+  width: 49px; height: 49px; border: 0; padding: 0; border-radius: 296px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-lift);
+  color: var(--wire-content-base-primary);
+}
+.sv-close:active { opacity: .6; }
+.sv-close:focus { outline: none; }
+.sv-close:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
+.sv-field {
+  position: absolute; left: 21px; right: 78px; bottom: 299px; z-index: 4;
+  height: 49px; border-radius: 296px; padding: 0 16px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-lift);
+}
+.sv-field .sv-mag { display: flex; color: var(--wire-content-base-secondary); flex-shrink: 0; }
+.sv-input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: none;
+  font: inherit; font-size: 17px; line-height: 22px; letter-spacing: -0.43px;
+  color: var(--wire-content-base-primary);
+}
+.sv-input::placeholder { color: var(--wire-content-base-secondary); }
+.sv-clear {
+  flex-shrink: 0; width: 22px; height: 22px; border: 0; padding: 0; cursor: pointer;
+  border-radius: 100px; display: none; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-tertiary); color: var(--wire-content-base-secondary);
+}
+.sv-clear.on { display: flex; }
+
+/* Simulated keyboard, so the field has something to sit on. */
+.sv-keyboard {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 291px;
+  background: var(--wire-bg-base-secondary);
+  display: flex; flex-direction: column; gap: 8px; padding: 8px 3px 28px;
+  border-top: 0.5px solid var(--wire-border-base-primary);
+}
+.kb-row { display: flex; gap: 5px; justify-content: center; }
+.kb-key {
+  min-width: 30px; height: 42px; flex: 1 1 0; max-width: 34px;
+  border: 0; border-radius: 5px; cursor: pointer; font: inherit; font-size: 17px;
+  background: var(--wire-bg-base-primary); color: var(--wire-content-base-primary);
+  box-shadow: 0 1px 0 rgba(0,0,0,.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.kb-key.wide { max-width: none; flex: 2 1 0; font-size: 14px; }
+.kb-key.space { max-width: none; flex: 5 1 0; }
+.kb-key.mod { background: var(--wire-bg-base-tertiary); }
+.kb-key:active { opacity: .6; }
 
 /* ─── PERSON AVATAR ────────────────────────────────────────────────
    DS "Initials" variant — identity tint, optional presence dot. */
@@ -877,6 +1024,23 @@ body {
         <div id="conv-list" role="list" data-swiftui="List"></div>
       </div>
     </div>
+
+    <!-- SwiftUI: search Tab role. The tab capsule becomes the field.
+         No nav title — the chips sit straight under the status bar. -->
+    <div class="scroll-edge-top tall" data-screen="search"></div>
+    <div class="sv-chips" data-screen="search" id="sv-chips" role="group"
+         aria-label="Filter results" data-swiftui="searchScopes"></div>
+    <div class="sv-results" data-screen="search" id="sv-results" role="list"></div>
+    <div class="sv-edge-bottom" data-screen="search"></div>
+    <div class="sv-field" data-screen="search" data-swiftui="searchable">
+      <span class="sv-mag" id="sv-mag"></span>
+      <input class="sv-input" id="sv-input" type="text" autocomplete="off"
+             placeholder="Search" aria-label="Search Wire"/>
+      <button class="sv-clear" id="sv-clear" aria-label="Clear search"></button>
+    </div>
+    <button class="sv-close" data-screen="search" id="sv-close"
+            aria-label="Close search"></button>
+    <div class="sv-keyboard" data-screen="search" id="sv-keyboard" aria-hidden="true"></div>
 
     <!-- SwiftUI: NavigationStack destination — a conversation.
          Header 107, thread, composer 104; no tab bar. -->
@@ -1572,6 +1736,7 @@ body {
   };
 
   function renderSettings() {
+    if (typeof updateEdges === 'function') { setTimeout(updateEdges, 0); }
     var id = setStack[setStack.length - 1];
     var screen = SET_SCREENS[id];
     document.getElementById('set-scroll').innerHTML = screen.html();
@@ -1664,6 +1829,46 @@ body {
     document.addEventListener('click', closeSetMenu);
     document.getElementById('set-scroll').addEventListener('scroll', closeSetMenu);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSetMenu(); } });
+  }
+
+  /* ── Scroll-edge effects ─────────────────────────────────────────
+     iOS only shows the effect where content actually passes under the
+     chrome, so each edge tracks its container and fades in over the
+     first few points of travel. */
+  var EDGE_MAP = {
+    conversations: { scroll: '#list-scroll', top: '.scroll-edge-top[data-screen="conversations"]', bottom: '.tab-edge' },
+    conversation:  { scroll: '#cv-scroll',   top: '.scroll-edge-top[data-screen="conversation"]',  bottom: null },
+    settings:      { scroll: '.set-scroll',  top: '.scroll-edge-top[data-screen="settings"]',      bottom: '.tab-edge' },
+    search:        { scroll: '#sv-results',  top: '.scroll-edge-top[data-screen="search"]',        bottom: '.sv-edge-bottom' }
+  };
+  var EDGE_RAMP = 24;   /* points of scroll before the top effect is at full strength */
+
+  function updateEdges() {
+    var dest = document.getElementById('page').getAttribute('data-dest');
+    /* Anything not on screen is cleared, so a stale value cannot show
+       through when the destination changes. */
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.scroll-edge-top, .sv-edge-bottom, .tab-edge'),
+      function (el) { el.style.opacity = '0'; });
+
+    var cfg = EDGE_MAP[dest]; if (!cfg) { return; }
+    var sc = document.querySelector(cfg.scroll); if (!sc) { return; }
+    if (cfg.top) {
+      var t = document.querySelector(cfg.top);
+      if (t) { t.style.opacity = Math.min(1, sc.scrollTop / EDGE_RAMP); }
+    }
+    if (cfg.bottom) {
+      var bEl = document.querySelector(cfg.bottom);
+      if (bEl) { bEl.style.opacity = '1'; }
+    }
+  }
+
+  function bindEdges() {
+    Object.keys(EDGE_MAP).forEach(function (k) {
+      var sc = document.querySelector(EDGE_MAP[k].scroll);
+      if (sc) { sc.addEventListener('scroll', updateEdges, { passive: true }); }
+    });
+    updateEdges();
   }
 
   /* ── Conversation view ───────────────────────────────────────────
@@ -1794,6 +1999,7 @@ body {
     document.getElementById('page').setAttribute('data-dest', 'conversation');
     var sc = document.getElementById('cv-scroll');
     sc.scrollTop = sc.scrollHeight;          /* newest message in view */
+    updateEdges();
   }
 
   function bindConversation() {
@@ -1812,6 +2018,277 @@ body {
     });
     document.getElementById('cv-back').addEventListener('click', function () {
       document.getElementById('page').setAttribute('data-dest', 'conversations');
+      updateEdges();
+    });
+  }
+
+  /* ── Global search ───────────────────────────────────────────────
+     Same engine as desktop and Android: conversations matched on name,
+     messages on body text, files on filename, all marked by weight. */
+  var SEARCH_FILTERS = [
+    { id: 'all',           label: 'All' },
+    { id: 'conversations', label: 'Conversations' },
+    { id: 'favorites',     label: 'Favorites' },
+    { id: 'channels',      label: 'Channels' },
+    { id: 'groups',        label: 'Groups' },
+    { id: 'people',        label: 'People' },
+    { id: 'files',         label: 'Files' },
+    { id: 'messages',      label: 'Messages' }
+  ];
+
+  /* Mirrors the desktop prototype's list so all three search the same
+     set. Rows are inert until Drive exists. */
+  var FILES = [
+    { name: 'Q3_Revenue_Model_v4.xlsx', ftype: 'Spreadsheet', conv: 'prodeng',
+      by: 'Tom Berger',  icon: 'ph-microsoft-excel-logo', color: 'green'  },
+    { name: 'Offsite_Location.png',     ftype: 'Image',       conv: 'prodeng',
+      by: 'Mara Voss',   icon: 'ph-image',                color: 'purple' },
+    { name: 'Demo_Recording.mp4',       ftype: 'Video',       conv: 'prodeng',
+      by: 'Tom Berger',  icon: 'ph-file-video',           color: 'petrol' },
+    { name: 'Brand_Guidelines.pdf',     ftype: 'PDF',         conv: 'marketing',
+      by: 'Lena Roth',   icon: 'ph-file-pdf',             color: 'red'    },
+    { name: 'Design_Tokens.json',       ftype: 'Code',        conv: 'design',
+      by: 'You',         icon: 'ph-brackets-curly',       color: 'blue'   },
+    { name: 'Sprint_Notes.docx',        ftype: 'Document',    conv: 'prodeng',
+      by: 'Priya Anand', icon: 'ph-file-doc',             color: 'blue'   }
+  ];
+
+  var searchFilter = 'all';
+  var searchQuery  = '';
+
+  function svEsc(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function svHi(text, q, cls) {
+    var safe = svEsc(text);
+    if (!q) { return safe; }
+    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return safe.replace(re, '<span class="' + (cls || 'hit-body') + '">$1</span>');
+  }
+  function svTypeLabel(c) {
+    return c.kind === 'channel' ? 'Channel' : c.kind === 'group' ? 'Group' : '1:1 conversation';
+  }
+  function shortDay(n) {
+    if (n === 0) { return 'Today'; }
+    if (n === 1) { return 'Yesterday'; }
+    var d = new Date(Date.now() - n * DAY_MS);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  function convMessages(key) {
+    var out = [], day = 0;
+    (THREADS[key] || []).forEach(function (m) {
+      if (m.divider === 'day') { day = m.day; return; }
+      if (m.divider || !m.text) { return; }
+      out.push({ sender: m.sender, color: m.color, initials: m.initials,
+                 external: !!m.external, time: m.time, text: m.text, day: day });
+    });
+    return out;
+  }
+  function svMessages() {
+    var out = [];
+    CONVERSATIONS.forEach(function (c) {
+      convMessages(c.convKey).forEach(function (m) {
+        out.push({ conv: c, sender: m.sender, color: m.color, initials: m.initials,
+                   external: m.external, time: m.time, day: m.day, text: m.text });
+      });
+    });
+    return out;
+  }
+  function svMatchConvs(q) {
+    return CONVERSATIONS.filter(function (c) {
+      return !q || c.name.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  function svMatchMessages(q) {
+    if (!q) { return []; }
+    return svMessages().filter(function (m) { return m.text.toLowerCase().indexOf(q) !== -1; });
+  }
+  function svMatchFiles(q) {
+    return FILES.filter(function (f) { return !q || f.name.toLowerCase().indexOf(q) !== -1; });
+  }
+  function svCounts(q) {
+    var c = svMatchConvs(q), m = svMatchMessages(q), f = svMatchFiles(q);
+    var by = function (k) { return c.filter(function (x) { return x.kind === k; }).length; };
+    return {
+      conversations: c.length,
+      favorites: c.filter(function (x) { return x.favorite; }).length,
+      channels: by('channel'), groups: by('group'), people: by('person'),
+      files: f.length, messages: m.length,
+      all: c.length + f.length + m.length
+    };
+  }
+  function csSnippet(text, q) {
+    var i = text.toLowerCase().indexOf(q);
+    if (i === -1) { return svEsc(text); }
+    var start = Math.max(0, i - 40);
+    var head = (start > 0 ? '\u2026' : '') + text.slice(start, i);
+    var out = svEsc(head) + '<span class="hit-body">' + svEsc(text.substr(i, q.length)) + '</span>';
+    var rest = text.slice(i + q.length), from = 0, j;
+    while ((j = rest.toLowerCase().indexOf(q, from)) !== -1) {
+      out += svEsc(rest.slice(from, j))
+           + '<span class="hit-body">' + svEsc(rest.substr(j, q.length)) + '</span>';
+      from = j + q.length;
+    }
+    return out + svEsc(rest.slice(from));
+  }
+
+  function svConvRow(c, q) {
+    return '<div class="conv-row" role="listitem" tabindex="0" data-sv-conv="' + c.convKey + '">'
+         +   '<span class="cr-inner">'
+         +     '<span class="cr-avatar">' + avatarFor(c) + '</span>'
+         +     '<span class="cr-body">'
+         +       '<span class="cr-text">'
+         +         '<span class="cr-title">' + svHi(c.name, q, 'hit-name') + '</span>'
+         +         '<span class="cr-detail">' + svTypeLabel(c) + '</span>'
+         +       '</span>'
+         +     '</span>'
+         +   '</span>'
+         + '</div>';
+  }
+  function svMsgRow(m, q) {
+    var self = m.sender === 'self';
+    var av = personAvatar(self ? { initials: 'KD', color: 'blue' }
+                               : { initials: m.initials, color: m.color });
+    return '<div class="sv-msg" role="listitem" tabindex="0" data-sv-conv="' + m.conv.convKey + '">'
+         +   av
+         +   '<span class="sv-msg-body">'
+         +     '<span class="sv-msg-head">'
+         +       '<span class="sv-msg-sender">' + (self ? 'You' : svEsc(m.sender))
+         +         ' <span class="sv-msg-in">in ' + svEsc(m.conv.name) + '</span></span>'
+         +       '<span class="sv-msg-time">' + shortDay(m.day) + ', ' + svEsc(m.time) + '</span>'
+         +     '</span>'
+         +     '<span class="sv-msg-snippet">' + csSnippet(m.text, q) + '</span>'
+         +   '</span>'
+         + '</div>';
+  }
+  function svFileRow(f, q) {
+    var conv = CONVERSATIONS.filter(function (c) { return c.convKey === f.conv; })[0];
+    var meta = [f.ftype, f.by].concat(conv ? [conv.name] : []).join(' \u00b7 ');
+    /* Inert by design: the file lives in Drive, which does not exist yet. */
+    return '<div class="conv-row sv-row-inert" role="listitem">'
+         +   '<span class="cr-inner">'
+         +     '<span class="cr-avatar"><span class="sv-file-ic" style="color:var(--wire-identity-'
+         +       f.color + ')"><i class="ph-bold ' + f.icon + '"></i></span></span>'
+         +     '<span class="cr-body">'
+         +       '<span class="cr-text">'
+         +         '<span class="cr-title">' + svHi(f.name, q, 'hit-name') + '</span>'
+         +         '<span class="cr-detail">' + svEsc(meta) + '</span>'
+         +       '</span>'
+         +     '</span>'
+         +   '</span>'
+         + '</div>';
+  }
+
+  function svRenderChips() {
+    var counts = svCounts(searchQuery);
+    document.getElementById('sv-chips').innerHTML = SEARCH_FILTERS.map(function (f) {
+      var n = counts[f.id];
+      return '<button class="filter-pill" data-sv-filter="' + f.id + '" '
+           +   'aria-pressed="' + (f.id === searchFilter) + '">'
+           +   f.label + (n ? '<span class="sv-count">' + n + '</span>' : '')
+           + '</button>';
+    }).join('');
+  }
+
+  function svRenderResults() {
+    var q = searchQuery, el = document.getElementById('sv-results');
+    var convs = svMatchConvs(q), msgs = svMatchMessages(q), files = svMatchFiles(q), html = '';
+    function section(label, rows) {
+      if (!rows.length) { return ''; }
+      return '<div class="sv-section">' + label + '</div>' + rows.join('');
+    }
+    var pick = function (k) {
+      return convs.filter(function (c) { return c.kind === k; })
+                  .map(function (c) { return svConvRow(c, q); });
+    };
+    var convSections = function () {
+      return section('Channels', pick('channel'))
+           + section('Groups',   pick('group'))
+           + section('People',   pick('person'));
+    };
+    if (searchFilter === 'all') {
+      html = convSections()
+           + section('Files',    files.map(function (f) { return svFileRow(f, q); }))
+           + section('Messages', msgs.map(function (m) { return svMsgRow(m, q); }));
+    } else if (searchFilter === 'conversations') { html = convSections(); }
+    else if (searchFilter === 'files')     { html = files.map(function (f) { return svFileRow(f, q); }).join(''); }
+    else if (searchFilter === 'favorites') { html = convs.filter(function (c) { return c.favorite; })
+                                                    .map(function (c) { return svConvRow(c, q); }).join(''); }
+    else if (searchFilter === 'messages')  { html = msgs.map(function (m) { return svMsgRow(m, q); }).join(''); }
+    else {
+      html = pick(searchFilter === 'channels' ? 'channel'
+                : searchFilter === 'groups'   ? 'group' : 'person').join('');
+    }
+    if (!html) {
+      html = '<div class="sv-empty">'
+           + (searchFilter === 'messages' && !q ? 'Type to search messages'
+              : q ? 'No results for \u201C' + svEsc(q) + '\u201D' : 'Nothing to show')
+           + '</div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function svRender() { svRenderChips(); svRenderResults(); updateEdges(); }
+
+  var KB_ROWS = [
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['\u21e7','z','x','c','v','b','n','m','\u232b'],
+    ['123','space','return']
+  ];
+
+  function bindSearch() {
+    document.getElementById('sv-mag').innerHTML   = ic('search', 18);
+    document.getElementById('sv-clear').innerHTML = ic('close', 12);
+    document.getElementById('sv-close').innerHTML = ic('close', 18);
+
+    /* Search overlays whatever was open; closing returns there. Drive
+       and Meetings will slot in once those screens exist. */
+    document.getElementById('sv-close').addEventListener('click', function () {
+      selectTab(lastDest === 'settings' ? 'settings' : 'conversations');
+    });
+
+    document.getElementById('sv-keyboard').innerHTML = KB_ROWS.map(function (row) {
+      return '<div class="kb-row">' + row.map(function (k) {
+        var cls = 'kb-key'
+          + (k === 'space' ? ' space' : '')
+          + (k === '123' || k === 'return' ? ' wide' : '')
+          + (k === '\u21e7' || k === '\u232b' || k === '123' || k === 'return' ? ' mod' : '');
+        return '<button class="' + cls + '" data-key="' + k + '">'
+             + (k === 'space' ? '' : k) + '</button>';
+      }).join('') + '</div>';
+    }).join('');
+
+    var input = document.getElementById('sv-input');
+    var clear = document.getElementById('sv-clear');
+    function setQuery(v) {
+      searchQuery = v.trim().toLowerCase();
+      input.value = v;
+      clear.classList.toggle('on', !!v);
+      svRender();
+    }
+    input.addEventListener('input', function () { setQuery(this.value); });
+    clear.addEventListener('click', function () { setQuery(''); input.focus(); });
+
+    document.getElementById('sv-keyboard').addEventListener('click', function (e) {
+      var k = e.target.closest('.kb-key'); if (!k) { return; }
+      var key = k.dataset.key, v = input.value;
+      if (key === '\u232b')      { setQuery(v.slice(0, -1)); }
+      else if (key === 'space')   { setQuery(v + ' '); }
+      else if (key === '\u21e7' || key === '123' || key === 'return') { return; }
+      else                        { setQuery(v + key); }
+    });
+
+    document.getElementById('sv-chips').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-sv-filter]'); if (!b) { return; }
+      searchFilter = b.dataset.svFilter;
+      svRender();
+    });
+
+    document.getElementById('sv-results').addEventListener('click', function (e) {
+      var row = e.target.closest('[data-sv-conv]'); if (!row) { return; }
+      openConversation(row.dataset.svConv);
     });
   }
 
@@ -1823,6 +2300,34 @@ body {
     { id: 'settings',      label: 'Settings' },
     { id: 'search',        label: 'Search' }
   ];
+  /* The destination search was opened from, so it can be restored. */
+  var lastDest = 'conversations';
+
+  function selectTab(tabId) {
+    var bar = document.getElementById('tab-bar');
+    Array.prototype.forEach.call(bar.querySelectorAll('.tab'), function (el) {
+      var on = el.dataset.tab === tabId;
+      el.setAttribute('aria-selected', String(on));
+      el.innerHTML = ic(el.dataset.tab, 24, on);
+    });
+    /* Tabs always exit a conversation. */
+    var dest = tabId === 'settings' ? 'settings'
+             : tabId === 'search'   ? 'search' : 'conversations';
+    var page = document.getElementById('page');
+    if (dest === 'search' && page.dataset.dest !== 'search') {
+      lastDest = page.dataset.dest === 'conversation' ? 'conversations' : page.dataset.dest;
+    }
+    page.setAttribute('data-dest', dest);
+    closeSetMenu();
+    if (dest === 'settings') { setStack = ['root']; renderSettings(); }
+    if (dest === 'search') {
+      svRender();
+      document.getElementById('sv-results').scrollTop = 0;
+      document.getElementById('sv-input').focus();
+    }
+    updateEdges();
+  }
+
   function renderTabs() {
     var bar = document.getElementById('tab-bar');
     bar.innerHTML = TABS.map(function (t) {
@@ -1832,15 +2337,7 @@ body {
     }).join('');
     bar.addEventListener('click', function (e) {
       var b = e.target.closest('.tab'); if (!b) { return; }
-      Array.prototype.forEach.call(bar.querySelectorAll('.tab'), function (el) {
-        el.setAttribute('aria-selected', String(el === b));
-        el.innerHTML = ic(el.dataset.tab, 24, el === b);
-      });
-      var dest = b.dataset.tab === 'settings' ? 'settings' : 'conversations';
-      /* Tabs always exit a conversation. */
-      document.getElementById('page').setAttribute('data-dest', dest);
-      closeSetMenu();
-      if (dest === 'settings') { setStack = ['root']; renderSettings(); }
+      selectTab(b.dataset.tab);
     });
   }
 
@@ -1851,7 +2348,8 @@ body {
   }
 
   renderChrome(); renderFilters(); renderMenu(); bindMenu(); renderList(); renderTabs();
-  renderSettings(); bindSettings(); bindConversation(); applyChrome();
+  renderSettings(); bindSettings(); bindConversation(); bindSearch();
+  bindEdges(); applyChrome();
 })();
 </script>
 </body>
