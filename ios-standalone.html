@@ -660,6 +660,8 @@ body {
   --ios-glass-fill:  color-mix(in srgb, var(--wire-bg-base-primary) 65%, transparent);
   --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 40%, transparent);
   --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
+  /* Held across the title, then eased away over a long tail. */
+  --ios-edge-core:   color-mix(in srgb, var(--wire-bg-base-primary) 82%, transparent);
   --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 80%, transparent);
   --ios-glass-blur:  blur(30px) saturate(1.7);
 
@@ -676,6 +678,7 @@ body {
   --ios-glass-fill:  color-mix(in srgb, var(--wire-bg-base-secondary) 62%, transparent);
   --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 55%, transparent);
   --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
+  --ios-edge-core:   color-mix(in srgb, var(--wire-bg-base-primary) 82%, transparent);
   --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 80%, transparent);
   /* On dark the rim carries the definition and the specular is faint. */
   --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.44), 0 1px 3px rgba(0,0,0,0.30);
@@ -989,14 +992,18 @@ body {
   opacity: 0; will-change: opacity;
 }
 .scroll-edge-top {
-  position: absolute; left: 0; right: 0; top: 0; height: 123px;
+  position: absolute; left: 0; right: 0; top: 0; height: 160px;
   z-index: 2; pointer-events: none;
-  -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
-  background: linear-gradient(to bottom, var(--ios-edge-fill), transparent 96%);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  /* Tint holds to 45% — past the title at ~48% — then eases out; the
+     mask carries the last of it away so there is no visible edge. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 50%, transparent 100%);
+  background: linear-gradient(to bottom,
+    var(--ios-edge-core) 0, var(--ios-edge-core) 45%, transparent 100%);
 }
-.scroll-edge-top.tall { height: 113px; }    /* status bar 53 + chips 44 + fade */
+.scroll-edge-top.tall { height: 140px; }    /* no title; covers status bar + chips */
 
 /* Mirrored effect behind the search field, so results diffuse as they
    pass under it rather than being clipped short of it. */
@@ -1009,7 +1016,7 @@ body {
   background: linear-gradient(to top, var(--ios-edge-fill), transparent 96%);
 }
 .set-scroll::-webkit-scrollbar { display: none; }
-.set-head, .set-foot {
+.set-head {
   padding: 8px 16px 6px;
   font-size: 13px; line-height: 16px; letter-spacing: -0.08px;
   color: var(--wire-content-base-secondary);
@@ -1139,10 +1146,10 @@ body {
    SwiftUI: NavigationStack destination with a .safeAreaInset composer. */
 .cv-title {
   position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 4px;
-  height: 44px; padding: 0 14px; border: 0; border-radius: 296px;
-  font: inherit; cursor: pointer; max-width: 240px;
-  font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -0.43px;
+  display: flex; align-items: center; gap: 6px;
+  height: 44px; padding: 0 12px; border: 0; border-radius: 296px;
+  font: inherit; cursor: pointer; max-width: 250px;
+  font-size: 15px; line-height: 20px; font-weight: 600; letter-spacing: -0.23px;
   color: var(--wire-content-base-primary); white-space: nowrap;
   background: var(--ios-glass-fill);
   -webkit-backdrop-filter: var(--ios-glass-blur);
@@ -1154,6 +1161,14 @@ body {
 .cv-title:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
 .cv-title span:first-child { overflow: hidden; text-overflow: ellipsis; }
 .cv-title .cv-chev { display: flex; flex-shrink: 0; color: var(--wire-content-base-secondary); }
+.cv-av { display: flex; flex-shrink: 0; }
+.cv-av .av-wrap, .cv-av .av-person,
+.cv-av .av-channel, .cv-av .av-group { width: 26px; height: 26px; }
+.cv-av .av-channel, .cv-av .av-group { border-radius: 7.4px; border-width: 1px; }
+.cv-av .av-person { font-size: 10px; border-width: 1px; letter-spacing: 0; }
+.cv-av .av-channel .wds-ic { width: 13px !important; height: 13px !important; }
+.cv-av .av-group .wds-ic   { width: 17.6px !important; height: 8.2px !important; }
+.cv-av .av-presence { display: none; }
 .cv-scroll {
   position: absolute; inset: 0; z-index: 1;
   overflow-y: auto; overflow-x: hidden;
@@ -1670,6 +1685,7 @@ body {
         <button class="glass-btn" id="cv-back" aria-label="Back to conversations"></button>
       </div>
       <button class="cv-title" id="cv-title-btn" aria-haspopup="menu">
+        <span class="cv-av" id="cv-av"></span>
         <span id="cv-title">Conversation</span><span class="cv-chev"></span>
       </button>
       <div class="glass-group">
@@ -2276,9 +2292,6 @@ body {
       { id: 'about',         icon: 'about',         label: 'About' }
     ] }
   ];
-  var SETTINGS_FOOTER = "To improve Wire's quality, please send us your feedback "
-                      + "and let us know about any problems.";
-
   var ACCENTS = ['blue', 'green', 'amber', 'purple', 'ink'];
   /* Kept complete so a stray data-accent value still resolves to a label. */
   var ACCENT_LABELS = { blue: 'Blue', petrol: 'Petrol', purple: 'Purple', amber: 'Amber',
@@ -2342,7 +2355,7 @@ body {
   var setStack = ['root'];
 
   function settingsRootHtml() {
-    return SETTINGS.map(function (g, i) {
+    return SETTINGS.map(function (g) {
       var rows = g.items.map(function (it) {
         return setRow({
           attrs: 'data-setting="' + it.id + '" data-ready="' + (it.ready ? 'true' : 'false') + '"',
@@ -2351,8 +2364,7 @@ body {
           trail: chevron()
         });
       }).join('');
-      return '<div class="set-head">' + g.group + '</div>' + card(rows)
-           + (i === SETTINGS.length - 1 ? '<div class="set-foot">' + SETTINGS_FOOTER + '</div>' : '');
+      return '<div class="set-head">' + g.group + '</div>' + card(rows);
     }).join('');
   }
 
@@ -2704,6 +2716,7 @@ body {
     var c = CONVERSATIONS.filter(function (x) { return x.convKey === convKey; })[0];
     if (!c) { return; }
     document.getElementById('cv-title').textContent = c.name;
+    document.getElementById('cv-av').innerHTML = avatarFor(c);
     renderThread(convKey, c.kind !== 'person');
     document.getElementById('page').setAttribute('data-dest', 'conversation');
     var sc = document.getElementById('cv-scroll');
