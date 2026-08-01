@@ -661,15 +661,26 @@ body {
   --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 40%, transparent);
   --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
   --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 80%, transparent);
-  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.12);
   --ios-glass-blur:  blur(30px) saturate(1.7);
+
+  /* Ambient (per spec) + a contact shadow, which is what seats the
+     glass on the surface rather than leaving it floating. */
+  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+  /* Hairline rim, then the specular highlight along the top edge. */
+  --ios-glass-rim:  inset 0 0 0 0.5px rgba(0,0,0,0.06);
+  --ios-glass-edge: inset 0 0.5px 0 rgba(255,255,255,0.9);
+  /* Full stack for any glass surface. */
+  --ios-glass-lift: var(--ios-glass-shadow), var(--ios-glass-rim), var(--ios-glass-edge);
 }
 [data-theme="dark"] {
   --ios-glass-fill:  color-mix(in srgb, var(--wire-bg-base-secondary) 62%, transparent);
   --ios-chip-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 55%, transparent);
   --ios-edge-fill:   color-mix(in srgb, var(--wire-bg-base-primary) 88%, transparent);
   --ios-menu-fill:   color-mix(in srgb, var(--wire-bg-base-secondary) 80%, transparent);
-  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.40);
+  /* On dark the rim carries the definition and the specular is faint. */
+  --ios-glass-shadow: 0 8px 40px rgba(0,0,0,0.44), 0 1px 3px rgba(0,0,0,0.30);
+  --ios-glass-rim:  inset 0 0 0 0.5px rgba(255,255,255,0.14);
+  --ios-glass-edge: inset 0 0.5px 0 rgba(255,255,255,0.22);
 }
 
 /* ─── DEVICE FRAME ─────────────────────────────────────────────────
@@ -760,9 +771,15 @@ body {
   width: 44px; height: 44px; flex-shrink: 0;
   border: 0; padding: 0; border-radius: 100px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  background: var(--wire-bg-accent-primary);
+  /* Tinted glass: accent beneath a soft specular wash. */
+  background:
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0) 58%),
+    var(--wire-bg-accent-primary);
   color: var(--wire-content-accent-on-primary);
-  box-shadow: var(--ios-glass-shadow);
+  box-shadow:
+    var(--ios-glass-shadow),
+    inset 0 0 0 0.5px rgba(0,0,0,0.08),
+    inset 0 0.5px 0 rgba(255,255,255,0.35);
 }
 .tb-action:active { opacity: .7; }
 .tb-action:focus { outline: none; }
@@ -775,7 +792,7 @@ body {
   background: var(--ios-glass-fill);
   -webkit-backdrop-filter: var(--ios-glass-blur);
   backdrop-filter: var(--ios-glass-blur);
-  box-shadow: var(--ios-glass-shadow);
+  box-shadow: var(--ios-glass-lift);
 }
 .glass-btn {
   width: 36px; height: 36px; border: 0; padding: 0; background: none;
@@ -930,8 +947,15 @@ body {
 /* ─── SCREENS ──────────────────────────────────────────────────────
    One status bar; toolbar and content swap per destination. */
 #page[data-dest="conversations"] [data-screen="settings"],
-#page[data-dest="settings"] [data-screen="conversations"] { display: none; }
-#page[data-dest="settings"] { --chrome-fg: var(--wire-content-base-primary); }
+#page[data-dest="conversations"] [data-screen="conversation"],
+#page[data-dest="settings"] [data-screen="conversations"],
+#page[data-dest="settings"] [data-screen="conversation"],
+#page[data-dest="conversation"] [data-screen="conversations"],
+#page[data-dest="conversation"] [data-screen="settings"] { display: none; }
+#page[data-dest="settings"],
+#page[data-dest="conversation"] { --chrome-fg: var(--wire-content-base-primary); }
+/* The tab bar belongs to the list, not to a conversation. */
+#page[data-dest="conversation"] .tab-wrap { display: none; }
 
 /* Settings sits on its own grouped-sheet background rather than the
    wallpaper: sheet/primary behind, sheet/secondary for the cards. */
@@ -1059,7 +1083,7 @@ body {
   background: var(--ios-menu-fill);
   -webkit-backdrop-filter: var(--ios-glass-blur);
   backdrop-filter: var(--ios-glass-blur);
-  box-shadow: var(--ios-glass-shadow);
+  box-shadow: var(--ios-glass-lift);
   display: flex; flex-direction: column;
   transform-origin: top right; transform: scale(.86);
   opacity: 0; pointer-events: none;
@@ -1085,6 +1109,167 @@ body {
 
 /* Back control — the same glass capsule as the trailing toolbar group. */
 .glass-group[hidden] { display: none; }
+
+/* ─── CONVERSATION VIEW ────────────────────────────────────────────
+   Spec: Kalium 50:9784 / 149:24147 — header 107, content, composer 104.
+   SwiftUI: NavigationStack destination with a .safeAreaInset composer. */
+.cv-title {
+  position: absolute; left: 50%; top: 13px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px;
+  border: 0; background: none; padding: 0; font: inherit; cursor: pointer;
+  font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -0.43px;
+  color: var(--chrome-fg); white-space: nowrap; max-width: 200px;
+}
+.cv-title span:first-child { overflow: hidden; text-overflow: ellipsis; }
+.cv-title .cv-chev { display: flex; flex-shrink: 0; color: var(--wire-content-base-secondary); }
+.cv-scroll {
+  flex: 1; min-height: 0; position: relative; z-index: 1;
+  overflow-y: auto; overflow-x: hidden;
+  background: var(--wire-bg-base-primary);
+  padding: 8px 0 12px; scrollbar-width: none;
+}
+.cv-scroll::-webkit-scrollbar { display: none; }
+
+/* Message rows ---------------------------------------------------- */
+/* Row is 390 wide with an 80 inset on the far side, so a bubble can
+   never span the full width. The 40 gutter is 8 + 26 + 6. */
+.msg-row { display: flex; align-items: flex-end; padding: 4px 80px 4px 0; }
+.msg-row.own { justify-content: flex-end; padding: 4px 16px 4px 80px; }
+/* A 1:1 has no avatar gutter, so the bubble takes the 16 inset itself. */
+.msg-row.other:not(.has-avatar) { padding-left: 16px; }
+/* The gutter is held on every row of a run so the bubbles stay
+   indented; the avatar itself only appears on the last one, sitting on
+   the bottom edge of that bubble. */
+.msg-avatar-gutter {
+  width: 40px; flex-shrink: 0; padding: 0 6px 0 8px;
+  display: flex; align-items: flex-end;
+}
+.msg-avatar-gutter .av-wrap, .msg-avatar-gutter .av-person { width: 26px; height: 26px; }
+.msg-avatar-gutter .av-person { font-size: 10px; border-width: 1px; letter-spacing: 0; }
+.msg-stack { display: flex; flex-direction: column; max-width: 270px; min-width: 0; }
+.msg-row.own .msg-stack { align-items: flex-end; }
+
+.bubble {
+  padding: 10px; border-radius: 16px; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.bubble.other { background: var(--wire-bg-bubbles-others-primary); color: var(--wire-content-base-primary); }
+.bubble.own   { background: var(--wire-bg-bubbles-own-primary);   color: var(--wire-content-bubbles-own-on-primary); }
+.msg-text {
+  font-size: 17px; line-height: 22px; letter-spacing: -0.43px; max-width: 250px;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.msg-sender {
+  font-size: 12px; line-height: 16px; font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.msg-external {
+  font-size: 11px; line-height: 14px; font-weight: 500; padding: 0 4px;
+  border-radius: 4px; background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary); color: var(--wire-content-base-secondary);
+}
+/* Status line inherits the bubble's own text colour at 70%. */
+.msg-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; line-height: 16px; opacity: .7; color: inherit;
+}
+.bubble.own .msg-status { gap: 4px; align-self: flex-end; }
+
+/* Assets sit on the bubble's 8px inset, as on desktop --------------- */
+.msg-media { display: block; border-radius: 10px; overflow: hidden; max-width: 100%; }
+.msg-media img { display: block; width: 100%; height: auto; }
+.msg-media-fallback {
+  display: flex; align-items: center; justify-content: center;
+  height: 120px; border-radius: 10px; font-size: 13px;
+  background: var(--wire-bg-base-tertiary); color: var(--wire-content-base-secondary);
+}
+.msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.msg-grid .msg-media { border-radius: 6px; }
+.msg-file, .msg-audio {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 10px; background: var(--wire-bg-base-primary);
+  color: var(--wire-content-base-primary); min-width: 180px;
+}
+.msg-file-meta { display: flex; flex-direction: column; min-width: 0; }
+.msg-file-name { font-size: 14px; line-height: 18px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg-file-sub { font-size: 12px; line-height: 16px; color: var(--wire-content-base-secondary); }
+.msg-audio-wave {
+  flex: 1; height: 16px; border-radius: 8px; min-width: 60px;
+  background: repeating-linear-gradient(to right,
+    var(--wire-bg-accent-primary) 0 2px, transparent 2px 5px);
+  opacity: .6;
+}
+.msg-reactions {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  padding: 0 10px; max-width: 270px;
+  margin-top: -8px; position: relative;   /* chips overlap the bubble */
+}
+.msg-row.own .msg-reactions { justify-content: flex-end; }
+.msg-reaction {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px;
+  border-radius: 12px; font-size: 12px; line-height: 16px; font-weight: 600;
+  background: var(--wire-bg-base-primary-focus);
+  border: 1px solid var(--wire-bg-base-tertiary-focus);
+  color: var(--wire-content-base-secondary);
+}
+.msg-reaction .emoji { font-size: 16px; line-height: 1; }
+.msg-reaction.own-reaction {
+  background: var(--wire-bg-accent-secondary);
+  border-color: var(--wire-border-accent-primary);
+  color: var(--wire-content-accent-primary);
+}
+.msg-divider {
+  display: flex; align-items: center; gap: 8px; padding: 14px 16px 6px;
+  font-size: 12px; line-height: 16px; color: var(--wire-content-base-secondary);
+}
+.msg-divider .rule { flex: 1; height: 0.5px; background: var(--wire-border-base-primary); }
+.msg-empty { padding: 48px 24px; text-align: center;
+  font-size: 15px; color: var(--wire-content-base-secondary); }
+
+/* Composer — Kalium 59:2236, 104 tall -------------------------------- */
+.composer {
+  flex-shrink: 0; position: relative; z-index: 2; height: 104px;
+  background: var(--wire-bg-base-primary);
+  border-top: 0.5px solid var(--wire-border-base-primary);
+}
+.cmp-input {
+  position: absolute; left: 10px; right: 10px; top: 12px; height: 34px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cmp-btn {
+  width: 40px; height: 32px; flex-shrink: 0; border-radius: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-primary);
+}
+.cmp-placeholder {
+  flex: 1; min-width: 0; font-size: 17px; line-height: 22px; letter-spacing: -0.43px;
+  color: var(--wire-content-base-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cmp-send {
+  width: 34px; height: 34px; flex-shrink: 0; border: 0; border-radius: 500px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+}
+.cmp-actions {
+  position: absolute; left: 10px; right: 10px; top: 60px;
+  display: flex; align-items: stretch;
+}
+.cmp-actions button {
+  flex: 1 1 0; min-width: 0; height: 32px; margin-right: -1px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-primary);
+}
+.cmp-actions button:first-child { border-radius: 12px 0 0 12px; }
+.cmp-actions button:last-child  { border-radius: 0 12px 12px 0; margin-right: 0; }
+.cmp-actions button:active, .cmp-btn:active, .cmp-send:active { opacity: .6; }
 
 /* ─── PERSON AVATAR ────────────────────────────────────────────────
    DS "Initials" variant — identity tint, optional presence dot. */
@@ -1152,7 +1337,7 @@ body {
   background: var(--ios-menu-fill);
   -webkit-backdrop-filter: var(--ios-glass-blur);
   backdrop-filter: var(--ios-glass-blur);
-  box-shadow: var(--ios-glass-shadow);
+  box-shadow: var(--ios-glass-lift);
   display: flex; flex-direction: column; overflow: hidden;
   /* Closed = the trailing capsule's exact footprint (100 x 44, r 296)
      at its exact position, so opening reads as one shape reshaping
@@ -1237,7 +1422,7 @@ body {
   background: var(--ios-glass-fill);
   -webkit-backdrop-filter: var(--ios-glass-blur);
   backdrop-filter: var(--ios-glass-blur);
-  box-shadow: var(--ios-glass-shadow);
+  box-shadow: var(--ios-glass-lift);
   display: flex; align-items: center; padding: 0 6px;
 }
 .tab {
@@ -1307,6 +1492,31 @@ body {
              aria-label="Filter conversations" data-swiftui="Picker(.segmented)"></div>
         <div id="conv-list" role="list" data-swiftui="List"></div>
       </div>
+    </div>
+
+    <!-- SwiftUI: NavigationStack destination — a conversation.
+         Header 107, thread, composer 104; no tab bar. -->
+    <div class="toolbar" data-screen="conversation" data-swiftui="Toolbar">
+      <div class="glass-group">
+        <button class="glass-btn" id="cv-back" aria-label="Back to conversations"></button>
+      </div>
+      <button class="cv-title" id="cv-title-btn" aria-haspopup="menu">
+        <span id="cv-title">Conversation</span><span class="cv-chev"></span>
+      </button>
+      <div class="glass-group">
+        <button class="glass-btn" id="cv-call" aria-label="Start a video call"></button>
+      </div>
+    </div>
+    <div class="cv-scroll" data-screen="conversation" id="cv-scroll" data-swiftui="ScrollView">
+      <div id="cv-messages" role="log"></div>
+    </div>
+    <div class="composer" data-screen="conversation" data-swiftui="safeAreaInset(edge:.bottom)">
+      <div class="cmp-input">
+        <button class="cmp-btn" id="cmp-attach" aria-label="Add attachment"></button>
+        <span class="cmp-placeholder">Type a message</span>
+        <button class="cmp-send" id="cmp-send" aria-label="Send"></button>
+      </div>
+      <div class="cmp-actions" id="cmp-actions" role="group" aria-label="Message actions"></div>
     </div>
 
     <!-- SwiftUI: NavigationStack + Form — settings destination -->
@@ -1701,6 +1911,180 @@ body {
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
   }
 
+  /* ── Threads — the same content the desktop and Android builds use.
+     Copied verbatim from android.html so the three stay in step. */
+  var DAY_MS = 86400000;
+  var THREADS = {
+  // ── Channel · Security & Compliance ──
+  security: [
+    { divider:'day', day:2 },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'8:52 AM', type:'text', text:'The external audit wrapped up yesterday. Report is with me now.', reactions:[] },
+    { sender:'self', time:'9:04 AM', type:'text', text:'Anything blocking for the release?', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'9:06 AM', type:'text', text:'Nothing blocking. Two low-severity findings, both already fixed on main.', reactions:[] },
+    { divider:'time', time:'11:20 AM' },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'11:20 AM', type:'text', text:'Good news. I will fold the summary into the board update.', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'11:24 AM', type:'text', text:'The audit report is ready — sharing it in this channel shortly.', reactions:[] }
+  ],
+  // ── 1:1 · Riley Davies ──
+  rd: [
+    { divider:'day', day:1 },
+    { sender:'Riley Davies', color:'green', initials:'RD', time:'4:10 PM', type:'text', text:'I pushed the revised spec to the shared folder.', reactions:[] },
+    { sender:'Riley Davies', color:'green', initials:'RD', time:'4:11 PM', type:'text', text:'Can you take a look before Friday?', reactions:[] }
+  ],
+  // ── Group · Onsite Berlin ──
+  onsite: [
+    { divider:'day', day:4 },
+    { sender:'Kim Dawson', color:'amber', initials:'KD', time:'10:02 AM', type:'text', text:'Flights are confirmed for everyone joining from Zurich.', reactions:[] },
+    { sender:'self', time:'10:15 AM', type:'text', text:'Do we have a room for the workshop on day two?', reactions:[] },
+    { sender:'Josephine Pliego', color:'purple', initials:'JP', time:'10:22 AM', type:'text', text:'Yes, booked until 5pm. Whiteboards included.', reactions:[] },
+    { sender:'Josephine Pliego', color:'purple', initials:'JP', time:'10:23 AM', type:'text', text:'Hotel is booked as well — same place as last year.', reactions:[] }
+  ],
+  // ── Channel · Release Notes ──
+  release: [
+    { divider:'day', day:1 },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'7:30 AM', type:'text', text:'4.17 is out on all platforms.', reactions:[] },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'7:31 AM', type:'text', text:'Highlights: faster search, conversation folders, and the new backup flow.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'8:05 AM', type:'text', text:'Thanks — I will send this to the customer channel.', reactions:[] }
+  ],
+  // ── 1:1 · Ron Zhou ──
+  rz: [
+    { divider:'day', day:6 },
+    { sender:'self', time:'2:40 PM', type:'text', text:'Are you around for a quick call about the audit scope?', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'3:12 PM', type:'text', text:'Just got out of a meeting, calling you now.', reactions:[] }
+  ],
+
+  // ── Channel · Product & Engineering — long, multi-person, files + media ──
+  prodeng: [
+    { divider:'day', day:9 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'9:41 AM', type:'text', text:"Kicking off the Q3 planning thread here so everything stays in one place.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:43 AM', type:'text', text:"Good call. I'll drop the research summary once the last interviews wrap.", reactions:[] },
+    { sender:'self', time:'9:45 AM', type:'text', text:"Perfect — let's keep all the decisions in this channel.", reactions:[] },
+    { divider:'time', time:'2:14 PM' },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'2:14 PM', type:'file-with-text', text:'First pass at the revenue model — rough numbers for now:', filename:'Q3_Revenue_Model_v1.xlsx', filesize:'241 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:18 PM', type:'text', text:'Thanks Tom, will review tonight and send notes.', reactions:[] },
+    { divider:'day', day:3 },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'8:58 AM', type:'text', text:'Design system tokens are merged — colours, spacing and radius all landed.', reactions:[{emoji:'🎉', count:3, own:true}] },
+    { sender:'self', time:'9:00 AM', type:'text', text:'Nice — that unblocks the settings screens.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'text', text:'Research summary is in: 12 interviews, three clear themes.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'file-solo', filename:'Q3_Research_Summary.pdf', filesize:'820 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { divider:'time', time:'1:22 PM' },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'1:22 PM', type:'text', text:'Reviewed the model — the Q3 forecast reads conservative. Can we revisit the growth assumptions before the board deck?', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'1:25 PM', type:'text', text:"Fair. I'll bump the growth rate and resend v2.", reactions:[] },
+    { sender:'self', time:'1:26 PM', type:'text', text:'👍', reactions:[] },
+    { divider:'day', day:1 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:12 AM', type:'text', text:'Reminder: design review moved to 3pm today.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'10:15 AM', type:'media-grid', text:'Latest empty-state explorations:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'The middle one — it has personality without being noisy.', reactions:[{emoji:'👍', count:12, own:true},{emoji:'😀', count:3, own:true},{emoji:'❤️', count:2, own:false},{emoji:'⚠️', count:1, own:true},{emoji:'👋', count:5, own:false},{emoji:'🥷', count:1, own:false}] },
+    { divider:'time', time:'4:30 PM' },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'4:30 PM', type:'text', text:'Review done — notes in the doc. Two small changes and we are good to build.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'4:33 PM', type:'file-with-text', text:'Revenue model v2 with the updated assumptions:', filename:'Q3_Revenue_Model_v2.xlsx', filesize:'256 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'4:35 PM', type:'text', text:'Thanks all — much better.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Morning all — sprint review is at 2pm. Quick heads up before then.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Can everyone make sure their tickets are updated?', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:29 AM', type:'text', text:'Done on my side. Moved the two API tickets to review.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:30 AM', type:'file-with-text', text:'Here is the updated revenue model:', filename:'Q3_Revenue_Model_v4.xlsx', filesize:'284 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'10:31 AM', type:'text', text:"Thanks Tom. I'll fold these into the deck.", reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:32 AM', type:'image-with-text', text:'Also — found a great spot for the team offsite 🌴', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[{emoji:'😍', count:5, own:false},{emoji:'👍', count:3, own:true}] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'That looks amazing.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'Count me in.', reactions:[] },
+    { sender:'self', time:'10:34 AM', type:'text', text:'Booking it. Details to follow.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:36 AM', type:'video-solo', thumb:'images/VariantLandscape.png', duration:'2:14', filesize:'8.4 MB', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:37 AM', type:'audio', duration:'0:48', played:'0:21', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:38 AM', type:'text', text:'One more thing before the review: we still need a decision on the onboarding flow. The current design adds an extra interstitial step that is hurting conversion in the funnel test. I would suggest we drop it and go straight to the workspace. Thoughts?', reactions:[] },
+    { sender:'self', time:'10:39 AM', type:'text', text:"Agreed, let's drop it.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:39 AM', type:'text', text:'+1', reactions:[{emoji:'✅', count:4, own:true}] },
+  ],
+
+  // ── Channel · Marketing Team — medium, images ──
+  marketing: [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'text', text:'Campaign assets are ready for review.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'image-solo', image:'images/VariantPortrait.png', aspectRatio:'portrait', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'9:16 AM', type:'text', text:'Looking sharp. Can we get a square crop for Instagram?', reactions:[] },
+    { sender:'self', time:'9:17 AM', type:'text', text:'On it — square version coming up.', reactions:[] },
+    { sender:'self', time:'9:18 AM', type:'image-with-text', text:'Here is the square crop:', image:'images/VariantSquare.png', aspectRatio:'square', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:20 AM', type:'text', text:'Perfect, ship it.', reactions:[{emoji:'🎉', count:2, own:false}] },
+  ],
+
+  // ── Channel · Design System — medium-long, media grid + file ──
+  design: [
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Pushed the new chat bubble specs to Figma.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Own, 1:1, and group variants are all in there now.', reactions:[] },
+    { sender:'self', time:'11:03 AM', type:'text', text:'Saw them — the grouping states look great.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:05 AM', type:'media-grid', text:'Reference shots for the new empty states:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'11:06 AM', type:'text', text:"Love these. I'll wire them into the prototype.", reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:08 AM', type:'file-solo', filename:'Wire_DS_Tokens_v2.pdf', filesize:'1.1 MB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'11:09 AM', type:'text', text:'Thanks!', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:10 AM', type:'text', text:'Once the bubbles are in, we should do a quick QA pass across light and dark mode. I noticed a couple of contrast issues on the received bubbles in dark.', reactions:[] },
+    { sender:'self', time:'11:11 AM', type:'text', text:'Good catch — adding it to the list.', reactions:[] },
+  ],
+
+  // ── Channel · General — short ──
+  general: [
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:45 AM', type:'text', text:'Coffee machine on the 3rd floor is fixed ☕', reactions:[{emoji:'🙌', count:6, own:true}] },
+    { sender:'self', time:'8:46 AM', type:'text', text:'Hero.', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:46 AM', type:'text', text:'Anytime 😄', reactions:[] },
+  ],
+
+  // ── Group · Q3 Planning — medium, file ──
+  q3: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:20 PM', type:'file-with-text', text:'Sharing the Q3 planning doc — please add your items by Friday.', filename:'Q3_Planning_2026.docx', filesize:'92 KB', filetype:'DOC', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:22 PM', type:'text', text:'Added the design milestones.', reactions:[] },
+    { sender:'self', time:'2:25 PM', type:'text', text:"Engineering capacity is in. We're tight but doable.", reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:26 PM', type:'text', text:'Thanks both 🙏', reactions:[{emoji:'👍', count:2, own:false}] },
+  ],
+
+  // ── Group · Marketing Team — short ──
+  'marketing-grp': [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:40 PM', type:'text', text:'Quick one — are we still on for the launch call tomorrow?', reactions:[] },
+    { sender:'self', time:'4:41 PM', type:'text', text:'Yes, 10am.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:41 PM', type:'text', text:'Great, see you then.', reactions:[] },
+  ],
+
+  // ── 1:1 · Jaqueline Olaho — medium, file ──
+  jo: [
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:05 PM', type:'text', text:'Hey! Did you get a chance to look at the brief?', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:'Yes — mostly good. One section needs tightening.', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:"I'll send notes this afternoon.", reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:07 PM', type:'text', text:'Perfect, thank you 🙌', reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:10 PM', type:'file-with-text', text:'Here is the latest version btw:', filename:'Creative_Brief_v3.pdf', filesize:'540 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'1:12 PM', type:'text', text:'Got it.', reactions:[] },
+  ],
+
+  // ── 1:1 · Dor Lewis — short ──
+  dl: [
+    { divider:'day', day:2 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:05 AM', type:'text', text:'Hey — did you get a chance to look at the migration plan?', reactions:[] },
+    { sender:'self', time:'11:20 AM', type:'text', text:'Reading it now. The phased rollout makes sense.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:22 AM', type:'text', text:'Great. I was worried about the downtime window.', reactions:[] },
+    { divider:'time', time:'3:47 PM' },
+    { sender:'self', time:'3:47 PM', type:'text', text:'We can keep it under 10 minutes if we pre-warm the caches.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'3:49 PM', type:'text', text:"Perfect. I'll schedule it for Saturday night.", reactions:[{emoji:'👍', count:1, own:true}] },
+    { divider:'day', day:1 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'9:12 AM', type:'text', text:'Migration went through cleanly. Zero errors overnight.', reactions:[{emoji:'🎉', count:1, own:true}] },
+    { sender:'self', time:'9:15 AM', type:'text', text:'Amazing work. Thanks for driving it.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'5:30 PM', type:'text', text:'Are you joining the standup?', reactions:[] },
+    { sender:'self', time:'5:30 PM', type:'text', text:'2 min late, starting now.', reactions:[] },
+  ],
+
+  // ── 1:1 · Deniz Agha — medium, image ──
+  da: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:15 AM', type:'image-with-text', text:'Check out the venue for the workshop:', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:"Whoa, that's gorgeous.", reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'How many does it fit?', reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:17 AM', type:'text', text:'Up to 30. Plenty of room.', reactions:[] },
+    { sender:'self', time:'10:18 AM', type:'text', text:'Book it 🎉', reactions:[] },
+  ],
+
+  // ── 1:1 · Marcel Pierrot — short ──
+  mp: [
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:00 PM', type:'text', text:'Lunch?', reactions:[] },
+    { sender:'self', time:'12:01 PM', type:'text', text:'Give me 15.', reactions:[] },
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:01 PM', type:'text', text:'👍', reactions:[] },
+  ],
+};
+
   /* ── Settings — same three groups and ten entries as desktop and
      Android. Only Appearance opens a detail there, so only Appearance
      opens one here; the rest are drawn and simply do not route yet. */
@@ -1985,6 +2369,155 @@ body {
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSetMenu(); } });
   }
 
+  /* ── Conversation view ───────────────────────────────────────────
+     Renderers ported from the Android build so both platforms lay the
+     same data out the same way; only the chrome differs. */
+  function dayLabel(n) {
+    if (n === 0) { return 'Today'; }
+    if (n === 1) { return 'Yesterday'; }
+    var d = new Date(Date.now() - n * DAY_MS);
+    return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  /* Consecutive messages from one sender sharing a timestamp form
+     one run — same rule as desktop and the Figma spec. */
+  function groupMessages(msgs) {
+    var runs = [];
+    msgs.forEach(function (m) {
+      var last = runs[runs.length - 1];
+      if (last && last.sender === m.sender && last.time === m.time) { last.bubbles.push(m); }
+      else { runs.push({ sender: m.sender, time: m.time, bubbles: [m] }); }
+    });
+    return runs;
+  }
+
+  function mediaHtml(src) {
+    return '<span class="msg-media"><img src="' + src + '" alt="" '
+         + 'onerror="this.parentNode.outerHTML=\'<span class=&quot;msg-media-fallback&quot;>Image</span>\'"></span>';
+  }
+
+  function bodyHtml(m) {
+    var out = '';
+    if (m.text) { out += '<span class="msg-text">' + m.text + '</span>'; }
+    if (m.type === 'image' || m.type === 'image-solo'
+        || m.type === 'image-with-text' || m.type === 'video-solo') {
+      if (m.src) { out += mediaHtml(m.src); }
+    }
+    if (m.type === 'media-grid' && m.media) {
+      out += '<span class="msg-grid">' + m.media.map(function (x) { return mediaHtml(x.src); }).join('') + '</span>';
+    }
+    if (m.type === 'file-solo' || m.type === 'file-with-text') {
+      out += '<span class="msg-file">' + ic('drive', 20)
+           + '<span class="msg-file-meta"><span class="msg-file-name">' + (m.filename || 'File') + '</span>'
+           + '<span class="msg-file-sub">' + [m.filetype, m.filesize].filter(Boolean).join(' \u00b7 ') + '</span></span></span>';
+    }
+    if (m.type === 'audio') {
+      out += '<span class="msg-audio">' + ic('meetings', 16)
+           + '<span class="msg-audio-wave"></span>'
+           + '<span class="msg-file-sub">' + (m.duration || '0:12') + '</span></span>';
+    }
+    return out;
+  }
+
+  function reactionsHtml(m) {
+    if (!m.reactions || !m.reactions.length) { return ''; }
+    return '<div class="msg-reactions">' + m.reactions.map(function (r) {
+      return '<span class="msg-reaction' + (r.own ? ' own-reaction' : '') + '">'
+           + '<span class="emoji">' + r.emoji + '</span>'
+           + '<span class="count">' + r.count + '</span></span>';
+    }).join('') + '</div>';
+  }
+
+  function renderThread(key, isGroupConv) {
+    var host = document.getElementById('cv-messages');
+    var msgs = THREADS[key];
+    if (!msgs || !msgs.length) {
+      host.innerHTML = '<div class="msg-empty">No messages yet.</div>';
+      return;
+    }
+    var html = '', buffer = [];
+
+    function flush() {
+      if (!buffer.length) { return; }
+      groupMessages(buffer).forEach(function (run) {
+        var own = run.sender === 'self';
+        var showAvatar = isGroupConv && !own;
+        run.bubbles.forEach(function (m, i) {
+          var first = i === 0, last = i === run.bubbles.length - 1;
+          var cls = 'msg-row ' + (own ? 'own' : 'other')
+                  + (showAvatar ? ' has-avatar' : '')
+                  + (first ? ' first' : '') + (last ? ' last' : '');
+          /* Spec 60:2122: the avatar sits on the bottom edge of the
+             run's *last* bubble, not its first. */
+          var gutter = showAvatar
+            ? '<span class="msg-avatar-gutter">'
+              + (last ? personAvatar({ initials: m.initials, color: m.color }) : '') + '</span>'
+            : '';
+          var sender = (showAvatar && first)
+            ? '<span class="msg-sender" style="color:var(--wire-identity-' + (m.color || 'blue') + ')">' + m.sender
+              + (m.external ? '<span class="msg-external">External</span>' : '') + '</span>'
+            : '';
+          var status = last
+            ? '<span class="msg-status">' + run.time
+              + (own ? ic('delivered', 13) : '') + '</span>'
+            : '';
+          html += '<div class="' + cls + '">' + gutter
+                + '<div class="msg-stack">'
+                +   '<div class="bubble ' + (own ? 'own' : 'other') + '">'
+                +     sender + bodyHtml(m) + status
+                +   '</div>'
+                +   reactionsHtml(m)
+                + '</div></div>';
+        });
+      });
+      buffer = [];
+    }
+
+    msgs.forEach(function (m) {
+      if (m.divider) {
+        flush();
+        html += '<div class="msg-divider"><span class="rule"></span><span>'
+             + (m.divider === 'day' ? dayLabel(m.day) : m.time)
+             + '</span><span class="rule"></span></div>';
+      } else {
+        buffer.push(m);
+      }
+    });
+    flush();
+    host.innerHTML = html;
+  }
+
+  var COMPOSER_ACTIONS = ['ping', 'drive', 'meetings', 'channel', 'mention', 'check'];
+
+  function openConversation(convKey) {
+    var c = CONVERSATIONS.filter(function (x) { return x.convKey === convKey; })[0];
+    if (!c) { return; }
+    document.getElementById('cv-title').textContent = c.name;
+    renderThread(convKey, c.kind !== 'person');
+    document.getElementById('page').setAttribute('data-dest', 'conversation');
+    var sc = document.getElementById('cv-scroll');
+    sc.scrollTop = sc.scrollHeight;          /* newest message in view */
+  }
+
+  function bindConversation() {
+    document.getElementById('cv-back').innerHTML = ic('back', 20);
+    document.getElementById('cv-call').innerHTML = ic('videocall', 18);
+    document.querySelector('.cv-chev').innerHTML = ic('dropdown', 14);
+    document.getElementById('cmp-attach').innerHTML = ic('compose', 16);
+    document.getElementById('cmp-send').innerHTML   = ic('send', 16);
+    document.getElementById('cmp-actions').innerHTML = COMPOSER_ACTIONS.map(function (a) {
+      return '<button aria-label="' + a + '">' + ic(a, 16) + '</button>';
+    }).join('');
+
+    document.getElementById('conv-list').addEventListener('click', function (e) {
+      var row = e.target.closest('.conv-row'); if (!row) { return; }
+      openConversation(row.dataset.conv);
+    });
+    document.getElementById('cv-back').addEventListener('click', function () {
+      document.getElementById('page').setAttribute('data-dest', 'conversations');
+    });
+  }
+
   /* ── Tabs — same destinations and glyphs as the Android nav bar ──── */
   var TABS = [
     { id: 'conversations', label: 'Conversations', selected: true },
@@ -2007,6 +2540,7 @@ body {
         el.innerHTML = ic(el.dataset.tab, 24, el === b);
       });
       var dest = b.dataset.tab === 'settings' ? 'settings' : 'conversations';
+      /* Tabs always exit a conversation. */
       document.getElementById('page').setAttribute('data-dest', dest);
       closeSetMenu();
       if (dest === 'settings') { setStack = ['root']; renderSettings(); }
@@ -2020,7 +2554,7 @@ body {
   }
 
   renderChrome(); renderFilters(); renderMenu(); bindMenu(); renderList(); renderTabs();
-  renderSettings(); bindSettings(); applyChrome();
+  renderSettings(); bindSettings(); bindConversation(); applyChrome();
 })();
 </script>
 </body>
