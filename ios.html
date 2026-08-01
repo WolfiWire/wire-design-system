@@ -185,7 +185,6 @@ body {
 .list-scroll {
   flex: 1; min-height: 0; display: flex; flex-direction: column;
   overflow-y: auto; overflow-x: hidden;
-  border-radius: 16px 16px 0 0;
   scrollbar-width: none;
 }
 .list-scroll::-webkit-scrollbar { display: none; }
@@ -230,11 +229,12 @@ body {
 
 /* Avatars ------------------------------------------------------- */
 .av-wrap { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
-.av-user {                                    /* DS "Initials" variant */
+.tb-av {                      /* own avatar — carries the selected accent */
   width: 44px; height: 44px; border-radius: 100px;
   border: 1.286px solid var(--wire-border-base-primary);
   display: flex; align-items: center; justify-content: center;
-  color: var(--wire-content-inverted-on-primary);
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
   font-size: 16px; font-weight: 600; letter-spacing: .2px;
   background-size: cover; background-position: center;
 }
@@ -663,7 +663,7 @@ body {
     <!-- SwiftUI: .toolbar — leading avatar, principal title, trailing glass group -->
     <div class="toolbar" data-screen="conversations" data-swiftui="Toolbar">
       <div class="tb-avatar" data-swiftui="ToolbarItem(.topBarLeading)">
-        <div class="av av-user" id="tb-av"></div>
+        <div class="av tb-av" id="tb-av"></div>
         <span class="tb-presence" title="Available"></span>
       </div>
       <div class="tb-title" data-swiftui="ToolbarItem(.principal)">Conversations</div>
@@ -1310,9 +1310,7 @@ body {
   function renderChrome() {
     document.getElementById('tb-more').innerHTML = ic('overflow', 20);
     document.getElementById('tb-plus').innerHTML = ic('compose', 20);
-    var av = document.getElementById('tb-av');
-    av.style.background = 'var(--wire-identity-petrol)';
-    av.textContent = 'KD';
+    document.getElementById('tb-av').textContent = 'KD';
   }
 
   renderChrome(); renderFilters(); renderMenu(); bindMenu(); renderList(); renderTabs();

@@ -115,10 +115,7 @@ body {
 .app-surface {
   background: var(--wire-bg-base-primary);
   min-height: calc(100% - 48px);   /* search bar 40 + 8 gap below it */
-  /* M3 corner.large (16dp) — same step as the FAB; the menu and search
-     bar sit one step down at corner.medium (12dp). overflow:hidden keeps
-     the filter bar and first row from squaring the corners off. */
-  border-radius: 16px 16px 0 0;
+  /* Square top edge — the surface meets the title bar flush. */
   overflow: hidden;
 }
 .conv-list { list-style: none; margin: 0; padding: 0 0 60px; }
@@ -1474,7 +1471,17 @@ html.hide-list-search .app-surface { min-height: 100%; }
     { activity: 40,  kind: 'person', avatar: { initials: 'DA', color: 'amber' },
       convKey: 'da', name: 'Deniz Agha', sub: 'Sent the files over' },
     { activity: 30,  kind: 'person', avatar: { initials: 'MP', color: 'red', presence: 'busy' },
-      convKey: 'mp', name: 'Marcel Pierrot', sub: 'Hello, how are you?' }
+      convKey: 'mp', name: 'Marcel Pierrot', sub: 'Hello, how are you?' },
+    { activity: 85,  kind: 'channel', color: 'petrol',
+      convKey: 'security', name: 'Security & Compliance', sub: 'Ron Zhou: the audit report is ready', state: 'mention', badge: 'mention' },
+    { activity: 75,  kind: 'person', avatar: { initials: 'RD', color: 'green', presence: 'available' },
+      convKey: 'rd', name: 'Riley Davies', sub: 'Can you take a look before Friday?', state: 'unread', badge: 'unread', count: 2 },
+    { activity: 65,  kind: 'group', variation: 9,
+      convKey: 'onsite', name: 'Onsite Berlin', sub: 'Josephine Pliego: hotel is booked', state: 'muted', badge: 'muted' },
+    { activity: 45,  kind: 'channel', color: 'gray', favorite: true,
+      convKey: 'release', name: 'Release Notes', sub: 'Anthony Powel: 4.17 is out' },
+    { activity: 20,  kind: 'person', avatar: { initials: 'RZ', color: 'petrol' },
+      convKey: 'rz', name: 'Ron Zhou', sub: 'Missed call', state: 'missed-call', badge: 'missedcall' }
   ];
 
   function avatarFor(c) {
@@ -1675,6 +1682,44 @@ html.hide-list-search .app-surface { min-height: 100%; }
      the same conversations, senders, timestamps and message types.
      q3 and the Marketing group have no thread on desktop either. */
   var THREADS = {
+  // ── Channel · Security & Compliance ──
+  security: [
+    { divider:'day', day:2 },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'8:52 AM', type:'text', text:'The external audit wrapped up yesterday. Report is with me now.', reactions:[] },
+    { sender:'self', time:'9:04 AM', type:'text', text:'Anything blocking for the release?', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'9:06 AM', type:'text', text:'Nothing blocking. Two low-severity findings, both already fixed on main.', reactions:[] },
+    { divider:'time', time:'11:20 AM' },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'11:20 AM', type:'text', text:'Good news. I will fold the summary into the board update.', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'11:24 AM', type:'text', text:'The audit report is ready — sharing it in this channel shortly.', reactions:[] }
+  ],
+  // ── 1:1 · Riley Davies ──
+  rd: [
+    { divider:'day', day:1 },
+    { sender:'Riley Davies', color:'green', initials:'RD', time:'4:10 PM', type:'text', text:'I pushed the revised spec to the shared folder.', reactions:[] },
+    { sender:'Riley Davies', color:'green', initials:'RD', time:'4:11 PM', type:'text', text:'Can you take a look before Friday?', reactions:[] }
+  ],
+  // ── Group · Onsite Berlin ──
+  onsite: [
+    { divider:'day', day:4 },
+    { sender:'Kim Dawson', color:'amber', initials:'KD', time:'10:02 AM', type:'text', text:'Flights are confirmed for everyone joining from Zurich.', reactions:[] },
+    { sender:'self', time:'10:15 AM', type:'text', text:'Do we have a room for the workshop on day two?', reactions:[] },
+    { sender:'Josephine Pliego', color:'purple', initials:'JP', time:'10:22 AM', type:'text', text:'Yes, booked until 5pm. Whiteboards included.', reactions:[] },
+    { sender:'Josephine Pliego', color:'purple', initials:'JP', time:'10:23 AM', type:'text', text:'Hotel is booked as well — same place as last year.', reactions:[] }
+  ],
+  // ── Channel · Release Notes ──
+  release: [
+    { divider:'day', day:1 },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'7:30 AM', type:'text', text:'4.17 is out on all platforms.', reactions:[] },
+    { sender:'Anthony Powel', color:'blue', initials:'AP', time:'7:31 AM', type:'text', text:'Highlights: faster search, conversation folders, and the new backup flow.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'8:05 AM', type:'text', text:'Thanks — I will send this to the customer channel.', reactions:[] }
+  ],
+  // ── 1:1 · Ron Zhou ──
+  rz: [
+    { divider:'day', day:6 },
+    { sender:'self', time:'2:40 PM', type:'text', text:'Are you around for a quick call about the audit scope?', reactions:[] },
+    { sender:'Ron Zhou', color:'petrol', initials:'RZ', time:'3:12 PM', type:'text', text:'Just got out of a meeting, calling you now.', reactions:[] }
+  ],
+
   // ── Channel · Product & Engineering — long, multi-person, files + media ──
   prodeng: [
     { divider:'day', day:9 },
