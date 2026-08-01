@@ -1,0 +1,618 @@
+/* ═══════════════════════════════════════════════════════════════════
+   WIRE DESIGN SYSTEM 2.0 — SHARED TOKEN LAYER
+   Source of truth: Wire Design System Figma (grkG8ylzSzIM0C1Nnaxn3l)
+   Consumed by: prototype.html (desktop), android.html, ios.html
+   Contract:  <html data-theme="light|dark" data-accent="blue|petrol|purple|amber|green|red|ink">
+              wallpaper element: id="page" class="bg-mood-<mood>"
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   WIRE DESIGN SYSTEM — CSS TOKENS
+   Source: Wire Design System Figma (grkG8ylzSzIM0C1Nnaxn3l)
+   Auto-resolved from Figma variable collections.
+   Token naming: Figma path → CSS var (slashes → hyphens, lowercase)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── IDENTITY TINTS — fixed avatar colors (not accent-dependent) ── */
+  --wire-identity-blue:   #0667c8;  /* Light/Accent color/500 Blue   */
+  --wire-identity-green:  #1d7833;  /* Light/Accent color/500 Green  */
+  --wire-identity-amber:  #a25915;  /* Light/Accent color/500 Amber  */
+  --wire-identity-petrol: #01718e;  /* Light/Accent color/500 Petrol */
+  --wire-identity-purple: #8944ab;  /* Light/Accent color/500 Purple */
+  --wire-identity-red:    #c20013;  /* Light/Accent color/500 Red    */
+
+  /* Background mood — companion hues per accent (resolve through identity tokens, so they stay theme-correct) */
+  --bg-hue: var(--wire-identity-blue);
+  --bg-h2:  var(--wire-identity-petrol);
+  --bg-h3:  var(--wire-identity-purple);
+  --bg-h4:  var(--wire-identity-green);
+  /* Fade-to base for the wallpaper: a soft, faintly accent-tinted off-white in light
+     (never pure white); overridden to the deep base in dark mode below. */
+  --bg-base: color-mix(in srgb, var(--bg-hue) 7%, var(--wire-bg-base-tertiary));
+
+  /* ── CHANNEL AVATAR FILLS ── */
+  --wire-channel-blue-bg:     #e7f0fa; --wire-channel-blue-border:   #cde1f4;
+  --wire-channel-green-bg:    #e8f1ea; --wire-channel-green-border:  #d2e4d6;
+  --wire-channel-amber-bg:    #f6eee8; --wire-channel-amber-border:  #ecded0;
+  --wire-channel-petrol-bg:   #e5f1f3; --wire-channel-petrol-border: #cce2e7;
+  --wire-channel-purple-bg:   #f4edf7; --wire-channel-purple-border: #e7daee;
+  --wire-channel-red-bg:      #f9e6e8; --wire-channel-red-border:    #f3ccd0;
+  /* ── SPACING (platform-independent) ─────────────────────────── */
+  --spacing-0:  0px;
+  --spacing-1:  4px;
+  --spacing-2:  8px;
+  --spacing-3:  12px;
+  --spacing-4:  16px;
+  --spacing-5:  20px;
+  --spacing-6:  24px;
+  --spacing-8:  32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+
+  /* ── RADIUS ──────────────────────────────────────────────────── */
+  --radius-none: 0px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-base: 12px;
+  --radius-xl:   17px;
+  --radius-2xl:  22px;
+  --radius-full: 9999px;
+
+  /* ── TYPOGRAPHY / INTER (WDS additions) ─────────────────────── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-weight-light:    300;
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  --font-size-xs:   12px;
+  --font-size-sm:   13px;
+  --font-size-base: 14px;
+  --font-size-md:   16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   20px;
+  --line-height-xs:   16px;
+  --line-height-sm:   18px;
+  --line-height-base: 20px;
+  --line-height-md:   24px;
+
+  /* ── THEME TOKENS — LIGHT MODE (default) ─────────────────────
+     CSS var naming: --wire-{group}-{subgroup}-{variant}
+     Maps 1:1 to Figma Theme collection token names.
+     ───────────────────────────────────────────────────────────── */
+
+  /* Background / Base */
+  --wire-bg-base-primary:           #ffffff;
+  --wire-bg-base-primary-focus:     #fafafa;
+  --wire-bg-base-secondary:         #fafafa;
+  --wire-bg-base-secondary-focus:   #e5e8ea;
+  --wire-bg-base-tertiary:          #edeff0;
+  --wire-bg-base-tertiary-focus:    #dce0e3;
+
+  /* Background / Accent Color — Blue (default, overridden by data-accent) */
+  --wire-bg-accent-primary:         #0667c8;
+  --wire-bg-accent-primary-focus:   #043e78;
+  --wire-bg-accent-secondary:       #e7f0fa;
+  --wire-bg-accent-secondary-focus: #cde1f4;
+
+  /* Background / Danger */
+  --wire-bg-danger-primary:         #c20013;
+  --wire-bg-danger-primary-focus:   #74000b;
+  --wire-bg-danger-secondary:       #f9e6e8;
+  --wire-bg-danger-secondary-focus: #f3ccd0;
+
+  /* Background / Warning */
+  --wire-bg-warning-primary:        #a25915;
+  --wire-bg-warning-primary-focus:  #61350d;
+  --wire-bg-warning-secondary:      #f6eee8;
+
+  /* Background / Positive */
+  --wire-bg-positive-primary:       #1d7833;
+  --wire-bg-positive-primary-focus: #11481f;
+  --wire-bg-positive-secondary:     #e8f1ea;
+
+  /* Background / Neutral */
+  --wire-bg-neutral-primary:        #dce0e3;
+  --wire-bg-neutral-secondary:      #ffffff;
+
+  /* Background / Disabled */
+  --wire-bg-disabled-primary:       #cbced1;
+  --wire-bg-disabled-secondary:     #edeff0;
+
+  /* Background / Inverted */
+  --wire-bg-inverted-primary:       #17181a;
+  --wire-bg-inverted-primary-focus: #54585f;
+  --wire-bg-inverted-secondary:     #17181a;
+
+  /* Background / Backdrop */
+  --wire-bg-backdrop:               rgba(0,0,0,0.55);
+
+  /* Background / Sheet */
+  --wire-bg-sheet-primary:          #edeff0;
+  --wire-bg-sheet-secondary:        #ffffff;
+
+  /* Background / Bubbles */
+  --wire-bg-bubbles-own-primary:        #0667c8;
+  --wire-bg-bubbles-own-primary-focus:  #043e78;
+  --wire-bg-bubbles-own-secondary:      #0552a0;
+  --wire-bg-bubbles-others-primary:         #edeff0;  /* Gray/020 */
+  --wire-bg-bubbles-others-primary-focus:   #dce0e3;  /* Gray/040 */
+  --wire-bg-bubbles-others-secondary:       #ffffff;  /* White/100 */
+  --wire-bg-bubbles-others-secondary-focus: #fafafa;  /* Gray/010 */
+
+  /* Content / Base */
+  --wire-content-base-primary:      #000000;
+  --wire-content-base-secondary:    #676b71;
+
+  /* Content / Accent Color */
+  --wire-content-accent-primary:    #0667c8;
+  --wire-content-accent-on-primary: #ffffff;
+  --wire-content-accent-on-secondary: #0667c8;
+
+  /* Content / Danger */
+  --wire-content-danger-primary:    #c20013;
+  --wire-content-danger-on-primary: #ffffff;
+  --wire-content-danger-on-secondary: #c20013;
+
+  /* Content / Warning */
+  --wire-content-warning-primary:   #a25915;
+  --wire-content-warning-on-primary: #ffffff;
+
+  /* Content / Positive */
+  --wire-content-positive-primary:  #1d7833;
+  --wire-content-positive-on-primary: #ffffff;
+
+  /* Content / Neutral */
+  --wire-content-neutral-on-primary:   #17181a;
+  --wire-content-neutral-on-secondary: #17181a;
+
+  /* Content / Disabled */
+  --wire-content-disabled-primary:    #676b71;
+  --wire-content-disabled-on-primary: #54585f;
+
+  /* Content / Inverted */
+  --wire-content-inverted-on-primary: #ffffff;
+
+  /* Content / Bubbles */
+  --wire-content-bubbles-own-primary:     #ffffff;
+  --wire-content-bubbles-own-on-primary:  #cde1f4;
+  --wire-content-bubbles-own-on-secondary:#9bc2e9;
+
+  /* Border / Base */
+  --wire-border-base-primary:         #dce0e3;
+  --wire-border-base-secondary:       #ffffff;
+  --wire-border-base-focus:           #6aa4de;
+
+  /* Border / Accent Color */
+  --wire-border-accent-primary:       #0667c8;
+  --wire-border-accent-secondary:     #cde1f4;
+  --wire-border-accent-focus:         #6aa4de;
+
+  /* Border / Danger */
+  --wire-border-danger-primary:       #c20013;
+  --wire-border-danger-secondary:     #f3ccd0;
+  --wire-border-danger-focus:         #da6671;
+
+  /* Border / Warning */
+  --wire-border-warning-primary:      #a25915;
+
+  /* Border / Positive */
+  --wire-border-positive-primary:     #1d7833;
+
+  /* Border / Neutral */
+  --wire-border-neutral-primary:      #676b71;
+  --wire-border-neutral-secondary:    #dce0e3;
+
+  /* Border / Disabled */
+  --wire-border-disabled-primary:     #dce0e3;
+
+  /* Border / Inverted */
+  --wire-border-inverted-primary:     #ffffff;
+
+  /* ── ACCENT COLOR RAMPS — Blue (default) ────────────────────── */
+  --wire-accent-050: #e7f0fa;
+  --wire-accent-100: #cde1f4;
+  --wire-accent-200: #9bc2e9;
+  --wire-accent-300: #6aa4de;
+  --wire-accent-400: #3885d3;
+  --wire-accent-500: #0667c8;
+  --wire-accent-600: #0552a0;
+  --wire-accent-700: #043e78;
+  --wire-accent-800: #022950;
+  --wire-accent-900: #021f3c;
+
+  /* Plain Colors — imported from Wire Design System (Theme collection) · light */
+  --wire-plain-purple-primary:#8944ab; --wire-plain-purple-primary-focus:#6e3689; --wire-plain-purple-secondary:#f4edf7; --wire-plain-purple-secondary-focus:#e7daee;
+  --wire-plain-blue-primary:#0667c8;   --wire-plain-blue-primary-focus:#0552a0;   --wire-plain-blue-secondary:#e7f0fa;   --wire-plain-blue-secondary-focus:#cde1f4;
+  --wire-plain-amber-primary:#a25915;  --wire-plain-amber-primary-focus:#824711;  --wire-plain-amber-secondary:#f6eee8;  --wire-plain-amber-secondary-focus:#ecded0;
+  --wire-plain-green-primary:#1d7833;  --wire-plain-green-primary-focus:#176029;  --wire-plain-green-secondary:#e8f1ea;  --wire-plain-green-secondary-focus:#d2e4d6;
+  --wire-plain-red-primary:#c20013;    --wire-plain-red-primary-focus:#9b000f;    --wire-plain-red-secondary:#f9e6e8;    --wire-plain-red-secondary-focus:#f3ccd0;
+  --wire-plain-petrol-primary:#01718e; --wire-plain-petrol-primary-focus:#015a6e; --wire-plain-petrol-secondary:#e5f1f3; --wire-plain-petrol-secondary-focus:#cce2e7;
+  --wire-plain-gray-primary:#54585f;   --wire-plain-gray-primary-focus:#34373d;   --wire-plain-gray-secondary:#e5e8ea;   --wire-plain-gray-secondary-focus:#dce0e3;
+}
+
+/* ── DARK MODE ───────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --wire-bg-base-primary:           #0e0f11;
+  --wire-bg-base-primary-focus:     #26272c;
+  --wire-bg-base-secondary:         #17181a;
+  --wire-bg-base-secondary-focus:   #34373d;
+  --wire-bg-base-tertiary:          #26272c;
+  --wire-bg-base-tertiary-focus:    #34373d;
+  --wire-bg-accent-primary:         #54a6ff;
+  --wire-bg-accent-primary-focus:   #98caff;
+  --wire-bg-accent-secondary:       #224266;
+  --wire-bg-accent-secondary-focus: #326499;
+  --wire-bg-danger-primary:         #ff7770;
+  --wire-bg-danger-primary-focus:   #ffada9;
+  --wire-bg-danger-secondary:       #66302d;
+  --wire-bg-danger-secondary-focus: #994743;
+  --wire-bg-warning-primary:        #ffd426;
+  --wire-bg-warning-primary-focus:  #ffe57d;
+  --wire-bg-warning-secondary:      #66550f;
+  --wire-bg-positive-primary:       #30db5b;
+  --wire-bg-positive-primary-focus: #83e99d;
+  --wire-bg-positive-secondary:     #135824;
+  --wire-bg-neutral-primary:        #54585f;
+  --wire-bg-neutral-secondary:      #26272c;
+  --wire-bg-disabled-primary:       #54585f;
+  --wire-bg-disabled-secondary:     #26272c;
+  --wire-bg-inverted-primary:       #ffffff;
+  --wire-bg-inverted-primary-focus: #edeff0;
+  --wire-bg-inverted-secondary:     #54585f;
+  --wire-bg-sheet-primary:          #17181a;
+  --wire-bg-sheet-secondary:        #26272c;
+  --wire-bg-bubbles-own-primary:        #224266;
+  --wire-bg-bubbles-own-primary-focus:  #4385cc;
+  --wire-bg-bubbles-own-secondary:      #19324d;
+  --wire-bg-bubbles-others-primary:         #34373d;  /* Gray/090 */
+  --wire-bg-bubbles-others-primary-focus:   #54585f;  /* Gray/080 */
+  --wire-bg-bubbles-others-secondary:       #17181a;  /* Gray/100 */
+  --wire-bg-bubbles-others-secondary-focus: #34373d;  /* Gray/090 */
+  --wire-content-base-primary:      #ffffff;
+  --wire-content-base-secondary:    #9fa1a7;
+  --wire-content-accent-primary:    #54a6ff;
+  --wire-content-accent-on-primary: #000000;
+  --wire-content-accent-on-secondary: #98caff;
+  --wire-content-danger-primary:    #ff7770;
+  --wire-content-danger-on-primary: #000000;
+  --wire-content-danger-on-secondary: #ffada9;
+  --wire-content-warning-primary:   #ffd426;
+  --wire-content-warning-on-primary: #000000;
+  --wire-content-positive-primary:  #30db5b;
+  --wire-content-positive-on-primary: #000000;
+  --wire-content-neutral-on-primary:   #ffffff;
+  --wire-content-neutral-on-secondary: #ffffff;
+  --wire-content-disabled-primary:    #9fa1a7;
+  --wire-content-disabled-on-primary: #cbced1;
+  --wire-content-inverted-on-primary: #000000;
+  --wire-content-bubbles-own-primary:     #ffffff;
+  --wire-content-bubbles-own-on-primary:  #76b8ff;
+  --wire-content-bubbles-own-on-secondary:#76b8ff;
+  --wire-border-base-primary:         #34373d;
+  --wire-border-base-secondary:       #34373d;
+  --wire-border-base-focus:           #bbdbff;
+  --wire-border-accent-primary:       #54a6ff;
+  --wire-border-accent-secondary:     #224266;
+  --wire-border-accent-focus:         #bbdbff;
+  --wire-border-danger-primary:       #ff7770;
+  --wire-border-danger-secondary:     #66302d;
+  --wire-border-danger-focus:         #e799a1;
+  --wire-border-warning-primary:      #ffd426;
+  --wire-border-positive-primary:     #30db5b;
+  --wire-border-neutral-primary:      #676b71;
+  --wire-border-neutral-secondary:    #34373d;
+  --wire-border-disabled-primary:     #34373d;
+  --wire-border-inverted-primary:     #17181a;
+  --wire-accent-050: #eef7ff;
+  --wire-accent-100: #ddedff;
+  --wire-accent-200: #bbdbff;
+  --wire-accent-300: #98caff;
+  --wire-accent-400: #76b8ff;
+  --wire-accent-500: #54a6ff;
+  --wire-accent-600: #4385cc;
+  --wire-accent-700: #326499;
+  --wire-accent-800: #224266;
+  --wire-accent-900: #19324d;
+
+  /* Plain Colors — imported from Wire Design System (Theme collection) · dark */
+  --wire-plain-purple-primary:#da8fff; --wire-plain-purple-primary-focus:#ae72cc; --wire-plain-purple-secondary:#573966; --wire-plain-purple-secondary-focus:#412b4d;
+  --wire-plain-blue-primary:#54a6ff;   --wire-plain-blue-primary-focus:#4385cc;   --wire-plain-blue-secondary:#224266;   --wire-plain-blue-secondary-focus:#19324d;
+  --wire-plain-amber-primary:#ffd426;  --wire-plain-amber-primary-focus:#ccaa1e;  --wire-plain-amber-secondary:#66550f;  --wire-plain-amber-secondary-focus:#4d400b;
+  --wire-plain-green-primary:#30db5b;  --wire-plain-green-primary-focus:#26af49;  --wire-plain-green-secondary:#135824;  --wire-plain-green-secondary-focus:#0e421b;
+  --wire-plain-red-primary:#ff7770;    --wire-plain-red-primary-focus:#cc5f5a;    --wire-plain-red-secondary:#66302d;    --wire-plain-red-secondary-focus:#4d2422;
+  --wire-plain-petrol-primary:#5de6ff; --wire-plain-petrol-primary-focus:#4ab8cc; --wire-plain-petrol-secondary:#255c66; --wire-plain-petrol-secondary-focus:#1c454d;
+  --wire-plain-gray-primary:#cbced1;   --wire-plain-gray-primary-focus:#9fa1a7;   --wire-plain-gray-secondary:#54585f;   --wire-plain-gray-secondary-focus:#34373d;
+
+  /* Identity / accent hues — dark mode (Color Primitives · Dark/{hue}/500) */
+  --wire-identity-blue:   #54a6ff;
+  --wire-identity-green:  #30db5b;
+  --wire-identity-amber:  #ffd426;
+  --wire-identity-petrol: #5de6ff;
+  --wire-identity-purple: #da8fff;
+  --wire-identity-red:    #ff7770;
+  --bg-base: #000000; /* dark canvas — sits below base-primary surfaces so cards/windows read as lighter panels */
+
+  /* Channel icon tints — dark mode (Color Primitives · Dark/{hue}/700) */
+  --wire-channel-blue-bg:   #326499; --wire-channel-blue-border:   #326499;
+  --wire-channel-green-bg:  #1d8337; --wire-channel-green-border:  #1d8337;
+  --wire-channel-amber-bg:  #997f17; --wire-channel-amber-border:  #997f17;
+  --wire-channel-petrol-bg: #388a99; --wire-channel-petrol-border: #388a99;
+  --wire-channel-purple-bg: #835699; --wire-channel-purple-border: #835699;
+  --wire-channel-red-bg:    #994743; --wire-channel-red-border:    #994743;
+}
+
+/* ── ACCENT COLOR OVERRIDES — Petrol ────────────────────────────── */
+[data-accent="petrol"] {
+  --wire-bg-accent-primary:           #01718e;
+  --wire-bg-accent-primary-focus:     #014352;
+  --wire-bg-accent-secondary:         #e5f1f3;
+  --wire-bg-accent-secondary-focus:   #cce2e7;
+  --wire-content-accent-primary:      #01718e;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #01718e;
+  --wire-border-accent-primary:       #01718e;
+  --wire-border-accent-secondary:     #cce2e7;
+  --wire-border-accent-focus:         #67a9b8;
+  --wire-accent-050: #e5f1f3; --wire-accent-100: #cce2e7;
+  --wire-accent-300: #67a9b8; --wire-accent-500: #01718e;
+  --wire-accent-600: #015a6e; --wire-accent-700: #014352;
+  --bg-hue: var(--wire-identity-petrol); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-purple);
+  --wire-bg-bubbles-own-primary:#01718e; --wire-bg-bubbles-own-primary-focus:#014352; --wire-bg-bubbles-own-secondary:#015a6e; --wire-content-bubbles-own-on-primary:#cce2e7; --wire-content-bubbles-own-on-secondary:#99c6d0;
+}
+[data-accent="purple"] {
+  --wire-bg-accent-primary:           #8944ab;
+  --wire-bg-accent-primary-focus:     #522967;
+  --wire-bg-accent-secondary:         #f4edf7;
+  --wire-bg-accent-secondary-focus:   #e7daee;
+  --wire-content-accent-primary:      #8944ab;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #8944ab;
+  --wire-border-accent-primary:       #8944ab;
+  --wire-border-accent-secondary:     #e7daee;
+  --wire-border-accent-focus:         #b88fcd;
+  --wire-accent-050: #f4edf7; --wire-accent-100: #e7daee;
+  --wire-accent-300: #b88fcd; --wire-accent-500: #8944ab;
+  --wire-accent-600: #6e3689; --wire-accent-700: #522967;
+  --bg-hue: var(--wire-identity-purple); --bg-h2: var(--wire-identity-blue); --bg-h3: var(--wire-identity-red); --bg-h4: var(--wire-identity-petrol);
+  --wire-bg-bubbles-own-primary:#8944ab; --wire-bg-bubbles-own-primary-focus:#522967; --wire-bg-bubbles-own-secondary:#6e3689; --wire-content-bubbles-own-on-primary:#e7daee; --wire-content-bubbles-own-on-secondary:#d0b4dd;
+}
+[data-accent="amber"] {
+  --wire-bg-accent-primary:           #a25915;
+  --wire-bg-accent-primary-focus:     #61350d;
+  --wire-bg-accent-secondary:         #f6eee8;
+  --wire-bg-accent-secondary-focus:   #ecded0;
+  --wire-content-accent-primary:      #a25915;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #a25915;
+  --wire-border-accent-primary:       #a25915;
+  --wire-border-accent-secondary:     #ecded0;
+  --wire-border-accent-focus:         #c79b73;
+  --wire-accent-050: #f6eee8; --wire-accent-100: #ecded0;
+  --wire-accent-300: #c79b73; --wire-accent-500: #a25915;
+  --wire-accent-600: #824711; --wire-accent-700: #61350d;
+  --bg-hue: var(--wire-identity-amber); --bg-h2: var(--wire-identity-red); --bg-h3: var(--wire-identity-green); --bg-h4: var(--wire-identity-petrol);
+  --wire-bg-bubbles-own-primary:#a25915; --wire-bg-bubbles-own-primary-focus:#61350d; --wire-bg-bubbles-own-secondary:#824711; --wire-content-bubbles-own-on-primary:#ecded0; --wire-content-bubbles-own-on-secondary:#dabda1;
+}
+[data-accent="green"] {
+  --wire-bg-accent-primary:           #1d7833;
+  --wire-bg-accent-primary-focus:     #11481f;
+  --wire-bg-accent-secondary:         #e8f1ea;
+  --wire-bg-accent-secondary-focus:   #d2e4d6;
+  --wire-content-accent-primary:      #1d7833;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #1d7833;
+  --wire-border-accent-primary:       #1d7833;
+  --wire-border-accent-secondary:     #d2e4d6;
+  --wire-border-accent-focus:         #77ae85;
+  --wire-accent-050: #e8f1ea; --wire-accent-100: #d2e4d6;
+  --wire-accent-300: #77ae85; --wire-accent-500: #1d7833;
+  --wire-accent-600: #176029; --wire-accent-700: #11481f;
+  --bg-hue: var(--wire-identity-green); --bg-h2: var(--wire-identity-petrol); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-blue);
+  --wire-bg-bubbles-own-primary:#1d7833; --wire-bg-bubbles-own-primary-focus:#11481f; --wire-bg-bubbles-own-secondary:#176029; --wire-content-bubbles-own-on-primary:#d2e4d6; --wire-content-bubbles-own-on-secondary:#a5c9ad;
+}
+[data-accent="red"] {
+  --wire-bg-accent-primary:           #c20013;
+  --wire-bg-accent-primary-focus:     #74000b;
+  --wire-bg-accent-secondary:         #f9e6e8;
+  --wire-bg-accent-secondary-focus:   #f3ccd0;
+  --wire-content-accent-primary:      #c20013;
+  --wire-content-accent-on-primary:   #ffffff;
+  --wire-content-accent-on-secondary: #c20013;
+  --wire-border-accent-primary:       #c20013;
+  --wire-border-accent-secondary:     #f3ccd0;
+  --wire-border-accent-focus:         #da6671;
+  --wire-accent-050: #f9e6e8; --wire-accent-100: #f3ccd0;
+  --wire-accent-300: #da6671; --wire-accent-500: #c20013;
+  --wire-accent-600: #9b000f; --wire-accent-700: #74000b;
+  --bg-hue: var(--wire-identity-red); --bg-h2: var(--wire-identity-purple); --bg-h3: var(--wire-identity-amber); --bg-h4: var(--wire-identity-petrol);
+  --wire-bg-bubbles-own-primary:#c20013; --wire-bg-bubbles-own-primary-focus:#74000b; --wire-bg-bubbles-own-secondary:#9b000f; --wire-content-bubbles-own-on-primary:#f3ccd0; --wire-content-bubbles-own-on-secondary:#e799a1;
+}
+
+/* ── DARK-MODE ACCENT OVERRIDES ──────────────────────────────────────
+   Non-blue accents had no dark ramp, so under data-theme="dark" they fell
+   back to their LIGHT values (and to blue's dark values for undefined stops).
+   These combined selectors (specificity beats both the light accent block
+   and the base dark block) restore the correct Dark/{hue} ramp. Values are
+   the authoritative Color Primitives · Dark/{hue}/{step} from the DS file. */
+[data-theme="dark"][data-accent="petrol"] {
+  --wire-bg-accent-primary:#5de6ff; --wire-bg-accent-primary-focus:#9ef0ff;
+  --wire-bg-accent-secondary:#255c66; --wire-bg-accent-secondary-focus:#388a99;
+  --wire-content-accent-primary:#5de6ff; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#9ef0ff;
+  --wire-border-accent-primary:#5de6ff; --wire-border-accent-secondary:#255c66; --wire-border-accent-focus:#bef5ff;
+  --wire-accent-050:#effdff; --wire-accent-100:#dffaff; --wire-accent-200:#bef5ff; --wire-accent-300:#9ef0ff; --wire-accent-400:#7debff;
+  --wire-accent-500:#5de6ff; --wire-accent-600:#4ab8cc; --wire-accent-700:#388a99; --wire-accent-800:#255c66; --wire-accent-900:#1c454d;
+  --wire-bg-bubbles-own-primary:#255c66; --wire-bg-bubbles-own-primary-focus:#4ab8cc; --wire-bg-bubbles-own-secondary:#1c454d; --wire-content-bubbles-own-on-primary:#7debff; --wire-content-bubbles-own-on-secondary:#7debff;
+}
+[data-theme="dark"][data-accent="purple"] {
+  --wire-bg-accent-primary:#da8fff; --wire-bg-accent-primary-focus:#e9bcff;
+  --wire-bg-accent-secondary:#573966; --wire-bg-accent-secondary-focus:#835699;
+  --wire-content-accent-primary:#da8fff; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#e9bcff;
+  --wire-border-accent-primary:#da8fff; --wire-border-accent-secondary:#573966; --wire-border-accent-focus:#f0d2ff;
+  --wire-accent-050:#fcf4ff; --wire-accent-100:#f8e9ff; --wire-accent-200:#f0d2ff; --wire-accent-300:#e9bcff; --wire-accent-400:#e1a5ff;
+  --wire-accent-500:#da8fff; --wire-accent-600:#ae72cc; --wire-accent-700:#835699; --wire-accent-800:#573966; --wire-accent-900:#412b4d;
+  --wire-bg-bubbles-own-primary:#573966; --wire-bg-bubbles-own-primary-focus:#ae72cc; --wire-bg-bubbles-own-secondary:#412b4d; --wire-content-bubbles-own-on-primary:#e1a5ff; --wire-content-bubbles-own-on-secondary:#e1a5ff;
+}
+[data-theme="dark"][data-accent="amber"] {
+  --wire-bg-accent-primary:#ffd426; --wire-bg-accent-primary-focus:#ffe57d;
+  --wire-bg-accent-secondary:#66550f; --wire-bg-accent-secondary-focus:#997f17;
+  --wire-content-accent-primary:#ffd426; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#ffe57d;
+  --wire-border-accent-primary:#ffd426; --wire-border-accent-secondary:#66550f; --wire-border-accent-focus:#ffeea8;
+  --wire-accent-050:#fffbea; --wire-accent-100:#fff6d4; --wire-accent-200:#ffeea8; --wire-accent-300:#ffe57d; --wire-accent-400:#ffdd51;
+  --wire-accent-500:#ffd426; --wire-accent-600:#ccaa1e; --wire-accent-700:#997f17; --wire-accent-800:#66550f; --wire-accent-900:#4d400b;
+  --wire-bg-bubbles-own-primary:#66550f; --wire-bg-bubbles-own-primary-focus:#ccaa1e; --wire-bg-bubbles-own-secondary:#4d400b; --wire-content-bubbles-own-on-primary:#ffdd51; --wire-content-bubbles-own-on-secondary:#ffdd51;
+}
+[data-theme="dark"][data-accent="green"] {
+  --wire-bg-accent-primary:#30db5b; --wire-bg-accent-primary-focus:#83e99d;
+  --wire-bg-accent-secondary:#135824; --wire-bg-accent-secondary-focus:#1d8337;
+  --wire-content-accent-primary:#30db5b; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#83e99d;
+  --wire-border-accent-primary:#30db5b; --wire-border-accent-secondary:#135824; --wire-border-accent-focus:#acf1bd;
+  --wire-accent-050:#ebfcef; --wire-accent-100:#d6f8de; --wire-accent-200:#acf1bd; --wire-accent-300:#83e99d; --wire-accent-400:#59e27c;
+  --wire-accent-500:#30db5b; --wire-accent-600:#26af49; --wire-accent-700:#1d8337; --wire-accent-800:#135824; --wire-accent-900:#0e421b;
+  --wire-bg-bubbles-own-primary:#135824; --wire-bg-bubbles-own-primary-focus:#26af49; --wire-bg-bubbles-own-secondary:#0e421b; --wire-content-bubbles-own-on-primary:#59e27c; --wire-content-bubbles-own-on-secondary:#59e27c;
+}
+[data-theme="dark"][data-accent="red"] {
+  --wire-bg-accent-primary:#ff7770; --wire-bg-accent-primary-focus:#ffada9;
+  --wire-bg-accent-secondary:#66302d; --wire-bg-accent-secondary-focus:#994743;
+  --wire-content-accent-primary:#ff7770; --wire-content-accent-on-primary:#000000; --wire-content-accent-on-secondary:#ffada9;
+  --wire-border-accent-primary:#ff7770; --wire-border-accent-secondary:#66302d; --wire-border-accent-focus:#ffc9c6;
+  --wire-accent-050:#fff2f1; --wire-accent-100:#ffe4e2; --wire-accent-200:#ffc9c6; --wire-accent-300:#ffada9; --wire-accent-400:#ff928d;
+  --wire-accent-500:#ff7770; --wire-accent-600:#cc5f5a; --wire-accent-700:#994743; --wire-accent-800:#66302d; --wire-accent-900:#4d2422;
+  --wire-bg-bubbles-own-primary:#66302d; --wire-bg-bubbles-own-primary-focus:#cc5f5a; --wire-bg-bubbles-own-secondary:#4d2422; --wire-content-bubbles-own-on-primary:#ff928d; --wire-content-bubbles-own-on-secondary:#ff928d;
+}
+
+/* ── ACCENT COLOR — Ink (monochrome) ─────────────────────────────────
+   Black in light, white in dark — driven entirely by the DS Inverted
+   token, which already flips per theme. One block covers both modes. */
+[data-accent="ink"] {
+  --wire-bg-accent-primary:           var(--wire-bg-inverted-primary);        /* #17181a light · #ffffff dark */
+  --wire-bg-accent-primary-focus:     var(--wire-bg-inverted-primary-focus);
+  --wire-bg-accent-secondary:         var(--wire-bg-base-tertiary);           /* neutral subtle fill */
+  --wire-bg-accent-secondary-focus:   var(--wire-bg-base-secondary-focus);
+  --wire-content-accent-primary:      var(--wire-bg-inverted-primary);        /* accent-as-text = ink */
+  --wire-content-accent-on-primary:   var(--wire-content-inverted-on-primary);/* #ffffff light · #000000 dark */
+  --wire-content-accent-on-secondary: var(--wire-bg-inverted-primary);
+  --wire-border-accent-primary:       var(--wire-bg-inverted-primary);
+  --wire-border-accent-secondary:     var(--wire-bg-base-tertiary);
+  --wire-border-accent-focus:         var(--wire-bg-inverted-primary-focus);
+  --wire-accent-500:                  var(--wire-bg-inverted-primary);
+  --bg-hue:#54585f; --bg-h2:#54585f; --bg-h3:#54585f; --bg-h4:#54585f;        /* greyscale wallpaper */
+  /* own chat bubble → ink; on-bubble text uses inverted content so it stays legible on the white (dark-mode) bubble */
+  --wire-bg-bubbles-own-primary:          var(--wire-bg-inverted-primary);
+  --wire-bg-bubbles-own-primary-focus:    var(--wire-bg-inverted-primary-focus);
+  --wire-bg-bubbles-own-secondary:        var(--wire-bg-inverted-secondary);
+  --wire-content-bubbles-own-primary:     var(--wire-content-inverted-on-primary);
+  --wire-content-bubbles-own-on-primary:  var(--wire-content-inverted-on-primary);
+  --wire-content-bubbles-own-on-secondary:var(--wire-content-inverted-on-primary);
+}
+
+/* ── Background moods ─────────────────────────────────────────────────
+   The app window covers the centre of the screen, so the wallpaper is only
+   seen in the outer frame: the top band (where the global search floats) and
+   the left column (where the nav rail sits). These #page rules therefore
+   concentrate colour along the top and left edges — richest at the top-left
+   corner — and fade into the covered centre. Hue comes from the current accent
+   (--bg-hue/-h2/-h3/-h4, theme-correct); lightness mixes toward --bg-base
+   (soft accent-tinted off-white in light, deep base in dark).
+   The .bg-swatch rules below are DECOUPLED — at 28px they show a full colour
+   chip of the mood rather than the spatial edge layout. */
+#page.bg-mood-playful, #onboarding-overlay.bg-mood-playful, .bg-preview.bg-mood-playful {
+  background:
+    radial-gradient(ellipse 62% 56% at 100% 0%, color-mix(in srgb, var(--bg-hue) 44%, transparent), transparent 72%),
+    radial-gradient(ellipse 55% 50% at 58% 2%,  color-mix(in srgb, var(--bg-h2) 32%, transparent), transparent 74%),
+    radial-gradient(ellipse 52% 48% at 26% 6%,  color-mix(in srgb, var(--bg-h3) 22%, transparent), transparent 76%),
+    radial-gradient(ellipse 105% 150% at 0% 0%, color-mix(in srgb, var(--bg-hue) 40%, transparent), transparent 64%),
+    var(--bg-base);
+}
+#page.bg-mood-vibrant, #onboarding-overlay.bg-mood-vibrant, .bg-preview.bg-mood-vibrant {
+  background:
+    radial-gradient(ellipse 52% 44% at 90% 0%, color-mix(in srgb, var(--bg-h3) 42%, transparent), transparent 72%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 75%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-h2) 50%, transparent), transparent 75%),
+    var(--bg-base);
+}
+#page.bg-mood-balanced, #onboarding-overlay.bg-mood-balanced, .bg-preview.bg-mood-balanced {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 54%, transparent), transparent 75%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 44%, transparent), transparent 75%),
+    var(--bg-base);
+}
+#page.bg-mood-calm, #onboarding-overlay.bg-mood-calm, .bg-preview.bg-mood-calm {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 22%, transparent), transparent 26%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 17%, transparent), transparent 24%),
+    var(--bg-base);
+}
+#page.bg-mood-professional, #onboarding-overlay.bg-mood-professional, .bg-preview.bg-mood-professional {
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-hue) 12%, transparent), transparent 24%),
+    linear-gradient(to right,  color-mix(in srgb, var(--bg-hue) 9%, transparent), transparent 22%),
+    var(--bg-base);
+}
+
+/* Live appearance preview (Settings → Appearance): a miniature of the screen —
+   wallpaper in the outer frame, a floating "app window", and an accent bubble —
+   so accent + background changes are visible without closing the modal. */
+.bg-preview { position:relative; width:100%; max-width:340px; aspect-ratio:16 / 9; border-radius:10px; overflow:hidden; border:0.5px solid var(--wire-border-base-primary); }
+.bg-preview-rail { position:absolute; top:24px; left:4px; display:flex; flex-direction:column; gap:6px; align-items:center; z-index:1; }
+.bg-preview-rail span { width:7px; height:7px; border-radius:2px; background:color-mix(in srgb, var(--wire-content-base-primary) 42%, transparent); }
+.bg-preview-window { position:absolute; inset:14px 5px 6px 16px; background:var(--wire-bg-base-primary); border:0.5px solid var(--wire-border-base-primary); border-radius:8px; overflow:hidden; display:flex; }
+.bgp-sidebar { width:34%; flex-shrink:0; border-right:0.5px solid var(--wire-border-base-primary); padding:9px 8px; display:flex; flex-direction:column; gap:7px; }
+.bgp-srow { height:6px; border-radius:3px; background:var(--wire-bg-base-tertiary); }
+.bgp-srow.short { width:62%; }
+.bgp-chat { flex:1; min-width:0; display:flex; flex-direction:column; padding:9px; gap:6px; }
+.bgp-messages { flex:1; display:flex; flex-direction:column; gap:6px; }
+.bgp-bubble-in  { align-self:flex-start; width:66%; height:12px; border-radius:6px; background:var(--wire-bg-base-tertiary); }
+.bgp-bubble-in.short { width:44%; }
+.bgp-bubble-out { align-self:flex-end; margin-top:2px; width:54%; height:12px; border-radius:6px; background:var(--wire-bg-accent-primary); }
+.bgp-input { flex-shrink:0; height:14px; border-radius:7px; background:var(--wire-bg-base-secondary); border:0.5px solid var(--wire-border-base-primary); }
+/* Picker thumbnails — full colour chips (spatial layout doesn't read at 28px) */
+/* Gradient-mood chips mirror the page peak colours. A page layer of
+   color-mix(hue X%, transparent) over --bg-base equals color-mix(hue X%, base),
+   so each chip uses the same hues at the same intensities as its #page rule.
+   Keep these percentages equal to the peaks in the matching #page.bg-mood-* rule. */
+.bg-swatch[data-mood="playful"] {
+  background:
+    radial-gradient(circle at 78% 26%, color-mix(in srgb, var(--bg-h2) 32%, transparent), transparent 60%),
+    radial-gradient(circle at 26% 80%, color-mix(in srgb, var(--bg-h3) 22%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 44%, var(--bg-base)), color-mix(in srgb, var(--bg-hue) 40%, var(--bg-base)));
+}
+.sc-chip[data-mood="vibrant"] {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--bg-hue) 54%, var(--bg-base)),
+    color-mix(in srgb, var(--bg-h2) 50%, var(--bg-base)) 55%,
+    color-mix(in srgb, var(--bg-h3) 42%, var(--bg-base)));
+}
+.sc-chip[data-mood="balanced"]     { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 54%, var(--bg-base)), var(--bg-base)); }
+.sc-chip[data-mood="calm"]         { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 22%, var(--bg-base)), var(--bg-base)); }
+.bg-swatch[data-mood="professional"] { background: linear-gradient(135deg, color-mix(in srgb, var(--bg-hue) 12%, var(--bg-base)), var(--bg-base)); }
+
+/* Plain user-colour variants — a solid block of the accent at three tones.
+   Built from the accent hue mixed toward black/white so the dark/mid/light
+   ordering holds in BOTH light and dark mode. Rail/search contrast for these
+   is set per-variant in JS (railFor), since a solid can be dark or light
+   regardless of the active theme. */
+/* Single solid background = accent-600 in light, accent-800-equivalent in dark (follows the accent). Chip uses .sc-chip. */
+#page.bg-mood-solid, #onboarding-overlay.bg-mood-solid, .bg-preview.bg-mood-solid, .sc-chip[data-mood="solid"] { background: var(--wire-accent-600); }
+[data-theme="dark"] #page.bg-mood-solid, [data-theme="dark"] #onboarding-overlay.bg-mood-solid, [data-theme="dark"] .bg-preview.bg-mood-solid, [data-theme="dark"] .sc-chip[data-mood="solid"] { background: color-mix(in srgb, var(--wire-bg-accent-primary) 40%, #000); }
+/* Inverted accent has no colour ramp -> Solid = relaxed gray (Plain Colors/Gray/Secondary, theme-aware). */
+[data-accent="ink"] #page.bg-mood-solid, [data-accent="ink"] #onboarding-overlay.bg-mood-solid, [data-accent="ink"] .bg-preview.bg-mood-solid, [data-accent="ink"] .sc-chip[data-mood="solid"] { background: var(--wire-plain-gray-secondary); }
+
+/* Pure neutral surfaces — no accent. These use the base tokens directly, so they
+   adapt to theme automatically (primary: white↔near-black; secondary: light-gray↔dark-gray). */
+#page.bg-mood-base-primary,   #onboarding-overlay.bg-mood-base-primary,   .bg-preview.bg-mood-base-primary,   .sc-chip[data-mood="base-primary"]   { background: var(--wire-bg-base-primary); }
+[data-theme="dark"] #page.bg-mood-base-primary,
+[data-theme="dark"] #onboarding-overlay.bg-mood-base-primary,
+[data-theme="dark"] .bg-preview.bg-mood-base-primary,
+[data-theme="dark"] .sc-chip[data-mood="base-primary"] { background: var(--bg-base); }
+#page.bg-mood-mono, #onboarding-overlay.bg-mood-mono, .bg-preview.bg-mood-mono, .sc-chip[data-mood="mono"] { background:#ffffff; }
+[data-theme="dark"] #page.bg-mood-mono, [data-theme="dark"] #onboarding-overlay.bg-mood-mono, [data-theme="dark"] .bg-preview.bg-mood-mono, [data-theme="dark"] .sc-chip[data-mood="mono"] { background:#000000; }
+#page.bg-mood-base-secondary, #onboarding-overlay.bg-mood-base-secondary, .bg-preview.bg-mood-base-secondary, .bg-swatch[data-mood="base-secondary"] { background: var(--wire-bg-base-secondary); }
+

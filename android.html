@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wire — Android Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"/>
+<link rel="stylesheet" href="wds-tokens.css"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   WIRE — ANDROID PROTOTYPE (Material 3 geometry, WDS 2.0 tokens)
+   Reference: Design Vision / node 364:14641
+   No hardcoded colour values — every surface resolves to a --wire-* token.
+   M3 mapping is annotated per block via data-m3 attributes.
+   ═══════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--wire-bg-base-tertiary);
+  color: var(--wire-content-base-primary);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start;      /* fallback: never clip the top */
+  justify-content: safe center;     /* centre only when it actually fits */
+  min-height: 100%; gap: 20px; padding: 24px;
+}
+
+/* ─── DEVICE FRAME ─────────────────────────────────────────────────
+   360 x 776 dp at 1x — matches the Figma frame exactly. */
+.device {
+  width: 360px; height: 776px;
+  position: relative; overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+/* ─── WALLPAPER LAYER ──────────────────────────────────────────────
+   Same contract as desktop: id="page" + .bg-mood-*, driven by
+   --bg-hue/-h2/-h3 and --bg-base from wds-tokens.css. Fully
+   customisable — the mood is what Settings will expose later. */
+#page {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+}
+
+/* ─── STATUS BAR ───────────────────────────────────────────────────
+   Sits directly on the wallpaper — transparent by design. */
+.status-bar {
+  height: 22px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 8px 0;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1px;
+  color: var(--chrome-fg);
+}
+.status-icons { display: flex; align-items: center; gap: 5px; }
+.status-icons span { display: block; background: var(--chrome-fg); }
+.si-sig  { width: 10px; height: 10px; border-radius: 2px; }
+.si-wifi { width: 10px; height: 10px; border-radius: 2px; opacity: 0.85; }
+.si-batt { width: 0; height: 0; background: transparent;
+           border-left: 6px solid transparent; border-right: 6px solid transparent;
+           border-top: 10px solid var(--chrome-fg); }
+
+/* ─── TITLE BAR ────────────────────────────────────────────────────
+   M3 top app bar (small). Transparent over the wallpaper. */
+.title-bar {
+  height: 48px; flex-shrink: 0; margin: 16px 8px 0;
+  position: relative; display: flex; align-items: center;
+}
+.title-bar .tb-avatar { position: absolute; left: 11px; }
+.tb-title {
+  position: absolute; left: 0; right: 0;
+  padding: 0 48px; text-align: center;
+  font-size: 18px; font-weight: 600; line-height: 23px;
+  color: var(--chrome-fg);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tb-action {
+  position: absolute; right: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 12px; border-radius: 12px;
+  background: none; border: 0; cursor: pointer;
+  color: var(--chrome-fg);
+}
+.tb-action:active { background: color-mix(in srgb, var(--chrome-fg) 12%, transparent); }
+
+/* ─── APP SURFACE ──────────────────────────────────────────────────
+   Opaque sheet on top of the wallpaper. Rounded top corners only;
+   runs underneath the navigation bar so the list scrolls behind it. */
+.app-scroll {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.app-scroll::-webkit-scrollbar { display: none; }
+.app-surface {
+  background: var(--wire-bg-base-primary);
+  min-height: calc(100% - 48px);   /* search bar 40 + 8 gap below it */
+  /* M3 corner.large (16dp) — same step as the FAB; the menu and search
+     bar sit one step down at corner.medium (12dp). overflow:hidden keeps
+     the filter bar and first row from squaring the corners off. */
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+.conv-list { list-style: none; margin: 0; padding: 0 0 60px; }
+
+/* ─── SEARCH BAR ───────────────────────────────────────────────────
+   344x40 at y86, radius 12. Opens global search (not yet built). */
+.search-bar {
+  flex-shrink: 0; height: 40px; margin: 0 8px 8px;
+  display: flex; align-items: center; padding-left: 4px;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 12px; cursor: pointer;
+}
+.search-bar:active { background: var(--wire-bg-base-primary-focus); }
+.search-icon {
+  width: 40px; height: 32px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-base-primary);
+}
+.search-placeholder {
+  flex: 1; text-align: center;
+  font-size: 14px; font-weight: 400; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+}
+.search-spacer { width: 40px; flex-shrink: 0; }
+
+/* ─── OVERFLOW MENU ────────────────────────────────────────────────
+   M3 menu (48dp items, elevation 2) carrying the desktop filter menu's
+   systematic: labelled sections, radio options with a trailing check,
+   and options whose feature isn't built shown but not selectable. */
+.menu {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 60;
+  min-width: 224px; padding: 8px 0;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px -6px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.12);
+  display: none; flex-direction: column;
+  text-align: left;
+}
+.menu.open { display: flex; }
+.menu-label {
+  padding: 8px 16px 4px;
+  font-size: 12px; font-weight: 400; line-height: 16px;
+  color: var(--wire-content-base-secondary);
+}
+.menu-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; box-sizing: border-box;
+  min-height: 48px; padding: 8px 16px;
+  border: 0; background: none; cursor: pointer; text-align: left;
+  font: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+  color: var(--wire-content-base-primary);
+}
+.menu-opt:active { background: var(--wire-bg-base-tertiary); }
+.menu-opt[aria-checked="true"] { font-weight: 500; }
+.menu-opt .menu-check { opacity: 0; color: var(--wire-content-accent-primary); flex-shrink: 0; }
+.menu-opt[aria-checked="true"] .menu-check { opacity: 1; }
+.menu-opt[aria-disabled="true"] { color: var(--wire-content-base-secondary); opacity: 0.55; cursor: default; }
+.menu-opt[aria-disabled="true"]:active { background: none; }
+.menu-sep { height: 1px; margin: 8px 0; background: var(--wire-border-base-primary); }
+
+/* ─── LIST SECTION HEADING (Group by → Message types) ──────────────*/
+.section-label {
+  padding: 12px 16px 4px;
+  font-size: 14px; font-weight: 500; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+  background: var(--wire-bg-base-primary);
+}
+
+/* ═══ SETTINGS ══════════════════════════════════════════════════════
+   M3 grouped list. Same three groups and the same ten entries as the
+   desktop settings modal; only Appearance has content there, so only
+   Appearance has content here. */
+#page[data-dest="settings"] #list-stack,
+#page[data-dest="settings"] .fab,
+#page[data-dest="settings"] .tb-action { display: none; }
+#page[data-dest="conversations"] #settings-stack { display: none; }
+
+#settings-stack { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 8px; }
+.settings-surface {
+  flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  background: var(--wire-bg-base-primary);
+  border-radius: 16px 16px 0 0;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.settings-surface::-webkit-scrollbar { display: none; }
+.settings-list { list-style: none; margin: 0; padding: 0 0 68px; }
+.settings-group {
+  padding: 16px 16px 4px;
+  font-size: 14px; font-weight: 500; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+}
+.settings-item {
+  display: flex; align-items: center; gap: 16px;
+  min-height: 56px; padding: 8px 16px; width: 100%; box-sizing: border-box;
+  border: 0; background: none; cursor: pointer; text-align: left;
+  font: inherit; font-size: 16px; line-height: 24px;
+  color: var(--wire-content-base-primary);
+  border-bottom: 1px solid var(--wire-border-base-primary);
+}
+.settings-item:active { background: var(--wire-bg-base-tertiary); }
+.settings-item .lead { color: var(--wire-content-base-secondary); flex-shrink: 0; }
+.settings-item .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.settings-item .chev { color: var(--wire-content-base-secondary); flex-shrink: 0; }
+
+/* ─── Settings detail (pushed, same transition as a conversation) ───*/
+#settings-detail {
+  position: absolute; inset: 0; z-index: 45;
+  display: flex; flex-direction: column;
+  background: var(--wire-bg-base-primary);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .22s cubic-bezier(.2, 0, 0, 1), visibility .22s;
+}
+#settings-detail.open { transform: translateX(0); visibility: visible; }
+.sd-scroll { flex: 1; min-height: 0; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
+.sd-scroll::-webkit-scrollbar { display: none; }
+.sd-row {
+  padding: 16px; border-bottom: 1px solid var(--wire-border-base-primary);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sd-row.inline { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
+.sd-label { font-size: 14px; font-weight: 500; line-height: 18px; color: var(--wire-content-base-secondary); }
+.sd-value { font-size: 16px; line-height: 24px; color: var(--wire-content-base-primary); }
+.sd-hint  { font-size: 12px; line-height: 16px; color: var(--wire-content-base-secondary); }
+.sd-profile { display: flex; align-items: center; gap: 16px; }
+.sd-avatar { width: 64px; height: 64px; flex-shrink: 0; }
+.sd-avatar .av-person { font-size: 22px; }
+.sd-btn {
+  border: 1px solid var(--wire-border-base-primary); background: var(--wire-bg-base-primary);
+  color: var(--wire-content-base-primary); font: inherit; font-size: 14px; font-weight: 500;
+  padding: 8px 14px; border-radius: 1000px; cursor: pointer;
+}
+/* M3 exposed dropdown menu — spec: Android / 52568:111015.
+   Field 49dp, radius 12, 15/16 padding; menu matches its width. */
+.sd-dropdown { position: relative; }
+.sd-dd-field {
+  width: 100%; height: 49px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 16px; border-radius: 12px; cursor: pointer;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  font: inherit; font-size: 15px; line-height: 19px;
+  color: var(--wire-content-base-primary);
+}
+.sd-dd-swatch {
+  width: 20px; height: 20px; border-radius: 1000px; flex-shrink: 0;
+  box-shadow: 0 0 0 1px var(--wire-border-base-primary) inset;
+}
+.sd-dd-label { flex: 1; min-width: 0; text-align: left; }
+.sd-dd-chev { flex-shrink: 0; color: var(--wire-content-base-secondary); transform: rotate(90deg); }
+.sd-dd-field[aria-expanded="true"] .sd-dd-chev { transform: rotate(-90deg); }
+.sd-dd-menu {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 20;
+  margin: 0; padding: 4px 0; list-style: none;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px -6px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.12);
+  display: none; max-height: 260px; overflow-y: auto;
+}
+.sd-dd-menu.open { display: block; }
+.sd-dd-opt {
+  width: 100%; box-sizing: border-box;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 8px 16px;
+  border: 0; background: none; cursor: pointer; text-align: left;
+  font: inherit; font-size: 16px; line-height: 24px;
+  color: var(--wire-content-base-primary);
+}
+.sd-dd-opt:active { background: var(--wire-bg-base-tertiary); }
+.sd-dd-opt[aria-selected="true"] { font-weight: 500; }
+.sd-dd-opt .tick { margin-left: auto; opacity: 0; color: var(--wire-content-accent-primary); }
+.sd-dd-opt[aria-selected="true"] .tick { opacity: 1; }
+
+/* Example preview — real bubble components, so the accent change is
+   visible the moment it is picked. */
+.sd-preview {
+  padding: 12px 0; border-radius: 12px;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+}
+.sd-preview .msg-row { padding-left: 12px; padding-right: 12px; }
+.sd-preview .msg-row.own { padding-left: 60px; }
+.sd-preview .msg-row.other { padding-right: 60px; padding-left: 0; }
+
+/* Segmented buttons — M3. Theme (2 options) sits inline on the right;
+   Background (5) needs the full width, so it wraps under its label. */
+.sd-row.inline .sd-segment { flex: 0 0 auto; }
+.sd-seg-group {
+  display: flex; width: 100%;
+  border: 1px solid var(--wire-border-base-primary);
+  border-radius: 1000px; overflow: hidden;
+}
+.sd-row.inline .sd-seg-group { width: auto; }
+.sd-seg-group .sd-seg-btn {
+  flex: 1 1 0; min-width: 0; border: 0; border-radius: 0;
+  padding: 8px 4px; font-size: 12px; line-height: 18px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: var(--wire-bg-base-primary);
+}
+/* Theme has only two segments and sits inline, so its buttons size to
+   their label instead of sharing a fixed track. */
+.sd-row.inline .sd-seg-group { flex: 0 0 auto; width: auto; }
+.sd-row.inline .sd-seg-group .sd-seg-btn {
+  flex: 0 0 auto; width: auto; padding: 8px 16px; font-size: 13px;
+  overflow: visible; text-overflow: clip;
+}
+.sd-seg-group .sd-seg-btn + .sd-seg-btn { border-left: 1px solid var(--wire-border-base-primary); }
+.sd-seg-group .sd-seg-btn[aria-pressed="true"] {
+  background: var(--wire-bg-accent-secondary);
+  color: var(--wire-content-accent-primary); font-weight: 600;
+}
+
+/* Live previews — abstract wireframes (spec: 375:15302 / 375:15358),
+   92x176 each, side by side. They resolve the same tokens as the app,
+   so theme, accent and background changes show up immediately. */
+.sd-previews { display: flex; gap: 12px; width: 100%; }
+.sd-prev-wrap { flex: 1 1 0; min-width: 0; }
+.sd-prev {
+  width: 100%; aspect-ratio: 92 / 176; border-radius: 8px; overflow: hidden;
+  position: relative; border: 1px solid var(--wire-border-base-primary);
+}
+.pv-bar   { position: absolute; border-radius: 3px; background: var(--wire-bg-base-tertiary); }
+.pv-surface { position: absolute; left: 0; right: 0; background: var(--wire-bg-base-primary); }
+.pv-row   { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-bottom: 1px solid var(--wire-border-base-primary); }
+.pv-dot   { width: 11px; height: 11px; border-radius: 1000px; flex-shrink: 0; }
+.pv-line  { height: 8px; border-radius: 3px; background: var(--wire-bg-base-tertiary); }
+.pv-fab   { position: absolute; right: 8px; bottom: 10px; width: 18px; height: 18px; border-radius: 6px; background: var(--wire-bg-accent-primary); }
+.pv-bubble-own   { margin: 5px 6px 0 auto; width: 52%; height: 24px; border-radius: 8px; background: var(--wire-bg-accent-primary); }
+.pv-bubble-other { margin: 5px auto 0 6px; width: 62%; height: 30px; border-radius: 8px; background: var(--wire-bg-base-tertiary); }
+.pv-composer { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background: var(--wire-bg-base-primary); border-top: 1px solid var(--wire-border-base-primary); }
+.pv-header { position: absolute; left: 0; right: 0; top: 0; height: 36px; background: var(--wire-bg-base-primary); border-bottom: 1px solid var(--wire-border-base-primary); }
+
+.sd-swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+.sd-swatch {
+  width: 32px; height: 32px; border-radius: 1000px; padding: 0; cursor: pointer;
+  border: 2px solid transparent; box-shadow: 0 0 0 1px var(--wire-border-base-primary) inset;
+}
+.sd-swatch[aria-pressed="true"] { border-color: var(--wire-content-base-primary); }
+.sd-segment { display: flex; gap: 8px; }
+.sd-seg-btn {
+  flex: 1; padding: 10px 12px; border-radius: 1000px; cursor: pointer;
+  border: 1px solid var(--wire-border-base-primary);
+  background: var(--wire-bg-base-primary); color: var(--wire-content-base-primary);
+  font: inherit; font-size: 14px; font-weight: 400;
+}
+.sd-seg-btn[aria-pressed="true"] {
+  background: var(--wire-bg-accent-secondary);
+  border-color: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-primary); font-weight: 700;
+}
+.sd-empty { padding: 40px 24px; text-align: center; font-size: 14px; color: var(--wire-content-base-secondary); }
+
+/* ═══ CONVERSATION VIEW ═════════════════════════════════════════════
+   Spec: Android / 50940:84197. Pushes over the list the way an Android
+   screen transition does; back returns. Header 86, composer 56. */
+#conv-view {
+  position: absolute; inset: 0; z-index: 40;
+  display: flex; flex-direction: column;
+  background: var(--wire-bg-base-primary);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .22s cubic-bezier(.2, 0, 0, 1), visibility .22s;
+}
+#conv-view.open { transform: translateX(0); visibility: visible; }
+
+.cv-header {
+  flex-shrink: 0; height: 86px; padding: 8px;
+  background: var(--wire-bg-base-primary);
+  border-bottom: 1px solid var(--wire-border-base-primary);
+}
+.cv-statusbar {
+  height: 14px; display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 500; color: var(--wire-content-base-primary);
+}
+.cv-titlebar { height: 56px; padding: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
+.cv-back, .cv-action {
+  width: 40px; height: 32px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; background: none; padding: 0; cursor: pointer;
+  color: var(--wire-content-base-primary);
+}
+.cv-action { background: var(--wire-bg-base-primary); border: 1px solid var(--wire-border-base-primary); }
+.cv-avatar { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+.cv-title { flex: 1; min-width: 0; display: flex; align-items: center; }
+.cv-title-text {
+  font-size: 18px; font-weight: 500; line-height: 23px;
+  color: var(--wire-content-base-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cv-title-chevron { flex-shrink: 0; color: var(--wire-content-base-secondary); }
+
+.cv-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.cv-scroll::-webkit-scrollbar { display: none; }
+
+/* ─── Bubbles ──────────────────────────────────────────────────────
+   Own: right aligned, accent fill, left inset 80. Others: left
+   aligned, tertiary fill, right inset 80. Group adds a 40dp avatar
+   gutter and a sender name on the first bubble of a run. */
+.msg-row { display: flex; padding: 1px 16px; }
+.msg-row.own   { justify-content: flex-end;   padding-left: 80px; }
+.msg-row.other { justify-content: flex-start; padding-right: 80px; }
+.msg-row.other.has-avatar { padding-left: 0; }
+.msg-row.first { padding-top: 8px; }
+.msg-row.last  { padding-bottom: 8px; }
+.msg-avatar-gutter {
+  width: 40px; flex-shrink: 0; padding: 0 6px 0 8px;
+  display: flex; align-items: flex-start;
+}
+.msg-avatar-gutter .av { width: 26px; height: 26px; }
+.bubble {
+  max-width: 270px; border-radius: 16px; padding: 10px;
+  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+}
+.bubble.own   { background: var(--wire-bg-accent-primary); color: var(--wire-content-accent-on-primary); }
+.bubble.other { background: var(--wire-bg-base-tertiary);  color: var(--wire-content-base-primary); }
+.msg-sender {
+  font-size: 13px; font-weight: 500; line-height: 17px;
+  display: flex; align-items: center; gap: 6px;
+}
+.msg-external {
+  font-size: 11px; font-weight: 500; line-height: 12px; letter-spacing: 0.5px;
+  padding: 1px 4px; border-radius: 4px;
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-secondary);
+}
+.msg-text { font-size: 15px; line-height: 19px; white-space: pre-wrap; word-break: break-word; }
+.msg-status {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; line-height: 14px;
+  color: var(--wire-content-base-secondary);
+}
+.bubble.own .msg-status { color: color-mix(in srgb, var(--wire-content-accent-on-primary) 75%, transparent); }
+
+/* Attachments — mirrors desktop's message types */
+.msg-media { border-radius: 12px; overflow: hidden; display: block; width: 100%; }
+.msg-media img { display: block; width: 100%; height: auto; }
+.msg-media-fallback {
+  width: 100%; aspect-ratio: 4 / 3; border-radius: 12px;
+  background: var(--wire-bg-base-secondary);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--wire-content-base-secondary);
+}
+.msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.msg-file {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px; border-radius: 12px;
+  background: var(--wire-bg-base-primary);
+  color: var(--wire-content-base-primary);
+}
+.bubble.own .msg-file { background: color-mix(in srgb, #000 18%, transparent); color: var(--wire-content-accent-on-primary); }
+.msg-file-meta { min-width: 0; }
+.msg-file-name { font-size: 14px; font-weight: 500; line-height: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg-file-sub  { font-size: 12px; line-height: 14px; opacity: .75; }
+.msg-audio { display: flex; align-items: center; gap: 8px; }
+.msg-audio-wave { flex: 1; height: 2px; border-radius: 2px; background: currentColor; opacity: .35; }
+/* Reactions — spec: Android / 51618:21682. The chip strip sits under the
+   bubble inside the same row and is pulled up 8dp so it tucks into the
+   bubble's bottom edge (Figma models this as a -8 vertical gap). It is
+   capped at the bubble width, so it wraps after about four chips. */
+.msg-stack { display: flex; flex-direction: column; min-width: 0; max-width: 270px; }
+.msg-row.own   .msg-stack { align-items: flex-end; }
+.msg-row.other .msg-stack { align-items: flex-start; }
+.msg-reactions {
+  display: flex; flex-wrap: wrap; gap: 4px; row-gap: 4px;
+  padding: 0 10px; margin-top: -8px; max-width: 270px;
+  position: relative; z-index: 1;
+}
+.msg-reaction {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 24px; padding: 4px 8px; border-radius: 12px; box-sizing: border-box;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+}
+.msg-reaction .emoji { font-size: 16px; line-height: 16px; }
+.msg-reaction .count {
+  font-size: 12px; font-weight: 700; line-height: 14px;
+  color: var(--wire-content-base-secondary);
+}
+.msg-reaction.own-reaction {
+  background: var(--wire-bg-accent-secondary);
+  border-color: var(--wire-bg-accent-primary);
+}
+.msg-reaction.own-reaction .count { color: var(--wire-content-accent-primary); }
+
+/* ─── Dividers, system messages, typing ────────────────────────────*/
+.msg-divider { display: flex; align-items: center; gap: 4px; padding: 16px; }
+.msg-divider .rule { flex: 1; height: 1px; background: var(--wire-border-base-primary); }
+.msg-divider span { font-size: 12px; font-weight: 700; line-height: 14px; color: var(--wire-content-base-primary); }
+.msg-system {
+  display: flex; align-items: center; gap: 16px;
+  padding: 4px 16px 4px 22px;
+  font-size: 15px; line-height: 19px; color: var(--wire-content-base-secondary);
+}
+.msg-typing-wrap { padding: 8px 16px; }
+.msg-typing {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 8px 8px 4px; border-radius: 24px;
+  background: var(--wire-bg-base-secondary);
+  font-size: 12px; line-height: 14px; color: var(--wire-content-base-secondary);
+}
+.msg-typing .av { width: 16px; height: 16px; }
+.msg-empty { padding: 40px 24px; text-align: center; font-size: 14px; color: var(--wire-content-base-secondary); }
+
+/* ─── Composer (presentational) ────────────────────────────────────*/
+.cv-composer {
+  flex-shrink: 0; height: 56px; display: flex; align-items: center; gap: 8px;
+  padding: 0 16px;
+  background: var(--wire-bg-base-primary);
+  border-top: 1px solid var(--wire-border-base-primary);
+}
+.cv-composer-input { flex: 1; font-size: 15px; line-height: 19px; color: var(--wire-content-base-secondary); }
+.cv-composer-btn {
+  width: 40px; height: 32px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-primary);
+}
+
+/* ═══ FILTER PILLS ══───────────────────────────────────────────────
+   360x40 row, pad 4/16/8, gap 8. Pills 28dp, fully rounded, pad 4/10.
+   Unselected fill in Figma is a raw iOS grey (#767680 @12%); mapped
+   here to --wire-bg-base-tertiary so it themes correctly. */
+.filter-bar {
+  flex-shrink: 0; display: flex; gap: 8px;
+  padding: 4px 16px 8px;
+  background: var(--wire-bg-base-primary);
+}
+.filter-pill {
+  height: 28px; padding: 4px 10px; border-radius: 1000px;
+  border: 1px solid transparent;
+  background: var(--wire-bg-base-tertiary);
+  color: var(--wire-content-base-primary);
+  font: inherit; font-size: 15px; font-weight: 400; line-height: 20px;
+  cursor: pointer; white-space: nowrap;
+}
+.filter-pill[aria-pressed="true"] {
+  background: var(--wire-bg-base-primary);
+  border-color: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-primary);
+  font-weight: 700;
+}
+.list-empty {
+  padding: 32px 24px; text-align: center;
+  font-size: 14px; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+}
+
+/* ─── CONVERSATION ROW ─────────────────────────────────────────────
+   Spec: Mobile UI – Android / 611:3303. 360x56, padding 0/8/0/16.
+   Name row at gap 6 carries inline indicators; trailing slot at right 8. */
+.conv-item {
+  position: relative; height: 56px; width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--wire-border-base-primary);
+  background: var(--wire-bg-base-primary);
+  cursor: pointer; user-select: none;
+}
+.conv-item:first-child { border-top: 1px solid var(--wire-border-base-primary); }
+.conv-item:active   { background: var(--wire-bg-base-primary-focus); }
+/* Kept for the tablet two-pane layout; unused on mobile, where the list
+   and the conversation are separate screens. */
+.conv-item.selected { background: var(--wire-bg-accent-secondary); }
+.ci-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.ci-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ci-name {                                   /* Title/Title 02 — Inter at Roboto's metrics */
+  font-size: 16px; font-weight: 500; line-height: 20px;
+  color: var(--wire-content-base-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ci-sub {                                    /* Label/Label 04 — Inter at Roboto's metrics */
+  font-size: 14px; font-weight: 400; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ci-trail { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Inline name-row indicators */
+.ci-legalhold { color: var(--wire-content-danger-primary);   flex-shrink: 0; }
+.ci-verified  { color: var(--wire-content-positive-primary); flex-shrink: 0; }
+.ci-qualifier {
+  flex-shrink: 0; padding: 2px 4px; border-radius: 4px;
+  font-size: 11px; font-weight: 500; line-height: 12px; letter-spacing: 0.5px;
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-secondary);
+}
+
+/* ─── EVENT BADGE ──────────────────────────────────────────────────
+   Three families, all radius 6 (spec: component set 1:220). */
+.ci-badge { flex-shrink: 0; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.ci-badge.filled  { background: var(--wire-bg-inverted-primary); color: var(--wire-content-inverted-on-primary); }
+.ci-badge.outline { background: var(--wire-bg-base-primary); border: 1px solid var(--wire-border-base-primary); color: var(--wire-content-base-primary); }
+.ci-badge.count   { padding: 2px 8px; font-size: 12px; font-weight: 700; line-height: 14px; letter-spacing: 0.25px; }
+.ci-badge.glyph   { padding: 3px 6px; }
+.ci-badge.tall    { height: 18px; padding: 1px 6px; }
+.ci-badge.word    { padding: 2px 8px; font-size: 11px; font-weight: 500; line-height: 12px; letter-spacing: 0.5px; color: var(--wire-content-base-primary); }
+.ci-badge.danger  { color: var(--wire-content-danger-primary); }
+.ci-badge.subtle  { color: var(--wire-content-base-secondary); }
+
+/* ─── TRAILING CONTROLS ────────────────────────────────────────────*/
+.ci-join {                                   /* Button/Button 03 (Inter), positive not accent */
+  border: 0; padding: 8px 12px; border-radius: 12px;
+  background: var(--wire-bg-positive-primary);
+  color: var(--wire-content-positive-on-primary);
+  font: inherit; font-size: 13px; font-weight: 500; line-height: 16px; letter-spacing: 0.3px;
+  cursor: pointer;
+}
+.ci-audio { display: flex; flex-shrink: 0; }  /* 79x32 segmented pair */
+.ci-audio button {
+  width: 40px; height: 32px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+  color: var(--wire-content-base-primary); cursor: pointer;
+}
+.ci-audio button + button { margin-left: -1px; }
+.ci-check {                                   /* 18x18, radius 3, 1.5 stroke */
+  width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0;
+  background: var(--wire-bg-base-tertiary);
+  border: 1.5px solid var(--wire-content-base-secondary);
+  display: flex; align-items: center; justify-content: center; color: transparent;
+}
+.conv-item.checked .ci-check {
+  background: var(--wire-bg-accent-primary);
+  border-color: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+}
+
+/* ─── AVATARS ──────────────────────────────────────────────────────*/
+.av { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+.av-person {
+  width: 100%; height: 100%; border-radius: 100px;
+  border: 1px solid var(--wire-border-base-primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.3px;
+  color: var(--wire-content-inverted-on-primary);
+  background-size: cover; background-position: center;
+}
+.av-group {                                   /* 32dp, r 9.14, 1.14 border */
+  width: 100%; height: 100%; border-radius: 9px;
+  background: var(--wire-bg-base-primary);
+  border: 1.14px solid var(--wire-border-base-primary);
+  display: flex; align-items: center; justify-content: center;
+}
+.av-group .wds-ic { width: 22px !important; height: 11px !important; }
+.av-channel {                                 /* 32dp, r 8 — Plain Colors */
+  width: 100%; height: 100%; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-plain-blue-secondary);
+  border: 1px solid var(--wire-plain-blue-secondary-focus);
+  color: var(--wire-plain-blue-primary);
+}
+.av-channel[data-color="purple"] { background: var(--wire-plain-purple-secondary); border-color: var(--wire-plain-purple-secondary-focus); color: var(--wire-plain-purple-primary); }
+.av-channel[data-color="red"] { background: var(--wire-plain-red-secondary); border-color: var(--wire-plain-red-secondary-focus); color: var(--wire-plain-red-primary); }
+.av-channel[data-color="green"] { background: var(--wire-plain-green-secondary); border-color: var(--wire-plain-green-secondary-focus); color: var(--wire-plain-green-primary); }
+.av-channel[data-color="amber"] { background: var(--wire-plain-amber-secondary); border-color: var(--wire-plain-amber-secondary-focus); color: var(--wire-plain-amber-primary); }
+.av-channel[data-color="petrol"] { background: var(--wire-plain-petrol-secondary); border-color: var(--wire-plain-petrol-secondary-focus); color: var(--wire-plain-petrol-primary); }
+.av-channel[data-color="gray"] { background: var(--wire-plain-gray-secondary); border-color: var(--wire-plain-gray-secondary-focus); color: var(--wire-plain-gray-primary); }
+.av-presence {
+  position: absolute; right: -1px; bottom: -1px;
+  width: 10px; height: 10px; border-radius: 100px;
+  background: var(--wire-bg-positive-primary);
+  box-shadow: 0 0 0 2px var(--wire-bg-base-primary);
+}
+.av-presence[data-status="busy"]  { background: var(--wire-bg-base-primary);
+  box-shadow: inset 0 0 0 2px var(--wire-bg-danger-primary), 0 0 0 2px var(--wire-bg-base-primary); }
+.av-presence[data-status="away"]  { background: var(--wire-bg-warning-primary); }
+.av-presence[data-status="none"]  { display: none; }
+.av-badge {
+  position: absolute; right: -3px; bottom: -3px;
+  width: 14px; height: 14px; border-radius: 3px;
+  background: var(--wire-bg-inverted-primary);
+  color: var(--wire-content-inverted-on-primary);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─── FAB ──────────────────────────────────────────────────────────
+   M3 FAB, 48dp, 16dp corner. */
+.fab {
+  position: absolute; right: 24px; bottom: 80px;
+  width: 48px; height: 48px; border: 0; border-radius: 16px;
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 3;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12);
+}
+.fab:active { background: var(--wire-bg-accent-primary-focus); }
+
+/* ─── NAVIGATION BAR ───────────────────────────────────────────────
+   M3 navigation bar, 60dp, icon-only (labels hidden per the mock). */
+.nav-bar {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  height: 60px; display: flex; align-items: center;
+  padding: 0 8px;
+  background: var(--wire-bg-base-primary);
+  border-top: 1px solid var(--wire-border-base-primary);
+}
+.nav-item {
+  flex: 1 0 0; min-width: 0; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: none; border: 0; padding: 6px 0; cursor: pointer;
+  color: var(--wire-content-base-secondary);
+}
+.nav-pill {
+  width: 56px; height: 32px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s ease;
+}
+.nav-item[aria-selected="true"] { color: var(--wire-content-accent-on-secondary); }
+.nav-item[aria-selected="true"] .nav-pill { background: var(--wire-bg-accent-secondary); }
+.nav-item:active .nav-pill { background: var(--wire-bg-accent-secondary-focus); }
+.nav-item[aria-selected="true"] { color: var(--wire-content-accent-primary); }
+
+.wds-ic svg { display: block; width: 100%; height: 100%; }
+
+/* ─── DEMO CONTROLS (prototype chrome, not part of the design) ──── */
+.controls {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 16px; font-size: 12px;
+}
+.ctl { display: flex; align-items: center; gap: 6px; }
+.ctl-label {
+  text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  color: var(--wire-content-base-secondary); font-size: 10px;
+}
+.swatch {
+  width: 20px; height: 20px; border-radius: 100px; cursor: pointer;
+  border: 2px solid transparent; padding: 0; flex-shrink: 0;
+}
+.swatch.active { border-color: var(--wire-content-base-primary); }
+.ctl button.chip {
+  font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 100px; cursor: pointer;
+  background: var(--wire-bg-base-primary); color: var(--wire-content-base-primary);
+  border: 1px solid var(--wire-border-base-primary);
+}
+.ctl button.chip.active {
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+  border-color: var(--wire-bg-accent-primary);
+}
+.caption { font-size: 11px; color: var(--wire-content-base-secondary); text-align: center; max-width: 520px; }
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div id="page" class="bg-mood-mono" data-dest="conversations">
+
+    <!-- M3: system status bar -->
+    <div class="status-bar" data-m3="SystemBars">
+      <span>12:34</span>
+      <span class="status-icons">
+        <span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span>
+      </span>
+    </div>
+
+    <!-- M3: TopAppBar (small) -->
+    <div class="title-bar" data-m3="TopAppBar">
+      <div class="av tb-avatar" id="tb-avatar"></div>
+      <div class="tb-title">Conversations</div>
+      <button class="tb-action" id="tb-overflow" aria-label="More options"
+              aria-haspopup="menu" aria-expanded="false" data-m3="IconButton"></button>
+      <div class="menu" id="conv-menu" role="menu" aria-label="Group and sort conversations" data-m3="DropdownMenu"></div>
+    </div>
+
+    <!-- Everything below the title bar scrolls together -->
+    <main class="app-scroll" id="list-stack">
+
+      <!-- M3: SearchBar — opens global search, not yet built -->
+      <div class="search-bar" id="search-bar" role="search" data-m3="SearchBar">
+        <span class="search-icon" id="search-icon"></span>
+        <span class="search-placeholder">Search for conversation</span>
+        <span class="search-spacer"></span>
+      </div>
+
+      <!-- M3: Surface — opaque sheet over the wallpaper -->
+      <div class="app-surface" data-m3="Surface">
+        <div class="filter-bar" id="filter-bar" role="group" aria-label="Filter conversations"></div>
+        <ul class="conv-list" id="conv-list" data-m3="LazyColumn"></ul>
+      </div>
+
+    </main>
+
+    <!-- Settings destination -->
+    <div id="settings-stack">
+      <div class="settings-surface">
+        <ul class="settings-list" id="settings-list"></ul>
+      </div>
+    </div>
+
+    <!-- M3: FloatingActionButton -->
+    <button class="fab" id="fab" aria-label="New conversation" data-m3="FloatingActionButton"></button>
+
+    <!-- M3: NavigationBar -->
+    <nav class="nav-bar" id="nav-bar" data-m3="NavigationBar" role="tablist"></nav>
+
+  </div>
+
+  <!-- ── SETTINGS DETAIL — pushes over the settings list ── -->
+  <section id="settings-detail" aria-label="Settings detail" data-m3="Screen">
+    <header class="cv-header">
+      <div class="cv-statusbar">
+        <span>12:34</span>
+        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
+      </div>
+      <div class="cv-titlebar">
+        <button class="cv-back" id="sd-back" aria-label="Back" data-m3="IconButton"></button>
+        <span class="cv-title"><span class="cv-title-text" id="sd-title">Settings</span></span>
+      </div>
+    </header>
+    <div class="sd-scroll"><div id="sd-body"></div></div>
+  </section>
+
+  <!-- ── CONVERSATION VIEW — pushes over the list, back returns ── -->
+  <section id="conv-view" aria-label="Conversation" data-m3="Screen">
+    <header class="cv-header">
+      <div class="cv-statusbar">
+        <span>12:34</span>
+        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
+      </div>
+      <div class="cv-titlebar">
+        <button class="cv-back" id="cv-back" aria-label="Back" data-m3="IconButton"></button>
+        <span class="cv-avatar av" id="cv-avatar"></span>
+        <span class="cv-title"><span class="cv-title-text" id="cv-title">Conversation</span>
+          <span class="cv-title-chevron" id="cv-chevron"></span></span>
+        <button class="cv-action" aria-label="More options" data-m3="IconButton" id="cv-action"></button>
+      </div>
+    </header>
+    <div class="cv-scroll" id="cv-scroll"><div id="cv-messages"></div></div>
+    <div class="cv-composer" data-m3="TextField">
+      <span class="cv-composer-input">Type a message</span>
+      <span class="cv-composer-btn" id="cv-send"></span>
+    </div>
+  </section>
+
+</div>
+
+
+
+<script src="wds-icons.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var page = document.getElementById('page');
+
+  /* ── Background moods — same set the desktop prototype exposes ── */
+  var MOODS   = ['vibrant', 'balanced', 'calm', 'solid', 'mono'];
+  var ACCENTS = ['blue', 'petrol', 'purple', 'amber', 'green', 'red', 'ink'];
+  var currentMood = 'mono';   /* desktop default */
+
+  /* Chrome contrast over the wallpaper — mirrors railFor() on desktop.
+     Gradient moods track the theme; the solid variant is always dark. */
+  function applyChrome() {
+    var isDark = root.getAttribute('data-theme') === 'dark';
+    var onDark = (currentMood === 'solid') || isDark;
+    page.style.setProperty('--chrome-fg', onDark ? '#ffffff' : '#000000');
+  }
+
+  function applyMood(mood) {
+    currentMood = mood;
+    MOODS.forEach(function (m) { page.classList.remove('bg-mood-' + m); });
+    page.classList.add('bg-mood-' + mood);
+    document.querySelectorAll('[data-mood-set]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.moodSet === mood);
+    });
+    applyChrome();
+  }
+
+  function setAccent(a) {
+    if (a === 'blue') root.removeAttribute('data-accent');
+    else root.setAttribute('data-accent', a);
+    document.querySelectorAll('[data-accent-set]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.accentSet === a);
+    });
+    applyChrome();
+  }
+
+  /* Theme follows the browser's colour-scheme preference until the
+     person picks one in Settings, after which their choice sticks.
+     The desktop prototype seeds from the same media query on load. */
+  var themeIsUserChoice = false;
+  function systemTheme() {
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ? 'dark' : 'light';
+  }
+  function watchSystemTheme() {
+    if (!window.matchMedia) return;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var onChange = function () { if (!themeIsUserChoice) setTheme(systemTheme()); };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+
+  function setTheme(t) {
+    root.setAttribute('data-theme', t);
+    document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.themeSet === t);
+    });
+    applyChrome();
+  }
+
+  /* ── Avatars ───────────────────────────────────────────────────
+     person  — DS "Initials" variant (identity tint). Set `photo` to a
+               file in ./avatars/ to use the photo variants instead.
+     group   — DS tri-colour people glyph; 15 colour variations are
+               permutations of the identity palette.
+     channel — DS hash glyph on Plain Colors (see note in README). */
+  var IDENTITY = ['blue', 'green', 'amber', 'purple', 'petrol', 'red'];
+
+  function personAvatar(a) {
+    a = a || {};
+    var bg = a.photo
+      ? "background-image:url('avatars/" + a.photo + "')"
+      : 'background:var(--wire-identity-' + (a.color || 'blue') + ')';
+    var status = a.presence || 'none';
+    return '<div class="av-person" style="' + bg + '">' + (a.photo ? '' : (a.initials || '')) + '</div>'
+         + '<span class="av-presence" data-status="' + status + '"></span>';
+  }
+
+  function groupAvatar(variation) {
+    var n = (variation || 1) - 1;
+    var c1 = IDENTITY[n % 6], c2 = IDENTITY[(n + 2) % 6], c3 = IDENTITY[(n + 4) % 6];
+    var vars = '--ga-1:var(--wire-identity-' + c1 + ');'
+             + '--ga-2:var(--wire-identity-' + c2 + ');'
+             + '--ga-3:var(--wire-identity-' + c3 + ')';
+    return '<div class="av-group" style="' + vars + '">' + WDS.icon('groupavatar', { size: 22 }) + '</div>';
+  }
+
+  function channelAvatar(color, locked) {
+    return '<div class="av-channel" data-color="' + (color || 'blue') + '">'
+         + WDS.icon('channel', { size: 15 }) + '</div>'
+         + (locked ? '<span class="av-badge">' + WDS.icon('lock', { size: 9 }) + '</span>' : '');
+  }
+
+  /* ── Event badge — component set 1:220, eleven types ───────────── */
+  function badge(type, count) {
+    function glyph(name, cls, size) {
+      return '<span class="ci-badge ' + cls + '">' + WDS.icon(name, { size: size || 12 }) + '</span>';
+    }
+    switch (type) {
+      case 'unread':        return '<span class="ci-badge filled count">' + (count || 1) + '</span>';
+      case 'mention':       return glyph('mention',    'filled glyph');
+      case 'reply':         return glyph('reply',      'filled glyph');
+      case 'missedcall':    return glyph('missedcall', 'filled glyph');
+      case 'thread':        return glyph('thread',     'filled glyph');
+      case 'ping':          return glyph('ping',       'filled glyph');
+      case 'request':       return glyph('pending12',  'filled glyph');
+      case 'muted':         return glyph('mute',       'outline glyph');
+      case 'muted-mention': return glyph('mention',    'outline glyph');
+      case 'muted-reply':   return glyph('reply',      'outline glyph');
+      case 'attention':     return glyph('attention',  'outline tall danger', 14);
+      case 'onboarding':    return glyph('pending14',  'outline tall subtle', 14);
+      case 'pending':       return '<span class="ci-badge outline word">pending</span>';
+      default:              return '';
+    }
+  }
+
+  /* ── Trailing slot ─────────────────────────────────────────────── */
+  function trailing(c) {
+    if (c.state === 'multiselect') {
+      return '<span class="ci-check">' + WDS.icon('check', { size: 12 }) + '</span>';
+    }
+    if (c.state === 'join-call') {
+      return '<button class="ci-join" data-m3="Button">Join</button>';
+    }
+    if (c.state === 'audio') {
+      return '<span class="ci-audio">'
+           + '<button aria-label="Play">'  + WDS.icon('meetings', { size: 14 }) + '</button>'
+           + '<button aria-label="Stop">'  + WDS.icon('close',    { size: 12 }) + '</button>'
+           + '</span>';
+    }
+    return badge(c.badge, c.count);
+  }
+
+  /* ── Conversation rows ─────────────────────────────────────────
+     Mirrors the desktop prototype's sidebar exactly: same ten
+     conversations, same types, colours, presence, unread counts and
+     activity ranks. Decoration is limited to what desktop shows —
+     unread count, selected state, presence dot. Nothing else.
+     The second line carries last-message text per the Android mock
+     ("second line - last message"); desktop has no such line. */
+  var CONVERSATIONS = [
+    { activity: 100, kind: 'channel', color: 'purple', favorite: true,
+      convKey: 'prodeng', name: 'Product & Engineering', sub: 'Riley: shipping the build tonight' },
+    { activity: 95,  kind: 'channel', color: 'green', favorite: true,
+      convKey: 'design', name: 'Design System', sub: 'Deniz: tokens are updated', state: 'unread', badge: 'unread', count: 3 },
+    { activity: 90,  kind: 'group', variation: 2,
+      convKey: 'marketing-grp', name: 'Marketing Team', sub: 'Paul Nagel: did you read my message?', state: 'unread', badge: 'unread', count: 1 },
+    { activity: 80,  kind: 'channel', color: 'blue',
+      convKey: 'marketing', name: 'Marketing Team', sub: 'Barbara: the campaign brief is up' },
+    { activity: 70,  kind: 'group', variation: 5,
+      convKey: 'q3', name: 'Q3 Planning', sub: 'Kim: moved the review to Thursday' },
+    { activity: 60,  kind: 'person', avatar: { initials: 'JO', color: 'purple' },
+      convKey: 'jo', name: 'Jaqueline Olaho', sub: 'Thanks, that works' },
+    { activity: 55,  kind: 'person', avatar: { initials: 'DL', color: 'blue', presence: 'available' }, favorite: true,
+      convKey: 'dl', name: 'Dor Lewis', sub: 'See you at the standup' },
+    { activity: 50,  kind: 'channel', color: 'amber',
+      convKey: 'general', name: 'General', sub: 'Alex: the coffee machine is fixed' },
+    { activity: 40,  kind: 'person', avatar: { initials: 'DA', color: 'amber' },
+      convKey: 'da', name: 'Deniz Agha', sub: 'Sent the files over' },
+    { activity: 30,  kind: 'person', avatar: { initials: 'MP', color: 'red', presence: 'busy' },
+      convKey: 'mp', name: 'Marcel Pierrot', sub: 'Hello, how are you?' }
+  ];
+
+  function avatarFor(c) {
+    if (c.kind === 'person')  return personAvatar(c.avatar);
+    if (c.kind === 'channel') return channelAvatar(c.color, c.locked);
+    return groupAvatar(c.variation);
+  }
+
+  /* ── Settings ──────────────────────────────────────────────────
+     Same three groups and ten entries as the desktop settings modal.
+     Only Appearance is built out there, so only Appearance is here. */
+  /* Only Appearance opens a detail view. The rest are drawn normally —
+     they're there to show the structure and simply don't route yet. */
+  var SETTINGS = [
+    { group: 'Personal information', items: [
+      { id: 'account',       icon: 'account',    label: 'Account' },
+      { id: 'devices',       icon: 'devices',    label: 'Devices' },
+      { id: 'backup',        icon: 'backup',     label: 'Backup' }
+    ] },
+    { group: 'Preferences', items: [
+      { id: 'appearance',    icon: 'appearance', label: 'Appearance', ready: true },
+      { id: 'conversations', icon: 'chat',       label: 'Conversations' },
+      { id: 'calls',         icon: 'calls',      label: 'Calls' },
+      { id: 'privacy',       icon: 'privacy',    label: 'Privacy & Security' },
+      { id: 'notifications', icon: 'notifications', label: 'Notifications' }
+    ] },
+    { group: 'Resources', items: [
+      { id: 'support',       icon: 'support',    label: 'Support' },
+      { id: 'about',         icon: 'about',      label: 'About' }
+    ] }
+  ];
+
+  function renderSettings() {
+    var list = document.getElementById('settings-list');
+    list.innerHTML = SETTINGS.map(function (g) {
+      return '<li class="settings-group" role="presentation">' + g.group + '</li>'
+           + g.items.map(function (it) {
+               return '<li><button class="settings-item" data-setting="' + it.id + '"'
+                    + ' data-ready="' + (it.ready ? 'true' : 'false') + '" data-m3="ListItem">'
+                    + '<span class="lead">' + WDS.icon(it.icon, { size: 24 }) + '</span>'
+                    + '<span class="label">' + it.label + '</span>'
+                    + '<span class="chev">' + WDS.icon('chevron', { size: 16 }) + '</span>'
+                    + '</button></li>';
+             }).join('');
+    }).join('');
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest('.settings-item');
+      if (!btn || btn.dataset.ready !== 'true') return;   // placeholder entry
+      openSetting(btn.dataset.setting, btn.querySelector('.label').textContent);
+    });
+  }
+
+  /* Appearance mirrors the desktop section: profile picture, display
+     name, username, theme, accent colour, background. */
+  var ACCENT_LABELS = { blue: 'Blue', petrol: 'Petrol', purple: 'Purple', amber: 'Amber',
+                        green: 'Green', red: 'Red', ink: 'Inverted' };
+  function accentSwatchStyle(a) {
+    return a === 'ink' ? 'var(--wire-content-base-primary)' : 'var(--wire-identity-' + a + ')';
+  }
+  function currentAccent() { return root.getAttribute('data-accent') || 'blue'; }
+
+  /* Live previews — abstract wireframes per 375:15302 / 375:15358. */
+  function previewsHtml() {
+    var rows = '';
+    var tints = ['blue', 'purple', 'green', 'amber', 'petrol', 'red', 'blue'];
+    for (var i = 0; i < 7; i++) {
+      rows += '<div class="pv-row"><span class="pv-dot" style="background:var(--wire-identity-'
+            + tints[i] + ')"></span><span class="pv-line" style="width:' + (52 + (i % 3) * 14) + '%"></span></div>';
+    }
+    return '<div class="sd-previews">'
+      + '<div class="sd-prev-wrap">'
+      +   '<div class="sd-prev bg-preview" id="prev-list">'
+      +     '<span class="pv-bar" style="left:8px;top:8px;width:28%;height:6px"></span>'
+      +     '<span class="pv-bar" style="left:8px;top:20px;width:58%;height:9px"></span>'
+      +     '<div class="pv-surface" style="top:36px;bottom:0;border-radius:8px 8px 0 0;overflow:hidden">' + rows + '</div>'
+      +     '<span class="pv-fab"></span>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="sd-prev-wrap">'
+      +   '<div class="sd-prev" id="prev-view" style="background:var(--wire-bg-base-primary)">'
+      +     '<div class="pv-header"><span class="pv-bar" style="left:8px;top:8px;width:28%;height:6px"></span>'
+      +       '<span class="pv-bar" style="left:8px;top:20px;width:44%;height:7px"></span></div>'
+      +     '<div style="position:absolute;left:0;right:0;top:36px;bottom:22px">'
+      +       '<div class="pv-bubble-other"></div>'
+      +       '<div class="pv-bubble-own"></div>'
+      +       '<div class="pv-bubble-other" style="width:44px;height:20px"></div>'
+      +       '<div class="pv-bubble-own" style="width:34px;height:14px"></div>'
+      +     '</div>'
+      +     '<div class="pv-composer"></div>'
+      +   '</div>'
+      + '</div></div>';
+  }
+
+  function appearanceHtml() {
+    var a = currentAccent();
+    var seg = function (attr, id, label) {
+      return '<button class="sd-seg-btn" data-' + attr + '-set="' + id + '">' + label + '</button>';
+    };
+    return ''
+      + '<div class="sd-row inline"><span class="sd-label">Theme</span>'
+      +   '<div class="sd-seg-group" role="group" data-m3="SegmentedButton">'
+      +     seg('theme', 'light', 'Light') + seg('theme', 'dark', 'Dark') + '</div></div>'
+      + '<div class="sd-row"><span class="sd-label">Accent color</span>'
+      +   '<div class="sd-dropdown" id="accent-dd">'
+      +     '<button class="sd-dd-field" id="accent-dd-field" aria-haspopup="listbox" aria-expanded="false" data-m3="ExposedDropdownMenu">'
+      +       '<span class="sd-dd-swatch" id="accent-dd-swatch" style="background:' + accentSwatchStyle(a) + '"></span>'
+      +       '<span class="sd-dd-label" id="accent-dd-label">' + ACCENT_LABELS[a] + '</span>'
+      +       '<span class="sd-dd-chev">' + WDS.icon('chevron', { size: 16 }) + '</span></button>'
+      +     '<ul class="sd-dd-menu" id="accent-dd-menu" role="listbox">'
+      +       ACCENTS.map(function (x) {
+                return '<li><button class="sd-dd-opt" role="option" data-accent-set="' + x + '"'
+                     + ' aria-selected="' + (x === a) + '">'
+                     + '<span class="sd-dd-swatch" style="background:' + accentSwatchStyle(x) + '"></span>'
+                     + '<span>' + ACCENT_LABELS[x] + '</span>'
+                     + '<span class="tick">' + WDS.icon('check', { size: 16 }) + '</span></button></li>';
+              }).join('') + '</ul></div>'
+      +   '<span class="sd-hint">Your accent color is used to guide you through the app\u2019s interface.</span>'
+      + '</div>'
+      + '<div class="sd-row"><span class="sd-label">Background</span>'
+      +   '<div class="sd-seg-group" role="group" data-m3="SegmentedButton">'
+      +     MOODS.map(function (m) {
+              return seg('mood', m, m.charAt(0).toUpperCase() + m.slice(1));
+            }).join('') + '</div></div>'
+      + '<div class="sd-row">' + previewsHtml() + '</div>';
+  }
+
+  function bindAccentDropdown() {
+    var field = document.getElementById('accent-dd-field');
+    var menu  = document.getElementById('accent-dd-menu');
+    if (!field || !menu) return;
+    field.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = menu.classList.toggle('open');
+      field.setAttribute('aria-expanded', open);
+    });
+    menu.addEventListener('click', function (e) {
+      var opt = e.target.closest('.sd-dd-opt');
+      if (!opt) return;
+      menu.classList.remove('open');
+      field.setAttribute('aria-expanded', 'false');
+    });
+    document.addEventListener('click', function () {
+      menu.classList.remove('open');
+      field.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function openSetting(id, label) {
+    document.getElementById('sd-title').textContent = label;
+    document.getElementById('sd-body').innerHTML = appearanceHtml();
+    bindAccentDropdown();
+    syncAppearanceControls();
+    document.getElementById('settings-detail').classList.add('open');
+  }
+  function closeSetting() { document.getElementById('settings-detail').classList.remove('open'); }
+
+  /* The in-app controls and the demo bar under the phone drive the same
+     state, so whichever you touch, both stay in step. */
+  function syncAppearanceControls() {
+    var theme = root.getAttribute('data-theme');
+    var accent = root.getAttribute('data-accent') || 'blue';
+    document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.themeSet === theme);
+      b.classList.toggle('active', b.dataset.themeSet === theme);
+    });
+    document.querySelectorAll('[data-accent-set]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.accentSet === accent);
+      b.classList.toggle('active', b.dataset.accentSet === accent);
+    });
+    document.querySelectorAll('[data-mood-set]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.moodSet === currentMood);
+      b.classList.toggle('active', b.dataset.moodSet === currentMood);
+    });
+    var prev = document.getElementById('prev-list');
+    if (prev) {
+      MOODS.forEach(function (m) { prev.classList.remove('bg-mood-' + m); });
+      prev.classList.add('bg-mood-' + currentMood);
+    }
+    var sw = document.getElementById('accent-dd-swatch');
+    var lb = document.getElementById('accent-dd-label');
+    if (sw) sw.style.background = accentSwatchStyle(accent);
+    if (lb) lb.textContent = ACCENT_LABELS[accent];
+    document.querySelectorAll('.sd-dd-opt').forEach(function (o) {
+      o.setAttribute('aria-selected', o.dataset.accentSet === accent);
+    });
+  }
+
+  function bindSettings() {
+    document.getElementById('sd-back').innerHTML = WDS.icon('back', { size: 16 });
+    document.getElementById('sd-back').addEventListener('click', closeSetting);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSetting(); });
+  }
+
+  /* ── Conversation threads ──────────────────────────────────────
+     Lifted verbatim from the desktop prototype so both clients show
+     the same conversations, senders, timestamps and message types.
+     q3 and the Marketing group have no thread on desktop either. */
+  var THREADS = {
+  // ── Channel · Product & Engineering — long, multi-person, files + media ──
+  prodeng: [
+    { divider:'day', day:9 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'9:41 AM', type:'text', text:"Kicking off the Q3 planning thread here so everything stays in one place.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:43 AM', type:'text', text:"Good call. I'll drop the research summary once the last interviews wrap.", reactions:[] },
+    { sender:'self', time:'9:45 AM', type:'text', text:"Perfect — let's keep all the decisions in this channel.", reactions:[] },
+    { divider:'time', time:'2:14 PM' },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'2:14 PM', type:'file-with-text', text:'First pass at the revenue model — rough numbers for now:', filename:'Q3_Revenue_Model_v1.xlsx', filesize:'241 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:18 PM', type:'text', text:'Thanks Tom, will review tonight and send notes.', reactions:[] },
+    { divider:'day', day:3 },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'8:58 AM', type:'text', text:'Design system tokens are merged — colours, spacing and radius all landed.', reactions:[{emoji:'🎉', count:3, own:true}] },
+    { sender:'self', time:'9:00 AM', type:'text', text:'Nice — that unblocks the settings screens.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'text', text:'Research summary is in: 12 interviews, three clear themes.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'9:02 AM', type:'file-solo', filename:'Q3_Research_Summary.pdf', filesize:'820 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { divider:'time', time:'1:22 PM' },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'1:22 PM', type:'text', text:'Reviewed the model — the Q3 forecast reads conservative. Can we revisit the growth assumptions before the board deck?', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'1:25 PM', type:'text', text:"Fair. I'll bump the growth rate and resend v2.", reactions:[] },
+    { sender:'self', time:'1:26 PM', type:'text', text:'👍', reactions:[] },
+    { divider:'day', day:1 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:12 AM', type:'text', text:'Reminder: design review moved to 3pm today.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'10:15 AM', type:'media-grid', text:'Latest empty-state explorations:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'The middle one — it has personality without being noisy.', reactions:[{emoji:'👍', count:12, own:true},{emoji:'😀', count:3, own:true},{emoji:'❤️', count:2, own:false},{emoji:'⚠️', count:1, own:true},{emoji:'👋', count:5, own:false},{emoji:'🥷', count:1, own:false}] },
+    { divider:'time', time:'4:30 PM' },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'4:30 PM', type:'text', text:'Review done — notes in the doc. Two small changes and we are good to build.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'4:33 PM', type:'file-with-text', text:'Revenue model v2 with the updated assumptions:', filename:'Q3_Revenue_Model_v2.xlsx', filesize:'256 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'4:35 PM', type:'text', text:'Thanks all — much better.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Morning all — sprint review is at 2pm. Quick heads up before then.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:28 AM', type:'text', text:'Can everyone make sure their tickets are updated?', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:29 AM', type:'text', text:'Done on my side. Moved the two API tickets to review.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:30 AM', type:'file-with-text', text:'Here is the updated revenue model:', filename:'Q3_Revenue_Model_v4.xlsx', filesize:'284 KB', filetype:'Spreadsheet', thumb:null, reactions:[] },
+    { sender:'self', time:'10:31 AM', type:'text', text:"Thanks Tom. I'll fold these into the deck.", reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:32 AM', type:'image-with-text', text:'Also — found a great spot for the team offsite 🌴', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[{emoji:'😍', count:5, own:false},{emoji:'👍', count:3, own:true}] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'That looks amazing.', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:33 AM', type:'text', text:'Count me in.', reactions:[] },
+    { sender:'self', time:'10:34 AM', type:'text', text:'Booking it. Details to follow.', reactions:[] },
+    { sender:'Tom Berger', color:'green', initials:'TB', external:true, time:'10:36 AM', type:'video-solo', thumb:'images/VariantLandscape.png', duration:'2:14', filesize:'8.4 MB', reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:37 AM', type:'audio', duration:'0:48', played:'0:21', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'10:38 AM', type:'text', text:'One more thing before the review: we still need a decision on the onboarding flow. The current design adds an extra interstitial step that is hurting conversion in the funnel test. I would suggest we drop it and go straight to the workspace. Thoughts?', reactions:[] },
+    { sender:'self', time:'10:39 AM', type:'text', text:"Agreed, let's drop it.", reactions:[] },
+    { sender:'Priya Anand', color:'petrol', initials:'PA', time:'10:39 AM', type:'text', text:'+1', reactions:[{emoji:'✅', count:4, own:true}] },
+  ],
+
+  // ── Channel · Marketing Team — medium, images ──
+  marketing: [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'text', text:'Campaign assets are ready for review.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:15 AM', type:'image-solo', image:'images/VariantPortrait.png', aspectRatio:'portrait', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'9:16 AM', type:'text', text:'Looking sharp. Can we get a square crop for Instagram?', reactions:[] },
+    { sender:'self', time:'9:17 AM', type:'text', text:'On it — square version coming up.', reactions:[] },
+    { sender:'self', time:'9:18 AM', type:'image-with-text', text:'Here is the square crop:', image:'images/VariantSquare.png', aspectRatio:'square', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'9:20 AM', type:'text', text:'Perfect, ship it.', reactions:[{emoji:'🎉', count:2, own:false}] },
+  ],
+
+  // ── Channel · Design System — medium-long, media grid + file ──
+  design: [
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Pushed the new chat bubble specs to Figma.', reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:02 AM', type:'text', text:'Own, 1:1, and group variants are all in there now.', reactions:[] },
+    { sender:'self', time:'11:03 AM', type:'text', text:'Saw them — the grouping states look great.', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:05 AM', type:'media-grid', text:'Reference shots for the new empty states:', media:[{type:'image',src:'images/VariantLandscape.png'},{type:'image',src:'images/VariantPortrait.png'},{type:'image',src:'images/VariantSquare.png'}], reactions:[] },
+    { sender:'self', time:'11:06 AM', type:'text', text:"Love these. I'll wire them into the prototype.", reactions:[] },
+    { sender:'Sam Okoye', color:'blue', initials:'SO', time:'11:08 AM', type:'file-solo', filename:'Wire_DS_Tokens_v2.pdf', filesize:'1.1 MB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'11:09 AM', type:'text', text:'Thanks!', reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'11:10 AM', type:'text', text:'Once the bubbles are in, we should do a quick QA pass across light and dark mode. I noticed a couple of contrast issues on the received bubbles in dark.', reactions:[] },
+    { sender:'self', time:'11:11 AM', type:'text', text:'Good catch — adding it to the list.', reactions:[] },
+  ],
+
+  // ── Channel · General — short ──
+  general: [
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:45 AM', type:'text', text:'Coffee machine on the 3rd floor is fixed ☕', reactions:[{emoji:'🙌', count:6, own:true}] },
+    { sender:'self', time:'8:46 AM', type:'text', text:'Hero.', reactions:[] },
+    { sender:'Noah Klein', color:'amber', initials:'NK', time:'8:46 AM', type:'text', text:'Anytime 😄', reactions:[] },
+  ],
+
+  // ── Group · Q3 Planning — medium, file ──
+  q3: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:20 PM', type:'file-with-text', text:'Sharing the Q3 planning doc — please add your items by Friday.', filename:'Q3_Planning_2026.docx', filesize:'92 KB', filetype:'DOC', thumb:null, reactions:[] },
+    { sender:'Mara Voss', color:'purple', initials:'MV', time:'2:22 PM', type:'text', text:'Added the design milestones.', reactions:[] },
+    { sender:'self', time:'2:25 PM', type:'text', text:"Engineering capacity is in. We're tight but doable.", reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'2:26 PM', type:'text', text:'Thanks both 🙏', reactions:[{emoji:'👍', count:2, own:false}] },
+  ],
+
+  // ── Group · Marketing Team — short ──
+  'marketing-grp': [
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:40 PM', type:'text', text:'Quick one — are we still on for the launch call tomorrow?', reactions:[] },
+    { sender:'self', time:'4:41 PM', type:'text', text:'Yes, 10am.', reactions:[] },
+    { sender:'Lena Fischer', color:'red', initials:'LF', time:'4:41 PM', type:'text', text:'Great, see you then.', reactions:[] },
+  ],
+
+  // ── 1:1 · Jaqueline Olaho — medium, file ──
+  jo: [
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:05 PM', type:'text', text:'Hey! Did you get a chance to look at the brief?', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:'Yes — mostly good. One section needs tightening.', reactions:[] },
+    { sender:'self', time:'1:06 PM', type:'text', text:"I'll send notes this afternoon.", reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:07 PM', type:'text', text:'Perfect, thank you 🙌', reactions:[] },
+    { sender:'Jaqueline Olaho', color:'purple', initials:'JO', time:'1:10 PM', type:'file-with-text', text:'Here is the latest version btw:', filename:'Creative_Brief_v3.pdf', filesize:'540 KB', filetype:'PDF', thumb:null, reactions:[] },
+    { sender:'self', time:'1:12 PM', type:'text', text:'Got it.', reactions:[] },
+  ],
+
+  // ── 1:1 · Dor Lewis — short ──
+  dl: [
+    { divider:'day', day:2 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:05 AM', type:'text', text:'Hey — did you get a chance to look at the migration plan?', reactions:[] },
+    { sender:'self', time:'11:20 AM', type:'text', text:'Reading it now. The phased rollout makes sense.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'11:22 AM', type:'text', text:'Great. I was worried about the downtime window.', reactions:[] },
+    { divider:'time', time:'3:47 PM' },
+    { sender:'self', time:'3:47 PM', type:'text', text:'We can keep it under 10 minutes if we pre-warm the caches.', reactions:[] },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'3:49 PM', type:'text', text:"Perfect. I'll schedule it for Saturday night.", reactions:[{emoji:'👍', count:1, own:true}] },
+    { divider:'day', day:1 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'9:12 AM', type:'text', text:'Migration went through cleanly. Zero errors overnight.', reactions:[{emoji:'🎉', count:1, own:true}] },
+    { sender:'self', time:'9:15 AM', type:'text', text:'Amazing work. Thanks for driving it.', reactions:[] },
+    { divider:'day', day:0 },
+    { sender:'Dor Lewis', color:'blue', initials:'DL', time:'5:30 PM', type:'text', text:'Are you joining the standup?', reactions:[] },
+    { sender:'self', time:'5:30 PM', type:'text', text:'2 min late, starting now.', reactions:[] },
+  ],
+
+  // ── 1:1 · Deniz Agha — medium, image ──
+  da: [
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:15 AM', type:'image-with-text', text:'Check out the venue for the workshop:', image:'images/VariantLandscape.png', aspectRatio:'landscape', reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:"Whoa, that's gorgeous.", reactions:[] },
+    { sender:'self', time:'10:16 AM', type:'text', text:'How many does it fit?', reactions:[] },
+    { sender:'Deniz Agha', color:'amber', initials:'DA', time:'10:17 AM', type:'text', text:'Up to 30. Plenty of room.', reactions:[] },
+    { sender:'self', time:'10:18 AM', type:'text', text:'Book it 🎉', reactions:[] },
+  ],
+
+  // ── 1:1 · Marcel Pierrot — short ──
+  mp: [
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:00 PM', type:'text', text:'Lunch?', reactions:[] },
+    { sender:'self', time:'12:01 PM', type:'text', text:'Give me 15.', reactions:[] },
+    { sender:'Marcel Pierrot', color:'red', initials:'MP', time:'12:01 PM', type:'text', text:'👍', reactions:[] },
+  ],
+}
+
+  var DAY_MS = 86400000;
+  function dayLabel(n) {
+    if (n === 0) return 'Today';
+    if (n === 1) return 'Yesterday';
+    var d = new Date(Date.now() - n * DAY_MS);
+    return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  /* Same rule as desktop and as the Figma spec: consecutive messages
+     from one sender sharing a timestamp form one run. */
+  function groupMessages(msgs) {
+    var runs = [];
+    msgs.forEach(function (m) {
+      var last = runs[runs.length - 1];
+      if (last && last.sender === m.sender && last.time === m.time) last.bubbles.push(m);
+      else runs.push({ sender: m.sender, time: m.time, bubbles: [m] });
+    });
+    return runs;
+  }
+
+  function mediaHtml(src) {
+    return '<span class="msg-media"><img src="' + src + '" alt="" '
+         + 'onerror="this.parentNode.outerHTML=\'<span class=&quot;msg-media-fallback&quot;>Image</span>\'"></span>';
+  }
+
+  function bodyHtml(m) {
+    var out = '';
+    if (m.text) out += '<span class="msg-text">' + m.text + '</span>';
+    if (m.type === 'image' || m.type === 'image-solo' || m.type === 'image-with-text' || m.type === 'video-solo') {
+      if (m.src) out += mediaHtml(m.src);
+    }
+    if (m.type === 'media-grid' && m.media) {
+      out += '<span class="msg-grid">' + m.media.map(function (x) { return mediaHtml(x.src); }).join('') + '</span>';
+    }
+    if (m.type === 'file-solo' || m.type === 'file-with-text') {
+      out += '<span class="msg-file">' + WDS.icon('drive', { size: 20 })
+           + '<span class="msg-file-meta"><span class="msg-file-name">' + (m.filename || 'File') + '</span>'
+           + '<span class="msg-file-sub">' + [m.filetype, m.filesize].filter(Boolean).join(' \u00b7 ') + '</span></span></span>';
+    }
+    if (m.type === 'audio') {
+      out += '<span class="msg-audio">' + WDS.icon('meetings', { size: 16 })
+           + '<span class="msg-audio-wave"></span><span class="msg-file-sub">' + (m.duration || '0:12') + '</span></span>';
+    }
+    return out;
+  }
+
+  function reactionsHtml(m) {
+    if (!m.reactions || !m.reactions.length) return '';
+    return '<div class="msg-reactions">' + m.reactions.map(function (r) {
+      return '<span class="msg-reaction' + (r.own ? ' own-reaction' : '') + '">'
+           + '<span class="emoji">' + r.emoji + '</span>'
+           + '<span class="count">' + r.count + '</span></span>';
+    }).join('') + '</div>';
+  }
+
+  function renderThread(key, isGroupConv) {
+    var host = document.getElementById('cv-messages');
+    var msgs = THREADS[key];
+    if (!msgs || !msgs.length) {
+      host.innerHTML = '<div class="msg-empty">No messages yet.</div>';
+      return;
+    }
+    var html = '', buffer = [];
+
+    function flush() {
+      if (!buffer.length) return;
+      groupMessages(buffer).forEach(function (run) {
+        var own = run.sender === 'self';
+        var showAvatar = isGroupConv && !own;
+        run.bubbles.forEach(function (m, i) {
+          var first = i === 0, last = i === run.bubbles.length - 1;
+          var cls = 'msg-row ' + (own ? 'own' : 'other')
+                  + (showAvatar ? ' has-avatar' : '')
+                  + (first ? ' first' : '') + (last ? ' last' : '');
+          var gutter = showAvatar
+            ? '<span class="msg-avatar-gutter">' + (first
+                ? '<span class="av">' + personAvatar({ initials: m.initials, color: m.color }) + '</span>' : '') + '</span>'
+            : '';
+          var sender = (showAvatar && first)
+            ? '<span class="msg-sender" style="color:var(--wire-identity-' + (m.color || 'blue') + ')">' + m.sender
+              + (m.external ? '<span class="msg-external">External</span>' : '') + '</span>'
+            : '';
+          var status = last
+            ? '<span class="msg-status">' + run.time
+              + (own ? WDS.icon('delivered', { size: 13 }) : '') + '</span>'
+            : '';
+          html += '<div class="' + cls + '">' + gutter
+                + '<div class="msg-stack">'
+                +   '<div class="bubble ' + (own ? 'own' : 'other') + '">'
+                +     sender + bodyHtml(m) + status
+                +   '</div>'
+                +   reactionsHtml(m)
+                + '</div></div>';
+        });
+      });
+      buffer = [];
+    }
+
+    msgs.forEach(function (m) {
+      if (m.divider) {
+        flush();
+        html += '<div class="msg-divider"><span class="rule"></span><span>'
+             + (m.divider === 'day' ? dayLabel(m.day) : m.time)
+             + '</span><span class="rule"></span></div>';
+      } else if (m.type === 'system') {
+        flush();
+        html += '<div class="msg-system">' + WDS.icon('attention', { size: 14 }) + '<span>' + m.text + '</span></div>';
+      } else {
+        buffer.push(m);
+      }
+    });
+    flush();
+    host.innerHTML = html;
+  }
+
+  /* ── Open / close ──────────────────────────────────────────────*/
+  function openConversation(c) {
+    document.getElementById('cv-title').textContent = c.name;
+    document.getElementById('cv-avatar').innerHTML = avatarFor(c);
+    renderThread(c.convKey, c.kind !== 'person');
+    document.getElementById('conv-view').classList.add('open');
+    document.getElementById('cv-scroll').scrollTop = 0;
+  }
+  function closeConversation() { document.getElementById('conv-view').classList.remove('open'); }
+
+  function bindConversationView() {
+    document.getElementById('cv-back').innerHTML   = WDS.icon('back',     { size: 16 });
+    document.getElementById('cv-action').innerHTML = WDS.icon('overflow', { size: 16 });
+    document.getElementById('cv-chevron').innerHTML = WDS.icon('back',    { size: 16 });
+    document.getElementById('cv-chevron').style.transform = 'rotate(180deg)';
+    document.getElementById('cv-send').innerHTML   = WDS.icon('send',     { size: 16 });
+    document.getElementById('cv-back').addEventListener('click', closeConversation);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeConversation();
+    });
+  }
+
+  /* ── Group & sort menu ─────────────────────────────────────────
+     Same systematic as the desktop filter menu: labelled sections,
+     radio options with a trailing check, unbuilt options shown inert.
+     "Filter by" lives in the pills now, so it is absent here. */
+  var MENU = [
+    { axis: 'group', label: 'Group by', options: [
+        { id: 'none',    label: 'None' },
+        { id: 'type',    label: 'Message types' },
+        { id: 'folders', label: 'Folders', disabled: true }
+      ] },
+    { axis: 'sort', label: 'Sort by', options: [
+        { id: 'activity', label: 'Activity' },
+        { id: 'alphabet', label: 'Alphabetically' }
+      ] }
+  ];
+  var groupBy = 'none';
+  var sortBy  = 'activity';
+
+  /* Grouping buckets mirror desktop: Channels / Groups / 1:1 Conversations */
+  var BUCKETS = [
+    { kind: 'channel', label: 'Channels' },
+    { kind: 'group',   label: 'Groups' },
+    { kind: 'person',  label: '1:1 Conversations' }
+  ];
+
+  function renderMenu() {
+    var menu = document.getElementById('conv-menu');
+    menu.innerHTML = MENU.map(function (sec, si) {
+      var current = sec.axis === 'group' ? groupBy : sortBy;
+      var opts = sec.options.map(function (o) {
+        var on = o.id === current && !o.disabled;
+        return '<button class="menu-opt" role="menuitemradio" data-axis="' + sec.axis + '" data-id="' + o.id + '"'
+             + ' aria-checked="' + on + '"'
+             + (o.disabled ? ' aria-disabled="true" title="Not yet implemented"' : '')
+             + '><span>' + o.label + '</span>'
+             + '<span class="menu-check">' + WDS.icon('check', { size: 18 }) + '</span></button>';
+      }).join('');
+      return (si ? '<div class="menu-sep" role="separator"></div>' : '')
+           + '<div class="menu-label">' + sec.label + '</div>' + opts;
+    }).join('');
+  }
+
+  function bindMenu() {
+    var btn  = document.getElementById('tb-overflow');
+    var menu = document.getElementById('conv-menu');
+    function close() { menu.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+    function open()  { menu.classList.add('open');    btn.setAttribute('aria-expanded', 'true'); }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menu.classList.contains('open') ? close() : open();
+    });
+    menu.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var opt = e.target.closest('.menu-opt');
+      if (!opt || opt.getAttribute('aria-disabled') === 'true') return;
+      if (opt.dataset.axis === 'group') groupBy = opt.dataset.id;
+      else                              sortBy  = opt.dataset.id;
+      renderMenu();
+      renderList();
+    });
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  }
+
+  /* ── Filters ───────────────────────────────────────────────────
+     Order follows the mock (All / Unread / Favorites). Unread and
+     Favorites combine — a row must satisfy every active filter (the
+     same AND semantics as the desktop filter menu). "All" is not a
+     filter of its own; it clears the set, and reads as pressed
+     whenever nothing else is. */
+  var FILTERS = [
+    { id: 'all',       label: 'All' },
+    { id: 'unread',    label: 'Unread' },
+    { id: 'favorites', label: 'Favorites' }
+  ];
+  var UNREAD_STATES = ['unread', 'mention', 'reply', 'thread', 'ping',
+                       'missed-call', 'muted-mention', 'muted-reply',
+                       'incoming-request', 'onboarding'];
+  var activeFilters = [];
+
+  function hasFilter(id) { return activeFilters.indexOf(id) !== -1; }
+
+  function toggleFilter(id) {
+    var i = activeFilters.indexOf(id);
+    if (i === -1) activeFilters.push(id);
+    else          activeFilters.splice(i, 1);
+  }
+
+  function matchesFilter(c) {
+    if (!activeFilters.length) return true;
+    if (hasFilter('unread')    && UNREAD_STATES.indexOf(c.state) === -1) return false;
+    if (hasFilter('favorites') && !c.favorite) return false;
+    return true;
+  }
+
+  function emptyMessage() {
+    if (hasFilter('unread') && hasFilter('favorites')) return 'Nothing matches these filters';
+    if (hasFilter('favorites')) return 'No favorites';
+    if (hasFilter('unread'))    return 'No unread conversations';
+    return 'No conversations';
+  }
+
+  function syncFilterPills() {
+    document.querySelectorAll('.filter-pill').forEach(function (b) {
+      var on = b.dataset.filter === 'all' ? !activeFilters.length : hasFilter(b.dataset.filter);
+      b.setAttribute('aria-pressed', on);
+    });
+  }
+
+  function renderFilters() {
+    var bar = document.getElementById('filter-bar');
+    bar.innerHTML = FILTERS.map(function (f) {
+      return '<button class="filter-pill" data-filter="' + f.id + '" '
+           + 'aria-pressed="false" data-m3="FilterChip">' + f.label + '</button>';
+    }).join('');
+    syncFilterPills();
+
+    bar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.filter-pill');
+      if (!btn) return;
+      if (btn.dataset.filter === 'all') activeFilters = [];
+      else                              toggleFilter(btn.dataset.filter);
+      syncFilterPills();
+      renderList();
+    });
+  }
+
+  function sortRows(list) {
+    var l = list.slice();
+    if (sortBy === 'alphabet') l.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    else                       l.sort(function (a, b) { return b.activity - a.activity; });
+    return l;
+  }
+
+  function renderList() {
+    var list = document.getElementById('conv-list');
+    var shown = sortRows(CONVERSATIONS.filter(matchesFilter));
+    if (!shown.length) {
+      list.innerHTML = '<li class="list-empty">' + emptyMessage() + '</li>';
+      return;
+    }
+    if (groupBy === 'type') {
+      list.innerHTML = BUCKETS.map(function (b) {
+        var inBucket = shown.filter(function (c) { return c.kind === b.kind; });
+        if (!inBucket.length) return '';
+        return '<li class="section-label" role="presentation">' + b.label + '</li>'
+             + inBucket.map(rowHtml).join('');
+      }).join('');
+      return;
+    }
+    list.innerHTML = shown.map(rowHtml).join('');
+  }
+
+  function rowHtml(c, i) {
+    return [c].map(function (c, i) {
+      var indicators = (c.verified  ? '<span class="ci-verified">'  + WDS.icon('verified',  { size: 14 }) + '</span>' : '')
+                     + (c.legalHold ? '<span class="ci-legalhold">' + WDS.icon('legalhold', { size: 12 }) + '</span>' : '')
+                     + (c.qualifier ? '<span class="ci-qualifier">' + c.qualifier + '</span>' : '');
+      var body = '<div class="ci-line"><span class="ci-name">' + c.name + '</span>' + indicators + '</div>'
+               + (c.sub ? '<div class="ci-sub">' + c.sub + '</div>' : '');
+      return '<li class="conv-item" data-index="' + i + '" data-state="' + c.state + '" data-m3="ListItem">'
+           +   '<div class="av">' + avatarFor(c) + '</div>'
+           +   '<div class="ci-body">' + body + '</div>'
+           +   '<div class="ci-trail">' + trailing(c) + '</div>'
+           + '</li>';
+    }).join('');
+  }
+
+  function bindListOnce() {
+    var list = document.getElementById('conv-list');
+    list.addEventListener('click', function (e) {
+      var row = e.target.closest('.conv-item');
+      if (!row) return;
+      var name = row.querySelector('.ci-name').textContent;
+      var conv = CONVERSATIONS.find(function (c) { return c.name === name; });
+      if (conv) openConversation(conv);
+    });
+  }
+
+  /* ── Navigation bar — order per the Design Vision mock ── */
+  /* Only Conversations and Settings route anywhere yet. The others are
+     drawn normally — they simply do nothing until their screens exist. */
+  var DESTINATIONS = [
+    { id: 'conversations', label: 'Conversations', ready: true },
+    { id: 'drive',         label: 'Drive' },
+    { id: 'meetings',      label: 'Meetings' },
+    { id: 'settings',      label: 'Settings',      ready: true },
+    { id: 'search',        label: 'Search' }
+  ];
+
+  function renderNav() {
+    var nav = document.getElementById('nav-bar');
+    nav.innerHTML = DESTINATIONS.map(function (d, i) {
+      return '<button class="nav-item" role="tab" data-dest="' + d.id + '" '
+           +   'aria-label="' + d.label + '" aria-selected="' + (i === 0) + '"'
+           +   ' data-ready="' + (d.ready ? 'true' : 'false') + '" data-m3="NavigationBarItem">'
+           +   '<span class="nav-pill">' + WDS.icon(d.id, { size: 24, active: i === 0 }) + '</span>'
+           + '</button>';
+    }).join('');
+
+    nav.addEventListener('click', function (e) {
+      var btn = e.target.closest('.nav-item');
+      if (!btn) return;
+      if (btn.dataset.ready !== 'true') return;   // placeholder destination
+      nav.querySelectorAll('.nav-item').forEach(function (b) {
+        var on = b === btn;
+        b.setAttribute('aria-selected', on);
+        b.querySelector('.nav-pill').innerHTML = WDS.icon(b.dataset.dest, { size: 24, active: on });
+      });
+      var dest = btn.dataset.dest === 'settings' ? 'settings' : 'conversations';
+      page.setAttribute('data-dest', dest);
+      document.querySelector('.tb-title').textContent =
+        dest === 'settings' ? 'Settings' : 'Conversations';
+    });
+  }
+
+  function renderChrome() {
+    document.getElementById('tb-avatar').innerHTML =
+      personAvatar({ initials: 'KD', color: 'blue', presence: 'available' });
+    document.getElementById('tb-overflow').innerHTML = WDS.icon('overflow', { size: 16 });
+    document.getElementById('fab').innerHTML        = WDS.icon('compose',  { size: 20 });
+    document.getElementById('search-icon').innerHTML = WDS.icon('search',   { size: 16 });
+  }
+
+  /* Routes the in-app Appearance controls. */
+  function renderControls() {
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-theme-set],[data-accent-set],[data-mood-set]');
+      if (!t) return;
+      if (t.dataset.themeSet)  { themeIsUserChoice = true; setTheme(t.dataset.themeSet); }
+      if (t.dataset.accentSet) setAccent(t.dataset.accentSet);
+      if (t.dataset.moodSet)   applyMood(t.dataset.moodSet);
+      syncAppearanceControls();
+    });
+  }
+
+  if (typeof WDS === 'undefined') {
+    document.querySelector('.app-surface').innerHTML =
+      '<div style="padding:24px;font-size:13px;line-height:1.5;color:var(--wire-content-base-secondary)">'
+      + '<strong style="color:var(--wire-content-danger-primary)">wds-icons.js did not load.</strong><br><br>'
+      + 'This file expects <code>wds-tokens.css</code> and <code>wds-icons.js</code> to sit next to it '
+      + 'under exactly those names. If your browser renamed them on download, use the standalone build instead.'
+      + '</div>';
+    return;
+  }
+
+  renderChrome();
+  renderSettings();
+  bindSettings();
+  bindConversationView();
+  renderMenu();
+  bindMenu();
+  renderFilters();
+  renderList();
+  bindListOnce();
+  renderNav();
+  renderControls();
+  setTheme(systemTheme());
+  watchSystemTheme();
+  setAccent('blue');
+  applyMood('mono');
+})();
+</script>
+</body>
+</html>
