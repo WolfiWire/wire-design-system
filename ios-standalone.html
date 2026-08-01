@@ -751,6 +751,23 @@ body {
   border: 2px solid var(--wire-bg-base-primary);
 }
 
+/* Trailing pair: glass "more", then the prominent new-conversation
+   action. Separate surfaces, not one capsule. */
+.tb-trailing { display: flex; align-items: center; gap: 8px; }
+
+/* Prominent action — filled with the selected accent. */
+.tb-action {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border: 0; padding: 0; border-radius: 100px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-accent-primary);
+  color: var(--wire-content-accent-on-primary);
+  box-shadow: var(--ios-glass-shadow);
+}
+.tb-action:active { opacity: .7; }
+.tb-action:focus { outline: none; }
+.tb-action:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
+
 /* Glass capsule button group — iOS 26 toolbar material */
 .glass-group {
   height: 44px; display: flex; align-items: center; gap: 20px;
@@ -1140,8 +1157,8 @@ body {
   /* Closed = the trailing capsule's exact footprint (100 x 44, r 296)
      at its exact position, so opening reads as one shape reshaping
      rather than a second surface appearing. */
-  top: 0; right: 16px;
-  width: 100px; height: 44px; border-radius: 296px;
+  top: 0; right: 68px;
+  width: 44px; height: 44px; border-radius: 296px;
   padding: 10px 16px;
   opacity: 0; pointer-events: none;
   transition:
@@ -1237,23 +1254,6 @@ body {
 .tab:focus { outline: none; }
 .tab:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
 
-/* ─── TEMPORARY DEMO CONTROLS ──────────────────────────────────────
-   Theme / accent / background move into Settings → Appearance once
-   that screen is built, exactly as on Android. */
-.controls { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
-.ctl { display: flex; align-items: center; gap: 6px; }
-.ctl-label { font-size: 12px; font-weight: 600; opacity: .6; text-transform: uppercase; letter-spacing: .6px; }
-.ctl button {
-  font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
-  border: 1px solid var(--wire-border-base-primary);
-  background: var(--wire-bg-base-primary); color: var(--wire-content-base-primary);
-}
-.ctl button[aria-pressed="true"] {
-  background: var(--wire-bg-accent-primary); color: #fff;
-  border-color: var(--wire-bg-accent-primary);
-}
-.sw { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--wire-border-base-primary); cursor: pointer; padding: 0; }
-.caption { font-size: 13px; opacity: .65; max-width: 560px; text-align: center; margin: 0; }
 </style>
 </head>
 <body>
@@ -1288,10 +1288,12 @@ body {
         <span class="tb-presence" title="Available"></span>
       </div>
       <div class="tb-title" data-swiftui="ToolbarItem(.principal)">Conversations</div>
-      <div class="glass-group" data-swiftui="ToolbarItem(.topBarTrailing)">
-        <button class="glass-btn" id="tb-more" aria-label="Group and sort conversations"
-                aria-haspopup="menu" aria-expanded="false"></button>
-        <button class="glass-btn" id="tb-plus" aria-label="New conversation"></button>
+      <div class="tb-trailing" data-swiftui="ToolbarItem(.topBarTrailing)">
+        <div class="glass-group" id="more-group">
+          <button class="glass-btn" id="tb-more" aria-label="Group and sort conversations"
+                  aria-haspopup="menu" aria-expanded="false"></button>
+        </div>
+        <button class="tb-action" id="tb-plus" aria-label="New conversation"></button>
       </div>
       <div class="menu" id="conv-menu" role="menu" aria-label="Group and sort conversations"
            data-swiftui="Menu"></div>
@@ -1327,11 +1329,6 @@ body {
 
   </div>
 </div>
-
-<p class="caption">
-  Native SwiftUI / iOS 26 geometry, Wire Design System 2.0 tokens.
-  Theme, accent and background live in Settings &rarr; Appearance.
-</p>
 
 <script>
 /* ── inlined: wds-icons.js ── */
@@ -1663,7 +1660,7 @@ body {
   function bindMenu() {
     var btn   = document.getElementById('tb-more');
     var menu  = document.getElementById('conv-menu');
-    var group = document.querySelector('.glass-group');
+    var group = document.getElementById('more-group');
 
     /* Natural height of the expanded menu: inner content + 10pt padding
        top and bottom. Measured live so it survives content changes. */
