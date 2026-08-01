@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="hide-list-search">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -669,14 +669,30 @@ body {
 }
 
 /* ─── STATUS BAR ───────────────────────────────────────────────────
-   Sits directly on the wallpaper — transparent by design. */
+   Drawn once, by the device rather than by any screen, and never
+   scrolls or transitions — the real system bar behaves this way.
+   Screens render behind it edge to edge; these reserve the band:
+     .status-spacer     home surface, 22 (8 inset + 14 content)
+     .cv-status-inset   overlay headers, 14 (their own 8 padding) */
 .status-bar {
-  height: 22px; flex-shrink: 0;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 60;
+  height: 22px; pointer-events: none;
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 8px 0;
   font-size: 12px; font-weight: 500; letter-spacing: 0.1px;
   color: var(--chrome-fg);
 }
+.status-spacer   { height: 22px; flex-shrink: 0; }
+.cv-status-inset { height: 14px; flex-shrink: 0; }
+
+/* Contrast follows the topmost surface: the wallpaper decides on the
+   home surface, the app surface decides under a full-screen overlay. */
+.device:has(#conv-view.open, #conv-details.open, #search-view.open, #settings-detail.open)
+  .status-bar { color: var(--wire-content-base-primary); }
+.device:has(#conv-view.open, #conv-details.open, #search-view.open, #settings-detail.open)
+  .status-icons span { background: var(--wire-content-base-primary); }
+.device:has(#conv-view.open, #conv-details.open, #search-view.open, #settings-detail.open)
+  .si-batt { background: transparent; border-top-color: var(--wire-content-base-primary); }
 .status-icons { display: flex; align-items: center; gap: 5px; }
 .status-icons span { display: block; background: var(--chrome-fg); }
 .si-sig  { width: 10px; height: 10px; border-radius: 2px; }
@@ -727,6 +743,15 @@ body {
   overflow: hidden;
 }
 .conv-list { list-style: none; margin: 0; padding: 0 0 60px; }
+
+/* Search bar toggle (Settings > Appearance): with the bar hidden the
+   surface reclaims the band it occupied, and the Search destination in
+   the navigation bar becomes the only way in. */
+html.hide-list-search .search-bar { display: none; }
+html.hide-list-search .app-surface { min-height: 100%; }
+
+/* Label and control on one line, hint underneath. */
+.sd-inline { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 
 /* ─── SEARCH BAR ───────────────────────────────────────────────────
    344x40 at y86. Fully rounded per M3 SearchBar (supersedes the mock's
@@ -988,7 +1013,9 @@ body {
 #conv-details {
   position: absolute; inset: 0; z-index: 46;
   display: flex; flex-direction: column;
-  background: var(--wire-bg-base-tertiary);
+  /* Sheet tokens: primary is the surface the screen sits on, secondary
+     is every item resting on it. */
+  background: var(--wire-bg-sheet-primary);
   /* M3 full-screen dialog: rises over the conversation and fades in,
      rather than pushing in from the side. Dismissed with the X. */
   transform: translateY(100%); opacity: 0; visibility: hidden;
@@ -997,7 +1024,7 @@ body {
               visibility .24s;
 }
 #conv-details.open { transform: translateY(0); opacity: 1; visibility: visible; }
-#conv-details .cv-header { background: var(--wire-bg-base-tertiary); border-bottom: 0; }
+#conv-details .cv-header { background: var(--wire-bg-sheet-primary); border-bottom: 0; }
 
 .cd-scroll {
   flex: 1; min-height: 0; overflow-y: auto;
@@ -1037,28 +1064,38 @@ body {
 }
 .cd-action:active { background: var(--wire-bg-base-primary-focus); }
 
-/* Material Tabs — 12/14 medium, uppercase, 0.5 tracking. Sticky. */
+/* Material 3 secondary tabs — 48dp row, Title Small labels in sentence
+   case, a 2dp active indicator spanning the full tab, and a 1dp divider
+   across the row. Sticky. */
 .cd-tabs {
   position: sticky; top: 0; z-index: 2; margin-top: 24px;
-  display: flex; background: var(--wire-bg-base-tertiary);
+  display: flex; background: var(--wire-bg-sheet-primary);
+  box-shadow: inset 0 -1px 0 var(--wire-border-base-primary);
 }
 .cd-tab {
-  flex: 1 0 0; min-width: 0; padding: 17px 8px 16px;
+  position: relative;
+  flex: 1 0 0; min-width: 0; height: 48px; padding: 0 16px;
+  display: flex; align-items: center; justify-content: center;
   background: none; border: 0; cursor: pointer;
-  font: inherit; font-size: 12px; font-weight: 500; line-height: 14px;
-  letter-spacing: 0.5px; text-transform: uppercase; text-align: center;
+  font: inherit; font-size: 14px; font-weight: 500; line-height: 20px;
   color: var(--wire-content-base-secondary);
-  border-bottom: 2px solid var(--wire-border-base-primary);
 }
-.cd-tab[aria-selected="true"] {
-  color: var(--wire-content-accent-primary);
-  border-bottom-color: var(--wire-bg-accent-primary);
+.cd-tab:active { background: color-mix(in srgb, var(--wire-content-base-primary) 8%, transparent); }
+.cd-tab[aria-selected="true"] { color: var(--wire-content-accent-primary); }
+.cd-tab-label {
+  display: inline-block;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+}
+/* Active indicator — full width of the tab item, sitting on the divider. */
+.cd-tab[aria-selected="true"]::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; background: var(--wire-bg-accent-primary);
 }
 
 /* Section label — same component as the Options and Participants heads. */
 .cd-title {
   height: 24px; display: flex; align-items: center; padding: 0 16px;
-  background: var(--wire-bg-base-tertiary);
+  background: var(--wire-bg-sheet-primary);
   font-size: 12px; font-weight: 500; line-height: 14px;
   letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--wire-content-base-secondary);
@@ -1067,7 +1104,7 @@ body {
 /* Data row — label over value, trailing chevron. */
 .cd-data {
   position: relative; padding: 16px 40px 16px 16px;
-  background: var(--wire-bg-base-primary);
+  background: var(--wire-bg-sheet-secondary);
   border-bottom: 1px solid var(--wire-border-base-primary);
   display: flex; flex-direction: column; gap: 4px; cursor: pointer;
 }
@@ -1089,7 +1126,7 @@ body {
 /* Setting row — title, state, switch, description. */
 .cd-setting {
   padding: 12px 12px 12px 16px;
-  background: var(--wire-bg-base-primary);
+  background: var(--wire-bg-sheet-secondary);
   border-bottom: 1px solid var(--wire-border-base-primary);
   display: flex; flex-direction: column; gap: 8px;
 }
@@ -1136,20 +1173,26 @@ body {
 
 /* Participants tab — intro block and filled action. */
 .cd-part-intro {
-  padding: 16px; background: var(--wire-bg-base-primary);
+  padding: 16px; background: var(--wire-bg-sheet-secondary);
   font-size: 15px; font-weight: 400; line-height: 19px; letter-spacing: 0.05px;
   color: var(--wire-content-base-primary);
 }
 .cd-part-intro b { font-weight: 500; }
-.cd-filled {
-  width: 100%; height: 48px; margin-top: 16px; box-sizing: border-box;
-  background: var(--wire-bg-accent-primary); border: 0; border-radius: 16px;
-  color: var(--wire-content-accent-on-primary); cursor: pointer;
-  font: inherit; font-size: 15px; font-weight: 500; line-height: 17px;
-}
-.cd-filled:active { background: var(--wire-bg-accent-primary-focus); }
 .cd-panel { padding-bottom: 32px; }
+/* Clear the floating action button: 24 offset + 48 button + 16 breathing. */
+.cd-panel[data-tab="participants"] { padding-bottom: 88px; }
+
+/* No navigation bar on this screen, so the FAB sits in the corner. */
+#cd-fab { right: 24px; bottom: 24px; display: none; }
+#cd-fab i { font-size: 20px; }
+#cd-fab.show { display: flex; }
 .cd-panel .conv-item:first-child { border-top: 0; }
+.cd-panel .conv-item { background: var(--wire-bg-sheet-secondary); }
+.cd-panel .conv-item:active {
+  background: color-mix(in srgb, var(--wire-content-base-primary) 8%, var(--wire-bg-sheet-secondary));
+}
+/* The action buttons rest on the sheet too. */
+.cd-action { background: var(--wire-bg-sheet-secondary); }
 
 /* ═══ MESSAGE RESULT ROW ════════════════════════════════════════════
    Spec: Android / 39692:274163. Used by the global search for message
@@ -1263,6 +1306,15 @@ body {
 .sv-chips::-webkit-scrollbar { display: none; }
 .sv-count { margin-left: 6px; font-weight: 400; opacity: .6; }
 
+/* File tile — sits in the row's avatar slot, tinted by file type. */
+.sv-file-ic {
+  width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--wire-bg-base-secondary);
+  border: 1px solid var(--wire-border-base-primary);
+}
+.sv-file-ic i { font-size: 16px; }
+
 .sv-results {
   flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 24px;
   -ms-overflow-style: none; scrollbar-width: none;
@@ -1344,10 +1396,6 @@ body {
   flex-shrink: 0; height: 86px; padding: 8px;
   background: var(--wire-bg-base-primary);
   border-bottom: 1px solid var(--wire-border-base-primary);
-}
-.cv-statusbar {
-  height: 14px; display: flex; align-items: center; justify-content: space-between;
-  font-size: 12px; font-weight: 500; color: var(--wire-content-base-primary);
 }
 .cv-titlebar { height: 56px; padding: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
 .cv-back, .cv-action {
@@ -1507,7 +1555,7 @@ body {
    here to --wire-bg-base-tertiary so it themes correctly. */
 .filter-bar {
   flex-shrink: 0; display: flex; gap: 8px;
-  padding: 4px 16px 8px;
+  padding: 8px 16px;
   background: var(--wire-bg-base-primary);
 }
 .filter-pill {
@@ -1542,6 +1590,10 @@ body {
   cursor: pointer; user-select: none;
 }
 .conv-item:first-child { border-top: 1px solid var(--wire-border-base-primary); }
+/* The conversation list closes against the surface: no rule above the
+   first row or below the last one. */
+#conv-list .conv-item:first-child { border-top: 0; }
+#conv-list .conv-item:last-child  { border-bottom: 0; }
 .conv-item:active   { background: var(--wire-bg-base-primary-focus); }
 /* Kept for the tablet two-pane layout; unused on mobile, where the list
    and the conversation are separate screens. */
@@ -1672,6 +1724,7 @@ body {
 }
 .fab:active { background: var(--wire-bg-accent-primary-focus); }
 
+
 /* ─── NAVIGATION BAR ───────────────────────────────────────────────
    M3 navigation bar, 60dp, icon-only (labels hidden per the mock). */
 .nav-bar {
@@ -1732,13 +1785,8 @@ body {
 <div class="device">
   <div id="page" class="bg-mood-mono" data-dest="conversations">
 
-    <!-- M3: system status bar -->
-    <div class="status-bar" data-m3="SystemBars">
-      <span>12:34</span>
-      <span class="status-icons">
-        <span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span>
-      </span>
-    </div>
+    <!-- Band reserved for the system status bar, which the device draws -->
+    <div class="status-spacer" aria-hidden="true"></div>
 
     <!-- M3: TopAppBar (small) -->
     <div class="title-bar" data-m3="TopAppBar">
@@ -1786,10 +1834,7 @@ body {
   <!-- ── SETTINGS DETAIL — pushes over the settings list ── -->
   <section id="settings-detail" aria-label="Settings detail" data-m3="Screen">
     <header class="cv-header">
-      <div class="cv-statusbar">
-        <span>12:34</span>
-        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
-      </div>
+      <div class="cv-status-inset" aria-hidden="true"></div>
       <div class="cv-titlebar">
         <button class="cv-back" id="sd-back" aria-label="Back" data-m3="IconButton"></button>
         <span class="cv-title"><span class="cv-title-text" id="sd-title">Settings</span></span>
@@ -1801,10 +1846,7 @@ body {
   <!-- ── CONVERSATION VIEW — pushes over the list, back returns ── -->
   <section id="conv-view" aria-label="Conversation" data-m3="Screen">
     <header class="cv-header">
-      <div class="cv-statusbar">
-        <span>12:34</span>
-        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
-      </div>
+      <div class="cv-status-inset" aria-hidden="true"></div>
       <div class="cv-titlebar">
         <button class="cv-back" id="cv-back" aria-label="Back" data-m3="IconButton"></button>
         <span class="cv-avatar av" id="cv-avatar"></span>
@@ -1823,10 +1865,7 @@ body {
   <!-- ── CONVERSATION DETAILS — pushes over the conversation ── -->
   <section id="conv-details" aria-label="Conversation details" data-m3="Screen">
     <header class="cv-header">
-      <div class="cv-statusbar">
-        <span>12:34</span>
-        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
-      </div>
+      <div class="cv-status-inset" aria-hidden="true"></div>
       <div class="cv-titlebar">
         <button class="cv-back" id="cd-close" aria-label="Close" data-m3="IconButton"></button>
         <span class="cv-title"><span class="cv-title-text">Conversation Details</span></span>
@@ -1846,15 +1885,14 @@ body {
       <div class="cd-tabs" id="cd-tabs" role="tablist" data-m3="Tabs"></div>
       <div class="cd-panel" id="cd-panel"></div>
     </div>
+    <button class="fab" id="cd-fab" aria-label="Add participants"
+            data-m3="FloatingActionButton"><i class="ph-bold ph-user-plus"></i></button>
   </section>
 
   <!-- ── GLOBAL SEARCH — full-screen M3 search view ── -->
   <section id="search-view" aria-label="Search" data-m3="SearchView">
     <header class="sv-header">
-      <div class="cv-statusbar">
-        <span>12:34</span>
-        <span class="status-icons"><span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span></span>
-      </div>
+      <div class="cv-status-inset" aria-hidden="true"></div>
       <div class="sv-bar" data-m3="SearchBar">
         <button class="sv-icon-btn" id="sv-back" aria-label="Back" data-m3="IconButton"></button>
         <span class="sv-scope" id="sv-scope" style="display:none">
@@ -1871,6 +1909,14 @@ body {
     <div class="sv-results" id="sv-results" role="list" data-m3="LazyColumn"></div>
     <div class="kb" id="sv-keyboard" aria-hidden="true" data-m3="Keyboard"></div>
   </section>
+
+    <!-- M3: system status bar — device-level, static, always on top -->
+    <div class="status-bar" data-m3="SystemBars">
+      <span>12:34</span>
+      <span class="status-icons">
+        <span class="si-sig"></span><span class="si-wifi"></span><span class="si-batt"></span>
+      </span>
+    </div>
 
 </div>
 
@@ -1985,7 +2031,8 @@ body {
   function applyChrome() {
     var isDark = root.getAttribute('data-theme') === 'dark';
     var onDark = (currentMood === 'solid') || isDark;
-    page.style.setProperty('--chrome-fg', onDark ? '#ffffff' : '#000000');
+    /* On the root so the device-level status bar inherits it too. */
+    root.style.setProperty('--chrome-fg', onDark ? '#ffffff' : '#000000');
   }
 
   function applyMood(mood) {
@@ -2264,6 +2311,15 @@ body {
       +     MOODS.map(function (m) {
               return seg('mood', m, m.charAt(0).toUpperCase() + m.slice(1));
             }).join('') + '</div></div>'
+      + '<div class="sd-row">'
+      +   '<div class="sd-inline"><span class="sd-label">Search bar</span>'
+      +     '<button class="m3-switch" role="switch" data-pref="list-search"'
+      +       ' aria-checked="' + (!root.classList.contains('hide-list-search')) + '"'
+      +       ' aria-label="Show the search bar" data-m3="Switch">'
+      +       '<span class="m3-switch-thumb"></span></button></div>'
+      +   '<span class="sd-hint">Show the search bar above the conversation list. '
+      +     'Search is always reachable from the navigation bar.</span>'
+      + '</div>'
       + '<div class="sd-row">' + previewsHtml() + '</div>';
   }
 
@@ -2594,12 +2650,32 @@ body {
      conversations only — messages join once something is typed. */
 
   var SEARCH_FILTERS = [
-    { id: 'all',       label: 'All' },
-    { id: 'favorites', label: 'Favorites' },
-    { id: 'channels',  label: 'Channels' },
-    { id: 'groups',    label: 'Groups' },
-    { id: 'people',    label: 'People' },
-    { id: 'messages',  label: 'Messages' }
+    { id: 'all',           label: 'All' },
+    { id: 'conversations', label: 'Conversations' },
+    { id: 'favorites',     label: 'Favorites' },
+    { id: 'channels',      label: 'Channels' },
+    { id: 'groups',        label: 'Groups' },
+    { id: 'people',        label: 'People' },
+    { id: 'files',         label: 'Files' },
+    { id: 'messages',      label: 'Messages' }
+  ];
+
+  /* Mirrors the desktop prototype's FILES list so both platforms search
+     the same set. Android has no Drive yet, so a hit opens the
+     conversation the file was shared in. */
+  var FILES = [
+    { name: 'Q3_Revenue_Model_v4.xlsx', ftype: 'Spreadsheet', conv: 'prodeng',
+      by: 'Tom Berger',  icon: 'ph-microsoft-excel-logo', color: 'green'  },
+    { name: 'Offsite_Location.png',     ftype: 'Image',       conv: 'prodeng',
+      by: 'Mara Voss',   icon: 'ph-image',                color: 'purple' },
+    { name: 'Demo_Recording.mp4',       ftype: 'Video',       conv: 'prodeng',
+      by: 'Tom Berger',  icon: 'ph-file-video',           color: 'petrol' },
+    { name: 'Brand_Guidelines.pdf',     ftype: 'PDF',         conv: 'marketing',
+      by: 'Lena Roth',   icon: 'ph-file-pdf',             color: 'red'    },
+    { name: 'Design_Tokens.json',       ftype: 'Code',        conv: 'design',
+      by: 'You',         icon: 'ph-brackets-curly',       color: 'blue'   },
+    { name: 'Sprint_Notes.docx',        ftype: 'Document',    conv: 'prodeng',
+      by: 'Priya Anand', icon: 'ph-file-doc',             color: 'blue'   }
   ];
   var searchFilter = 'all';
   var searchQuery  = '';
@@ -2659,13 +2735,22 @@ body {
     input.placeholder = 'Search this conversation';
   }
 
+  function svMatchFiles(q) {
+    return FILES.filter(function (f) {
+      if (searchScope && f.conv !== searchScope.convKey) return false;
+      return !q || f.name.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
   function svCounts(q) {
-    var c = svMatchConvs(q), m = svMatchMessages(q);
+    var c = svMatchConvs(q), m = svMatchMessages(q), f = svMatchFiles(q);
     var by = function (k) { return c.filter(function (x) { return x.kind === k; }).length; };
     return {
+      conversations: c.length,
       favorites: c.filter(function (x) { return x.favorite; }).length,
       channels: by('channel'), groups: by('group'), people: by('person'),
-      messages: m.length, all: c.length + m.length
+      files: f.length, messages: m.length,
+      all: c.length + f.length + m.length
     };
   }
 
@@ -2712,9 +2797,25 @@ body {
          + '</li>';
   }
 
+  function svFileRow(f, q) {
+    var conv = CONVERSATIONS.find(function (c) { return c.convKey === f.conv; });
+    var tint = 'color:var(--wire-identity-' + f.color + ');';
+    var meta = [f.ftype, f.by].concat(conv ? [conv.name] : []).join(' \u00b7 ');
+    /* No target yet — the file lives in Drive, which does not exist on
+       Android. The row is drawn normally and simply does nothing. */
+    return '<li class="conv-item" data-state="default" data-m3="ListItem">'
+         +   '<div class="sv-file-ic" style="' + tint + '"><i class="ph-bold ' + f.icon + '"></i></div>'
+         +   '<div class="ci-body">'
+         +     '<div class="ci-line"><span class="ci-name">' + svHi(f.name, q, 'hit-name') + '</span></div>'
+         +     '<div class="ci-sub">' + svEsc(meta) + '</div>'
+         +   '</div>'
+         + '</li>';
+  }
+
   function svRenderResults() {
     var q = searchQuery, el = document.getElementById('sv-results');
-    var convs = svMatchConvs(q), msgs = svMatchMessages(q), html = '';
+    var convs = svMatchConvs(q), msgs = svMatchMessages(q);
+    var files = svMatchFiles(q), html = '';
 
     function section(label, rows) {
       if (!rows.length) return '';
@@ -2724,11 +2825,20 @@ body {
       return convs.filter(function (c) { return c.kind === k; }).map(function (c) { return svConvRow(c, q); });
     };
 
-    if (searchFilter === 'all') {
-      html = section('Channels', pick('channel'))
+    var convSections = function () {
+      return section('Channels', pick('channel'))
            + section('Groups',   pick('group'))
-           + section('People',   pick('person'))
+           + section('People',   pick('person'));
+    };
+
+    if (searchFilter === 'all') {
+      html = convSections()
+           + section('Files',    files.map(function (f) { return svFileRow(f, q); }))
            + section('Messages', msgs.map(function (m) { return svMsgRow(m, q); }));
+    } else if (searchFilter === 'conversations') {
+      html = convSections();
+    } else if (searchFilter === 'files') {
+      html = files.map(function (f) { return svFileRow(f, q); }).join('');
     } else if (searchFilter === 'favorites') {
       html = convs.filter(function (c) { return c.favorite; })
                   .map(function (c) { return svConvRow(c, q); }).join('');
@@ -2968,9 +3078,10 @@ body {
   function renderDetailsTabs(count) {
     document.getElementById('cd-tabs').innerHTML =
         '<button class="cd-tab" role="tab" data-tab="options" aria-selected="'
-      +   (detailsTab === 'options') + '">Options</button>'
+      +   (detailsTab === 'options') + '"><span class="cd-tab-label">Options</span></button>'
       + '<button class="cd-tab" role="tab" data-tab="participants" aria-selected="'
-      +   (detailsTab === 'participants') + '">Participants (' + count + ')</button>';
+      +   (detailsTab === 'participants') + '"><span class="cd-tab-label">Participants ('
+      +   count + ')</span></button>';
   }
 
   function renderOptionsPanel(c) {
@@ -3015,7 +3126,6 @@ body {
     var html = '<div class="cd-part-intro">'
              +   'This group has <b>' + people.length + '</b> participants. '
              +   'Up to 500 people can join a group conversation.'
-             +   '<button class="cd-filled" data-m3="FilledButton">Add participants</button>'
              + '</div>';
     if (admins.length) {
       html += '<div class="cd-title">Group Admins (' + admins.length + ')</div>'
@@ -3039,8 +3149,11 @@ body {
     document.getElementById('cd-participants').textContent =
       people.length + (people.length === 1 ? ' participant' : ' participants');
     renderDetailsTabs(people.length);
-    document.getElementById('cd-panel').innerHTML =
+    var panel = document.getElementById('cd-panel');
+    panel.dataset.tab = detailsTab;
+    panel.innerHTML =
       detailsTab === 'options' ? renderOptionsPanel(c) : renderParticipantsPanel(c, people);
+    document.getElementById('cd-fab').classList.toggle('show', detailsTab === 'participants');
   }
 
   function openDetails() {
@@ -3373,6 +3486,14 @@ body {
       if (t.dataset.accentSet) setAccent(t.dataset.accentSet);
       if (t.dataset.moodSet)   applyMood(t.dataset.moodSet);
       syncAppearanceControls();
+    });
+
+    document.addEventListener('click', function (e) {
+      var sw = e.target.closest('.m3-switch[data-pref="list-search"]');
+      if (!sw) return;
+      var show = sw.getAttribute('aria-checked') !== 'true';
+      sw.setAttribute('aria-checked', show ? 'true' : 'false');
+      root.classList.toggle('hide-list-search', !show);
     });
   }
 
