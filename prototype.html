@@ -2287,13 +2287,13 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
   <nav id="rail" aria-label="Primary navigation">
     <div class="rail-top">
       <div class="account-trigger" id="account-trigger">
-        <div class="user-av" id="account-av" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false" title="Account">KD<span class="presence"></span></div>
+        <div class="user-av" id="account-av" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false" title="Account">Y<span class="presence"></span></div>
         <div class="account-menu" id="account-menu" role="menu" aria-label="Account">
           <div class="acct-header">
-            <div class="acct-av">KD<span class="presence" id="acct-header-presence" style="background:#1d7833"></span></div>
+            <div class="acct-av">Y<span class="presence" id="acct-header-presence" style="background:#1d7833"></span></div>
             <div class="acct-id">
-              <div class="acct-name">Kasimir Dengler</div>
-              <div class="acct-handle">@kasimir.dengler</div>
+              <div class="acct-name">Yoda</div>
+              <div class="acct-handle">@yoda</div>
             </div>
           </div>
           <div class="acct-status"><div class="acct-field-label">Status</div><div class="status-dropdown" id="status-dropdown">
@@ -2709,7 +2709,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
     <div class="ob-body" id="ob-body">
 
       <div class="ob-step" data-step="0">
-        <h2 class="ob-title">Welcome to Wire, Kasimir</h2>
+        <h2 class="ob-title">Welcome to Wire, Yoda</h2>
         <p class="ob-text">Let's take a minute to make Wire feel like yours. Everything here can be changed later.</p>
       </div>
 
@@ -2717,7 +2717,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
         <h2 class="ob-title">Add a profile picture</h2>
         <p class="ob-text">Help people recognise you — or keep your initials.</p>
         <div class="ob-avatar-wrap">
-          <div class="ob-avatar" id="ob-avatar">KD</div>
+          <div class="ob-avatar" id="ob-avatar">Y</div>
           <div class="ob-avatar-actions">
             <button class="wds-btn wds-btn-secondary wds-btn-sm" id="ob-upload-btn"><i class="ph-bold ph-upload-simple" style="margin-right:6px"></i>Upload a photo</button>
             <button class="wds-btn wds-btn-ghost wds-btn-sm" id="ob-remove-btn" style="display:none">Remove</button>
@@ -2826,22 +2826,6 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
         <div class="settings-content">
           <section class="settings-section active" data-section="appearance">
             <h3>Appearance</h3>
-            <div class="settings-row profile-row">
-              <div class="avatar-lg" id="settings-avatar">KD</div>
-              <div class="profile-text">
-                <span class="field-label">Profile picture</span>
-                <span class="field-hint">PNG or JPG, up to 5&nbsp;MB</span>
-                <button class="avatar-change">Change picture</button>
-              </div>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-label"><span class="field-label">Display name</span></div>
-              <div class="settings-row-control"><input class="text-input" type="text" value="Kasimir Dengler"/></div>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-label"><span class="field-label">Username</span></div>
-              <div class="settings-row-control"><input class="text-input" type="text" value="@kasimir.dengler"/></div>
-            </div>
             <div class="settings-row">
               <div class="settings-row-label"><span class="field-label">Theme</span></div>
               <div class="settings-row-control">
@@ -2887,7 +2871,25 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
               </div>
             </div>
           </section>
-          <section class="settings-section" data-section="account"><div class="settings-placeholder">Account settings — to be defined</div></section>
+          <section class="settings-section" data-section="account">
+            <h3>Account</h3>
+            <div class="settings-row profile-row">
+              <div class="avatar-lg" id="settings-avatar">Y</div>
+              <div class="profile-text">
+                <span class="field-label">Profile picture</span>
+                <span class="field-hint">PNG or JPG, up to 5&nbsp;MB</span>
+                <button class="avatar-change">Change picture</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label"><span class="field-label">Display name</span></div>
+              <div class="settings-row-control"><input class="text-input" type="text" value="Yoda"/></div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label"><span class="field-label">Username</span></div>
+              <div class="settings-row-control"><input class="text-input" type="text" value="@yoda"/></div>
+            </div>
+          </section>
           <section class="settings-section" data-section="devices"><div class="settings-placeholder">Devices — to be defined</div></section>
           <section class="settings-section" data-section="backup"><div class="settings-placeholder">Backup — to be defined</div></section>
           <section class="settings-section" data-section="conversations"><div class="settings-placeholder">Conversations — to be defined</div></section>
@@ -3846,7 +3848,7 @@ function renderMessages() {
         if (showAvatar) {
           const av = document.createElement('div');
           av.className = 'av av-26 own-self-av';
-          av.textContent = 'KD';
+          av.textContent = 'Y';
           const selfAv = document.getElementById('account-av');
           if (selfAv && selfAv.classList.contains('has-photo') && selfAv.style.backgroundImage) {
             av.style.backgroundImage = selfAv.style.backgroundImage;

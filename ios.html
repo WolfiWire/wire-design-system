@@ -2175,7 +2175,7 @@ body {
   }
   function svMsgRow(m, q) {
     var self = m.sender === 'self';
-    var av = personAvatar(self ? { initials: 'KD', color: 'blue' }
+    var av = personAvatar(self ? { initials: 'Y', color: 'blue' }
                                : { initials: m.initials, color: m.color });
     return '<div class="sv-msg" role="listitem" tabindex="0" data-sv-conv="' + m.conv.convKey + '">'
          +   av
@@ -2371,7 +2371,7 @@ body {
   function renderChrome() {
     document.getElementById('tb-more').innerHTML = ic('overflow', 20);
     document.getElementById('tb-plus').innerHTML = ic('compose', 20);
-    document.getElementById('tb-av').textContent = 'KD';
+    document.getElementById('tb-av').textContent = 'Y';
   }
 
   renderChrome(); renderFilters(); renderMenu(); bindMenu(); renderList(); renderTabs();

@@ -2834,7 +2834,7 @@ html.hide-list-search .app-surface { min-height: 100%; }
   function svMsgRow(m, q) {
     var self = m.sender === 'self';
     var av = personAvatar(self
-      ? { initials: 'KD', color: 'blue' }
+      ? { initials: 'Y', color: 'blue' }
       : { initials: m.initials, color: m.color });
     return '<li class="cs-row" data-sv-conv="' + m.conv.convKey + '" role="listitem">'
          +   '<div class="av">' + av + '</div>'
@@ -3097,8 +3097,8 @@ html.hide-list-search .app-surface { min-height: 100%; }
       });
     }
     list.push({
-      name: 'Kasimir Dengler (You)', color: 'blue', initials: 'KD',
-      presence: 'available', qualifier: null, handle: '@kasimir'
+      name: 'Yoda (You)', color: 'blue', initials: 'Y',
+      presence: 'available', qualifier: null, handle: '@yoda'
     });
     return list;
   }
@@ -3525,7 +3525,7 @@ html.hide-list-search .app-surface { min-height: 100%; }
 
   function renderChrome() {
     document.getElementById('tb-avatar').innerHTML =
-      '<div class="av-person av-self">KD</div>'
+      '<div class="av-person av-self">Y</div>'
       + '<span class="av-presence" data-status="available"></span>';
     document.getElementById('tb-overflow').innerHTML = WDS.icon('overflow', { size: 16 });
     document.getElementById('fab').innerHTML        = WDS.icon('compose',  { size: 20 });
