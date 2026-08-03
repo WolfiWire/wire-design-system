@@ -633,7 +633,7 @@ input, textarea { font-family:var(--font-sans); }
 .conv-section { padding:var(--spacing-2) var(--spacing-4); }
 .conv-section + .conv-section { border-top:0.5px solid var(--wire-border-base-primary); }
 
-/* Conversation list sort/filter menu (gear next to the title) */
+/* Conversation list sort/filter menu (overflow button next to the title) */
 .conv-filter { position:relative; display:inline-flex; }
 .conv-filter-menu {
   position:absolute; top:calc(100% + 6px); left:0; z-index:50; min-width:230px;
@@ -2380,7 +2380,7 @@ html.hide-global-search #app-window { margin-top: var(--spacing-1); }
         <span class="psidebar-title" id="sidebar-title">
           Conversations
           <span class="conv-filter" id="conv-filter">
-            <button class="icon-btn" id="conv-filter-btn" title="Group, filter &amp; sort conversations" aria-haspopup="menu" aria-expanded="false" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-gear"></i></button>
+            <button class="icon-btn" id="conv-filter-btn" title="Group, filter &amp; sort conversations" aria-haspopup="menu" aria-expanded="false" style="width:24px;height:24px;margin-left:2px;"><i class="ph-bold ph-dots-three"></i></button>
             <div class="conv-filter-menu" id="conv-filter-menu" role="menu" aria-label="Group, filter and sort conversations">
               <div role="group" aria-label="Group by" class="cf-group">
                 <div class="cf-menu-label">Group by</div>
@@ -3131,7 +3131,7 @@ document.querySelectorAll('.conv-item').forEach(wireConvItem);
 const initialConv = document.querySelector('.conv-item.selected');
 if (initialConv) syncConvHeader(initialConv);
 
-// ── Conversation list: group & sort menu (gear beside the "Conversations" title) ──
+// ── Conversation list: group & sort menu (overflow button beside the "Conversations" title) ──
 // Three independent axes: Group by (none | conversation type | folders) × Filter by × Sort by.
 (function(){
   const filter = document.getElementById('conv-filter');

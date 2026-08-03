@@ -984,6 +984,15 @@ body {
 .tab:focus { outline: none; }
 .tab:focus-visible { outline: 2px solid var(--wire-border-accent-primary); outline-offset: 2px; }
 
+
+/* ─── SHELL HINT ───────────────────────────────────────────────────
+   Sits outside the device frame; not part of the prototype itself. */
+.shell-hint {
+  margin: 0; max-width: 420px; text-align: center;
+  font-size: 13px; line-height: 18px;
+  color: var(--wire-content-base-secondary);
+}
+.shell-hint strong { font-weight: 600; color: var(--wire-content-base-primary); }
 </style>
 </head>
 <body>
@@ -1104,6 +1113,11 @@ body {
 
   </div>
 </div>
+
+<p class="shell-hint">
+  Theme, background and accent colour can be changed in
+  <strong>Settings &rarr; Appearance</strong>.
+</p>
 
 <script src="wds-icons.js"></script>
 <script>
